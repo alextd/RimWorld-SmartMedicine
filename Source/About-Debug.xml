@@ -8,6 +8,6 @@
 Doctors will also use medicine from the patient's inventory, or anyone else on the map, if none is available otherwise.
 
 Now technically the medicine is dropped and immediately picked back up - but what can you do.
-		(This is the dev version of TestMod. The release version of About.xml is available for editing at About/About-Release.xml. Edits made on this file or on the temporary About/About.xml won't show up on the release version. Use VisualStudio to build a "Release" version of this mod when ready to upload your mod!)</description>
+		(This is the dev version of InventoryMedicine. The release version of About.xml is available for editing at About/About-Release.xml. Edits made on this file or on the temporary About/About.xml won't show up on the release version. Use VisualStudio to build a "Release" version of this mod when ready to upload your mod!)</description>
 	<url>http://steamcommunity.com/sharedfiles/filedetails/?id=1309994319</url>
 </ModMetaData>
