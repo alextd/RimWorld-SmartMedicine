@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+	<name>InventoryMedicine</name>
+	<author>Uuugggg</author>
+	<targetVersion>0.18.0</targetVersion>
+	<description>Doctors will use medicine from their inventory. What a concept!
+		
+Doctors will also use medicine from the patient's inventory, or anyone else on the map, if none is available otherwise.
+
+Now technically the medicine is dropped and immediately picked back up - but what can you do.</description>
+	<url>http://steamcommunity.com/sharedfiles/filedetails/?id=1309994319</url>
+</ModMetaData>
