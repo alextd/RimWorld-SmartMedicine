@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ModMetaData>
+	<name>InventoryMedicine - Dev Build</name>
+	<author>Uuugggg</author>
+	<targetVersion>0.18.0</targetVersion>
+	<description>Doctors will use medicine from their inventory. What a concept!
+		(This is the dev version of TestMod. The release version of About.xml is available for editing at About/About-Release.xml. Edits made on this file or on the temporary About/About.xml won't show up on the release version. Use VisualStudio to build a "Release" version of this mod when ready to upload your mod!)</description>
+	<url>http://steamcommunity.com/sharedfiles/filedetails/?id=1309954546</url>
+</ModMetaData>
