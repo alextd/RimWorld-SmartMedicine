@@ -34,7 +34,8 @@ namespace InventoryMedicine
 
         private static bool FindBestMedicine_Prefix(Pawn healer, Pawn patient, ref Thing __result)
         {
-            if (patient.playerSettings == null || patient.playerSettings.medCare <= MedicalCareCategory.NoMeds)
+            if (patient.playerSettings == null || patient.playerSettings.medCare <= MedicalCareCategory.NoMeds
+                || !healer.Faction.IsPlayer)
                 return true;
 
             Thing medicine = FindBestMedicineInInventory(healer, patient);
@@ -59,7 +60,8 @@ namespace InventoryMedicine
             {
                 float bestQuality = float.MinValue;
                 float bestCost = float.MaxValue;
-                foreach (Pawn p in healer.Map.mapPawns.SpawnedPawnsInFaction(Faction.OfPlayer).Where(p => p != patient && p != healer)) //p.HostFaction == null
+                foreach (Pawn p in healer.Map.mapPawns.SpawnedPawnsInFaction(Faction.OfPlayer).Where(p => p != patient && p != healer
+                && healer.Map.reachability.CanReach(patient.Position, p, PathEndMode.ClosestTouch, traverseParams)))
                 {
                     Thing pMedicine = FindBestMedicineInInventory(p, patient);
                     if (pMedicine == null) continue;
