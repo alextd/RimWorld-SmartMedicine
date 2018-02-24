@@ -66,7 +66,11 @@ namespace InventoryMedicine
         //Filter time-sensitive injuries
         public static void FilterForUrgentInjuries(List<Hediff> hediffs)
         {
-            int removed = hediffs.RemoveAll(h => !(!(h is Hediff_Injury) || (h as Hediff_Injury).Bleeding
+            if (!Settings.Get().noMedicineForNonUrgent)
+                return;
+
+            hediffs.RemoveAll(h => !(!(h is Hediff_Injury)
+                || (h as Hediff_Injury).Bleeding
                 || (h as Hediff_Injury).TryGetComp<HediffComp_Infecter>() != null
                 || (h as Hediff_Injury).TryGetComp<HediffComp_GetsOld>() != null));
         }
@@ -86,9 +90,14 @@ namespace InventoryMedicine
                 || !healer.Faction.IsPlayer)
                 return true;
 
-            Thing medicine = FindBestMedicineInInventory(healer, patient);
-            Pawn medicineHolder = healer;
-            if (medicine == null)
+            Thing medicine = null;
+            Pawn medicineHolder = null;
+            if (Settings.Get().useDoctorMedicine)
+            { 
+                medicine = FindBestMedicineInInventory(healer, patient);
+                medicineHolder = healer;
+            }
+            if (Settings.Get().usePatientMedicine && medicine == null)
             {
                 medicine = FindBestMedicineInInventory(patient, patient);
                 medicineHolder = patient;
@@ -104,25 +113,39 @@ namespace InventoryMedicine
                 Log.Message("Ground medicine = " + t + "@" + MedicineQuality(t) + " (dist: " + DistanceTo(healer, t) + ")");
             }
 
-            if(medicine == null && groundMedicines.NullOrEmpty())
+            //
+            if(!Settings.Get().useOtherOnlyIfNeeded || medicine == null && groundMedicines.NullOrEmpty() && (Settings.Get().useColonistMedicine || Settings.Get().useAnimalMedicine))
             {
+                IEnumerable<Pawn> holders;
+                if (Settings.Get().useColonistMedicine && Settings.Get().useAnimalMedicine)
+                    holders = healer.Map.mapPawns.SpawnedPawnsInFaction(Faction.OfPlayer);
+                else if (Settings.Get().useColonistMedicine)
+                    holders = healer.Map.mapPawns.FreeColonists;
+                else
+                    holders = healer.Map.mapPawns.SpawnedPawnsInFaction(Faction.OfPlayer).Where(p => !p.RaceProps.Humanlike);
+                foreach (Pawn p in holders)
+                {
+                    Log.Message(p + "?");
+                }
+
                 float bestQuality = float.MinValue;
-                int bestCost = int.MaxValue;
-                foreach (Pawn p in healer.Map.mapPawns.SpawnedPawnsInFaction(Faction.OfPlayer).Where(p => p != patient && p != healer
-                && healer.Map.reachability.CanReach(patient.Position, p, PathEndMode.ClosestTouch, traverseParams)))
+                int bestDistance = int.MaxValue;
+                foreach (Pawn p in holders.Where(p => p!= healer && p!= patient && healer.Map.reachability.CanReach(patient.Position, p, PathEndMode.ClosestTouch, traverseParams)))
                 {
                     Thing pMedicine = FindBestMedicineInInventory(p, patient);
                     if (pMedicine == null) continue;
 
                     float pQuality = MedicineQuality(pMedicine);
-                    int pCost = DistanceTo(healer, p);
+                    int pDistance = Math.Min(DistanceTo(healer, p), DistanceTo(patient,p));
 
-                    if(pQuality > bestQuality || (pQuality == bestQuality && pCost < bestCost))
+                    Log.Message(p + " has " + pMedicine + "@" + pQuality + " (dist: " + pDistance + ")");
+
+                    if (pQuality > bestQuality || (pQuality == bestQuality && pDistance < bestDistance))
                     {
                         medicine = pMedicine;
                         medicineHolder = p;
                         bestQuality = pQuality;
-                        bestCost = pCost;
+                        bestDistance = pDistance;
                         //TODO: Have pawn walk to hand off medicine, lol never gonna happen
                     }
                 }
@@ -201,10 +224,11 @@ namespace InventoryMedicine
 
         private static Thing CloseMedOnGround(List<Thing> groundMedicines, float medQuality, Pawn pawn)
         {
-            if (groundMedicines.Count == 0)
+            List<Thing> equalMedicines = groundMedicines.Where(t => MedicineQuality(t) == medQuality).ToList();
+            if (equalMedicines.Count == 0)
                 return null;
 
-            Thing closeMed = groundMedicines.Where(t => MedicineQuality(t) == medQuality).MinBy(t => DistanceTo(pawn, t));
+            Thing closeMed = equalMedicines.MinBy(t => DistanceTo(pawn, t));
             if (DistanceTo(pawn, closeMed) <= Settings.Get().distanceToUseEqualOnGround)
                 return closeMed;
 

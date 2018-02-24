@@ -1,5 +1,6 @@
 ﻿using System.Reflection;
 using Verse;
+using UnityEngine;
 using Harmony;
 
 namespace InventoryMedicine
@@ -18,6 +19,17 @@ namespace InventoryMedicine
 #endif
             HarmonyInstance harmony = HarmonyInstance.Create("uuugggg.rimworld.inventorymedicine.main");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
+        }
+
+        public override void DoSettingsWindowContents(Rect inRect)
+        {
+            base.DoSettingsWindowContents(inRect);
+            GetSettings<Settings>().DoWindowContents(inRect);
+        }
+
+        public override string SettingsCategory()
+        {
+            return "Smart Medicine";
         }
     }
 }
