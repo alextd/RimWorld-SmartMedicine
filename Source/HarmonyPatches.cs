@@ -14,7 +14,7 @@ namespace InventoryMedicine
     [StaticConstructorOnStartup]
     static class HarmonyPatches
     {
-        static float distanceToUseEqualOnGround = 5 * 20.0f; //About 5 squares.
+        static int distanceToUseEqualOnGround = 5;
 
         [System.Diagnostics.Conditional("DEBUG")]
         public static void Message(string x)
@@ -53,13 +53,13 @@ namespace InventoryMedicine
 
             foreach (Thing t in groundMedicines)
             {
-                Message("Ground medicine = " + t + "@" + MedicineQuality(t) + " (" + PathToCost(healer, t) + ")");
+                Message("Ground medicine = " + t + "@" + MedicineQuality(t) + " (" + DistanceTo(healer, t) + ")");
             }
 
             if(medicine == null && groundMedicines.NullOrEmpty())
             {
                 float bestQuality = float.MinValue;
-                float bestCost = float.MaxValue;
+                int bestCost = int.MaxValue;
                 foreach (Pawn p in healer.Map.mapPawns.SpawnedPawnsInFaction(Faction.OfPlayer).Where(p => p != patient && p != healer
                 && healer.Map.reachability.CanReach(patient.Position, p, PathEndMode.ClosestTouch, traverseParams)))
                 {
@@ -67,7 +67,7 @@ namespace InventoryMedicine
                     if (pMedicine == null) continue;
 
                     float pQuality = MedicineQuality(pMedicine);
-                    float pCost = PathToCost(healer, p);
+                    int pCost = DistanceTo(healer, p);
 
                     if(pQuality > bestQuality || (pQuality == bestQuality && pCost < bestCost))
                     {
@@ -84,6 +84,7 @@ namespace InventoryMedicine
             {
                 float medQuality = MedicineQuality(medicine);
                 Message("Inventory medicine = " + medicine + "@" + medQuality+", holder = "+ medicineHolder);
+
                 //Higher quality on ground
                 Message("checking better on ground");
                 if (BetterMedOnGround(groundMedicines, medQuality))
@@ -152,16 +153,19 @@ namespace InventoryMedicine
 
         private static Thing CloseMedOnGround(List<Thing> groundMedicines, float medQuality, Pawn pawn)
         {
-            return groundMedicines.Where(t => MedicineQuality(t) == medQuality && (PathToCost(pawn, t) <= distanceToUseEqualOnGround)).
-                MaxByWithFallback(t => PathToCost(pawn, t));
+            if (groundMedicines.Count == 0)
+                return null;
+
+            Thing closeMed = groundMedicines.Where(t => MedicineQuality(t) == medQuality).MinBy(t => DistanceTo(pawn, t));
+            if (DistanceTo(pawn, closeMed) <= distanceToUseEqualOnGround)
+                return closeMed;
+
+            return null;
         }
 
-        private static float PathToCost(Pawn p, Thing t)
+        private static int DistanceTo(Thing t1, Thing t2)
         {
-            PawnPath pawnPath = p.Map.pathFinder.FindPath(p.Position, t, p);
-            float cost = pawnPath.TotalCost;
-            pawnPath.ReleaseToPool();
-            return cost;
+            return (t1.Position - t2.Position).LengthManhattan;
         }
         
     }
