@@ -16,11 +16,10 @@ namespace InventoryMedicine
     {
         static float distanceToUseEqualOnGround = 5 * 20.0f; //About 5 squares.
 
+        [System.Diagnostics.Conditional("DEBUG")]
         public static void Message(string x)
         {
-#if DEBUG
             Log.Message(x);
-#endif
         }
 
 
@@ -160,7 +159,6 @@ namespace InventoryMedicine
             PawnPath pawnPath = p.Map.pathFinder.FindPath(p.Position, t, p);
             float cost = pawnPath.TotalCost;
             pawnPath.ReleaseToPool();
-            if (cost < 0) return float.MaxValue;
             return cost;
         }
         
