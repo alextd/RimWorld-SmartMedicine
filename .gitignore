@@ -1,3 +1,5 @@
 .vs
 *.cache
 Source/obj
+/Assemblies/InventoryMedicine.dll
+/About/About.xml
