@@ -55,9 +55,10 @@
     <None Include="..\Patches\**" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="HarmonyPatches.cs" />
+    <Compile Include="MedicineGrabbing.cs" />
     <Compile Include="InventoryMedicine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Settings.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

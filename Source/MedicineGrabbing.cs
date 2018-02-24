@@ -1,38 +1,86 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
+using System.Reflection.Emit;
 using RimWorld;
-using Verse;
 using UnityEngine;
-using Harmony;
+using Verse;
 using Verse.AI;
+using Harmony;
 
 
 namespace InventoryMedicine
 {
 
-    [StaticConstructorOnStartup]
-    static class HarmonyPatches
+    static class Log
     {
-        static int distanceToUseEqualOnGround = 5;
-
         [System.Diagnostics.Conditional("DEBUG")]
         public static void Message(string x)
         {
-            Log.Message(x);
+            Verse.Log.Message(x);
         }
-
-
-        static HarmonyPatches()
+    }
+    
+    [HarmonyPatch(typeof(Medicine))]
+    [HarmonyPatch("GetMedicineCountToFullyHeal")]
+    static class GetMedicineCountToFullyHeal
+    {
+        //Insert FilterForUrgentHediffs when counting needed medicine
+        public static IEnumerable<CodeInstruction> Transpiler(MethodBase mBase, IEnumerable<CodeInstruction> instructions)
         {
-            HarmonyInstance harmony = HarmonyInstance.Create("uuugggg.rimworld.inventorymedicine.main");
+            foreach(LocalVariableInfo info in mBase.GetMethodBody().LocalVariables)
+            {
+                Log.Message(info.ToString());
+            }
 
-            harmony.Patch(AccessTools.Method(typeof(HealthAIUtility), "FindBestMedicine"),
-                new HarmonyMethod(typeof(HarmonyPatches), nameof(FindBestMedicine_Prefix)), null, null);
+            MethodInfo SortByTendPriorityInfo = AccessTools.Method(
+                typeof(TendUtility), nameof(TendUtility.SortByTendPriority));
+            MethodInfo filterMethodInfo = AccessTools.Method(
+                typeof(GetMedicineCountToFullyHeal), nameof(FilterForUrgentInjuries));
 
+            List<CodeInstruction> instructionList = instructions.ToList();
+            for (int i = 0; i < instructionList.Count; i++)
+            {
+                CodeInstruction instruction = instructionList[i];
+                if (instruction.opcode == OpCodes.Ldsfld)
+                {
+                    CodeInstruction lastLoad = new CodeInstruction(OpCodes.Ldsfld, instruction.operand);
+
+                    i++;
+                    CodeInstruction nextInstruction = instructionList[i];
+                    if (nextInstruction.opcode == OpCodes.Call && nextInstruction.operand == SortByTendPriorityInfo)
+                    {
+                        //insert before the sort call
+                        yield return lastLoad;
+                        yield return new CodeInstruction(OpCodes.Call, filterMethodInfo);
+                    }
+                    yield return instruction;
+                    yield return nextInstruction;
+                }
+                else
+                    yield return instruction;
+            }
         }
 
-        private static bool FindBestMedicine_Prefix(Pawn healer, Pawn patient, ref Thing __result)
+        //Filter time-sensitive injuries
+        public static void FilterForUrgentInjuries(List<Hediff> hediffs)
+        {
+            int removed = hediffs.RemoveAll(h => !(!(h is Hediff_Injury) || (h as Hediff_Injury).Bleeding
+                || (h as Hediff_Injury).TryGetComp<HediffComp_Infecter>() != null
+                || (h as Hediff_Injury).TryGetComp<HediffComp_GetsOld>() != null));
+        }
+
+        //Filter for medicine unneeded 
+
+
+    }
+
+    [HarmonyPatch(typeof(HealthAIUtility))]
+    [HarmonyPatch("FindBestMedicine")]
+    static class FindBestMedicine
+    {
+        private static bool Prefix(Pawn healer, Pawn patient, ref Thing __result)
         {
             if (patient.playerSettings == null || patient.playerSettings.medCare <= MedicalCareCategory.NoMeds
                 || !healer.Faction.IsPlayer)
@@ -53,7 +101,7 @@ namespace InventoryMedicine
 
             foreach (Thing t in groundMedicines)
             {
-                Message("Ground medicine = " + t + "@" + MedicineQuality(t) + " (" + DistanceTo(healer, t) + ")");
+                Log.Message("Ground medicine = " + t + "@" + MedicineQuality(t) + " (dist: " + DistanceTo(healer, t) + ")");
             }
 
             if(medicine == null && groundMedicines.NullOrEmpty())
@@ -83,19 +131,19 @@ namespace InventoryMedicine
             if (medicine != null)
             {
                 float medQuality = MedicineQuality(medicine);
-                Message("Inventory medicine = " + medicine + "@" + medQuality+", holder = "+ medicineHolder);
+                Log.Message("Inventory medicine = " + medicine + "@" + medQuality+", holder = "+ medicineHolder);
 
                 //Higher quality on ground
-                Message("checking better on ground");
+                Log.Message("checking better on ground");
                 if (BetterMedOnGround(groundMedicines, medQuality))
                     return true;
 
-                Message("checking equal near patient");
+                Log.Message("checking equal near patient");
                 //Close enough to patient to let normal thing do it
                 if (CloseMedOnGround(groundMedicines, medQuality, patient) != null)
                     return true;
 
-                Message("checking equal near healer");
+                Log.Message("checking equal near healer");
                 //Close enough to just grab
                 Thing closeMedicine = CloseMedOnGround(groundMedicines, medQuality, healer);
                 if (closeMedicine != null)
@@ -104,7 +152,7 @@ namespace InventoryMedicine
                     return false;
                 }
 
-                Message("Using medicine = " + medicine + "@" + medQuality);
+                Log.Message("Using medicine = " + medicine + "@" + medQuality);
 
                 // because The Toil to get this medicine is FailOnDespawnedNullOrForbidden
                 // And Medicine in inventory or carried is despawned
@@ -123,7 +171,7 @@ namespace InventoryMedicine
                 return false;
 
                 //Use it!
-                //Message("using inventory " + medicine);
+                //Log.Message("using inventory " + medicine);
                 //healer.carryTracker.innerContainer.TryAddOrTransfer(medicine);
                 //__result = medicine;
                 //return false;
@@ -157,7 +205,7 @@ namespace InventoryMedicine
                 return null;
 
             Thing closeMed = groundMedicines.Where(t => MedicineQuality(t) == medQuality).MinBy(t => DistanceTo(pawn, t));
-            if (DistanceTo(pawn, closeMed) <= distanceToUseEqualOnGround)
+            if (DistanceTo(pawn, closeMed) <= Settings.Get().distanceToUseEqualOnGround)
                 return closeMed;
 
             return null;
