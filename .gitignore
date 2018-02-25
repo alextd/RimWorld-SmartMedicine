@@ -3,3 +3,4 @@
 Source/obj
 /Assemblies/InventoryMedicine.dll
 /About/About.xml
+*.csproj.user
