@@ -78,61 +78,93 @@ namespace InventoryMedicine
     [HarmonyPatch("FindBestMedicine")]
     static class FindBestMedicine
     {
-        private static bool Prefix(Pawn healer, Pawn patient, ref Thing __result)
+        //private class MedicineEvaluator
+        //{
+        //    Thing medicine;
+        //    Thing holder;
+        //    float quality;
+        //    int distance;
+        //}
+        private static void LogMedicine(string label, Thing t, int distance = -1)
         {
+            LogMedicine(label, t, null, distance);
+        }
+
+        private static void LogMedicine(string label, Thing t, Pawn p, int distance = -1)
+        {
+            if (t == null)
+                return;
+            Log.Message(label + ": " + t + "@" + MedicineQuality(t) + (distance > -1 ? " (dist: " + distance + ")":"") + (p == null?"":" by "+ p));
+        }
+        private static void Postfix(Pawn healer, Pawn patient, ref Thing __result)
+        {
+            //This is what the game would do
+            Thing chosenMedicine = __result;
+            float chosenQuality = chosenMedicine != null ? MedicineQuality(chosenMedicine) : 0.0f;
+            int chosenDistance = chosenMedicine != null ? DistanceTo(patient, chosenMedicine) :  int.MaxValue;
+            LogMedicine("Chosen", chosenMedicine, chosenDistance);
+
+
             if (patient.playerSettings == null || patient.playerSettings.medCare <= MedicalCareCategory.NoMeds
                 || !healer.Faction.IsPlayer)
-                return true;
+                return;
 
+            //Try to find better, or closer.
             Thing medicine = null;
             Pawn medicineHolder = null;
             if (Settings.Get().useDoctorMedicine)
-            { 
+            {
                 medicine = FindBestMedicineInInventory(healer, patient);
-                medicineHolder = healer;
+                if(medicine!= null) medicineHolder = healer;
             }
             if (Settings.Get().usePatientMedicine && medicine == null)
             {
                 medicine = FindBestMedicineInInventory(patient, patient);
-                medicineHolder = patient;
+                if (medicine != null) medicineHolder = patient;
             }
 
             TraverseParms traverseParams = TraverseParms.For(healer, Danger.Deadly, TraverseMode.ByPawn, false);
-            List<Thing> groundMedicines = healer.Map.listerThings.ThingsInGroup(ThingRequestGroup.Medicine).Where(t =>
-            healer.Map.reachability.CanReach(patient.Position, t, PathEndMode.ClosestTouch, traverseParams) &&
-            !t.IsForbidden(healer) && patient.playerSettings.medCare.AllowsMedicine(t.def) && healer.CanReserve(t, 1, -1, null, false)).ToList();
-
-            foreach (Thing t in groundMedicines)
+            if (Settings.Get().useColonistMedicine || Settings.Get().useAnimalMedicine)
             {
-                Log.Message("Ground medicine = " + t + "@" + MedicineQuality(t) + " (dist: " + DistanceTo(healer, t) + ")");
-            }
-
-            //
-            if(!Settings.Get().useOtherOnlyIfNeeded || medicine == null && groundMedicines.NullOrEmpty() && (Settings.Get().useColonistMedicine || Settings.Get().useAnimalMedicine))
-            {
-                IEnumerable<Pawn> holders;
+                List<Pawn> holders;
                 if (Settings.Get().useColonistMedicine && Settings.Get().useAnimalMedicine)
+                {
                     holders = healer.Map.mapPawns.SpawnedPawnsInFaction(Faction.OfPlayer);
+                }
                 else if (Settings.Get().useColonistMedicine)
-                    holders = healer.Map.mapPawns.FreeColonists;
+                {
+                    holders = healer.Map.mapPawns.FreeColonists.ToList();
+                }
                 else
-                    holders = healer.Map.mapPawns.SpawnedPawnsInFaction(Faction.OfPlayer).Where(p => !p.RaceProps.Humanlike);
+                {
+                    holders = healer.Map.mapPawns.SpawnedPawnsInFaction(Faction.OfPlayer).Where(p => !p.RaceProps.Humanlike).ToList();
+                }
+
+                foreach (Pawn p in holders)
+                {
+                    Log.Message(p + "??");
+                }
+                holders.RemoveAll(p => p == healer || p == patient || !healer.Map.reachability.CanReach(healer.Position, p, PathEndMode.ClosestTouch, traverseParams));
+
+                if (!Settings.Get().useOtherEvenIfFar)
+                    holders.RemoveAll(p => DistanceToEither(p, healer, patient) > Settings.Get().distanceToUseEqualOnGround);
+
                 foreach (Pawn p in holders)
                 {
                     Log.Message(p + "?");
                 }
 
-                float bestQuality = float.MinValue;
-                int bestDistance = int.MaxValue;
-                foreach (Pawn p in holders.Where(p => p!= healer && p!= patient && healer.Map.reachability.CanReach(patient.Position, p, PathEndMode.ClosestTouch, traverseParams)))
+                float bestQuality = medicine != null ? MedicineQuality(medicine) : 0;
+                int bestDistance = medicineHolder != null ? 0 : int.MaxValue;  //medicine on doctor/patient is either 0 from doctor or patient
+
+                foreach (Pawn p in holders)
                 {
                     Thing pMedicine = FindBestMedicineInInventory(p, patient);
                     if (pMedicine == null) continue;
 
                     float pQuality = MedicineQuality(pMedicine);
-                    int pDistance = Math.Min(DistanceTo(healer, p), DistanceTo(patient,p));
-
-                    Log.Message(p + " has " + pMedicine + "@" + pQuality + " (dist: " + pDistance + ")");
+                    int pDistance = DistanceToEither(p, healer, patient);
+                    LogMedicine("Inventory", pMedicine, pDistance);
 
                     if (pQuality > bestQuality || (pQuality == bestQuality && pDistance < bestDistance))
                     {
@@ -148,28 +180,45 @@ namespace InventoryMedicine
             if (medicine != null)
             {
                 float medQuality = MedicineQuality(medicine);
-                Log.Message("Inventory medicine = " + medicine + "@" + medQuality+", holder = "+ medicineHolder);
+                LogMedicine("Picked from " + medicineHolder, medicine, DistanceToEither(medicineHolder, healer, patient));
 
-                //Higher quality on ground
-                Log.Message("checking better on ground");
-                if (BetterMedOnGround(groundMedicines, medQuality))
-                    return true;
+                Log.Message("checking if chosen medicine is better");
+                if (chosenQuality > medQuality)
+                    return;
 
-                Log.Message("checking equal near patient");
-                //Close enough to patient to let normal thing do it
-                if (CloseMedOnGround(groundMedicines, medQuality, patient) != null)
-                    return true;
+                Log.Message("checking if chosen medicine is equal");
+                if (chosenQuality == medQuality)
+                { 
+                    //Okay, find closest
+                    if (medicineHolder != healer && medicineHolder != patient)
+                    {
+                        Log.Message("checking if holder is much closer than chosen");
+                        if (chosenDistance - Settings.Get().distanceToUseEqualOnGround *2 <= DistanceToEither(medicineHolder, healer, patient))
+                            return;
+                    }
+            
+		            List<Thing> groundMedicines = healer.Map.listerThings.ThingsInGroup(ThingRequestGroup.Medicine).Where(t =>
+		            healer.Map.reachability.CanReach(patient.Position, t, PathEndMode.ClosestTouch, traverseParams) &&
+		            !t.IsForbidden(healer) && patient.playerSettings.medCare.AllowsMedicine(t.def) && healer.CanReserve(t, 1, -1, null, false)).ToList();
 
-                Log.Message("checking equal near healer");
-                //Close enough to just grab
-                Thing closeMedicine = CloseMedOnGround(groundMedicines, medQuality, healer);
-                if (closeMedicine != null)
-                {
-                    __result = closeMedicine;
-                    return false;
+		            foreach (Thing t in groundMedicines)
+		            {
+		                LogMedicine("Ground", t, DistanceToEither(t, healer, patient));
+		            }
+                    Log.Message("checking close to healer (and too far from patient)");
+                    Thing closeMedicine = CloseMedOnGround(groundMedicines, medQuality, healer);
+                    if (Settings.Get().useCloseMedicine && closeMedicine != null && DistanceTo(healer, closeMedicine) <= Settings.Get().distanceToUseEqualOnGround)
+                    {
+                        __result = closeMedicine;
+                        return;
+                    }
+
+                    Log.Message("checking close to patient");
+                    if (Settings.Get().useCloseMedicine && chosenDistance <= Settings.Get().distanceToUseEqualOnGround)
+                        return;
                 }
 
-                Log.Message("Using medicine = " + medicine + "@" + medQuality);
+                LogMedicine("Using", medicine);
 
                 // because The Toil to get this medicine is FailOnDespawnedNullOrForbidden
                 // And Medicine in inventory or carried is despawned
@@ -184,16 +233,16 @@ namespace InventoryMedicine
                 count = Mathf.Min(medicine.stackCount, count);
                 Thing droppedMedicine;
                 medicineHolder.inventory.innerContainer.TryDrop(medicine, ThingPlaceMode.Direct, count, out droppedMedicine);
-                __result = droppedMedicine;
-                return false;
+
+                //Whoops dropped onto forbidden / reserved stack
+                if(!droppedMedicine.IsForbidden(healer) && healer.CanReserve(droppedMedicine, 1, -1, null, false))
+                   __result = droppedMedicine;
 
                 //Use it!
                 //Log.Message("using inventory " + medicine);
-                //healer.carryTracker.innerContainer.TryAddOrTransfer(medicine);
+                //healer.carryTracker.innerContainer.TryAddOrTransfer(medicine, count);
                 //__result = medicine;
-                //return false;
             }
-            return true;
         }
 
         private static Thing FindBestMedicineInInventory(Pawn pawn, Pawn patient)
@@ -211,27 +260,23 @@ namespace InventoryMedicine
             return t.def.GetStatValueAbstract(StatDefOf.MedicalPotency, null);
         }
 
-        private static bool BetterMedOnGround(List<Thing> groundMedicines, float medQuality)
-        {
-            return groundMedicines.Any(t => MedicineQuality(t) > medQuality);
-        }
-
         private static Thing CloseMedOnGround(List<Thing> groundMedicines, float medQuality, Pawn pawn)
         {
             List<Thing> equalMedicines = groundMedicines.Where(t => MedicineQuality(t) == medQuality).ToList();
             if (equalMedicines.Count == 0)
                 return null;
 
-            Thing closeMed = equalMedicines.MinBy(t => DistanceTo(pawn, t));
-            if (DistanceTo(pawn, closeMed) <= Settings.Get().distanceToUseEqualOnGround)
-                return closeMed;
-
-            return null;
+            return equalMedicines.MinBy(t => DistanceTo(pawn, t));
         }
 
         private static int DistanceTo(Thing t1, Thing t2)
         {
             return (t1.Position - t2.Position).LengthManhattan;
+        }
+
+        private static int DistanceToEither(Thing t, Thing t1, Thing t2)
+        {
+            return Math.Min(DistanceTo(t, t1), DistanceTo(t, t2));
         }
         
     }

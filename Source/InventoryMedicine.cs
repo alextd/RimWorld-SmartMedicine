@@ -11,14 +11,20 @@ namespace InventoryMedicine
         {
             // initialize settings
             GetSettings<Settings>();
-
-            // prefix implied PawnColumnWorker_WorkType generation 
-            // prefix get/set workPriorities
 #if DEBUG
             HarmonyInstance.DEBUG = true;
 #endif
             HarmonyInstance harmony = HarmonyInstance.Create("uuugggg.rimworld.inventorymedicine.main");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
+
+            harmony.Patch(AccessTools.Property(typeof(MapPawns), nameof(MapPawns.AllPawnsSpawned)).GetGetMethod(false),
+                 null, new HarmonyMethod(typeof(HarmonyPatches), nameof(HarmonyPatches.AllPawnsSpawnedPostfix)));
+            harmony.Patch(AccessTools.Property(typeof(MapPawns), nameof(MapPawns.PrisonersOfColonySpawned)).GetGetMethod(false),
+                 null, new HarmonyMethod(typeof(HarmonyPatches), nameof(HarmonyPatches.PrisonersOfColonySpawnedPostfix)));
+            harmony.Patch(AccessTools.Method(typeof(MapPawns), "SpawnedPawnsInFaction"),
+                 null, new HarmonyMethod(typeof(HarmonyPatches), nameof(HarmonyPatches.SpawnedPawnsInFactionPostfix)));
+
+
         }
 
         public override void DoSettingsWindowContents(Rect inRect)
