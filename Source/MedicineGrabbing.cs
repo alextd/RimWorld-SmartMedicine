@@ -27,32 +27,26 @@ namespace InventoryMedicine
     static class GetMedicineCountToFullyHeal
     {
         //Insert FilterForUrgentHediffs when counting needed medicine
-        public static IEnumerable<CodeInstruction> Transpiler(MethodBase mBase, IEnumerable<CodeInstruction> instructions)
+        public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
         {
-            foreach(LocalVariableInfo info in mBase.GetMethodBody().LocalVariables)
-            {
-                Log.Message(info.ToString());
-            }
-
             MethodInfo SortByTendPriorityInfo = AccessTools.Method(
                 typeof(TendUtility), nameof(TendUtility.SortByTendPriority));
             MethodInfo filterMethodInfo = AccessTools.Method(
                 typeof(GetMedicineCountToFullyHeal), nameof(FilterForUrgentInjuries));
+            FieldInfo filterMethodParameter = AccessTools.Field(typeof(Medicine), "tendableHediffsInTendPriorityOrder");
 
-            List<CodeInstruction> instructionList = instructions.ToList();
+            List <CodeInstruction> instructionList = instructions.ToList();
             for (int i = 0; i < instructionList.Count; i++)
             {
                 CodeInstruction instruction = instructionList[i];
                 if (instruction.opcode == OpCodes.Ldsfld)
                 {
-                    CodeInstruction lastLoad = new CodeInstruction(OpCodes.Ldsfld, instruction.operand);
-
                     i++;
                     CodeInstruction nextInstruction = instructionList[i];
                     if (nextInstruction.opcode == OpCodes.Call && nextInstruction.operand == SortByTendPriorityInfo)
                     {
                         //insert before the sort call
-                        yield return lastLoad;
+                        yield return new CodeInstruction(OpCodes.Ldsfld, filterMethodParameter);
                         yield return new CodeInstruction(OpCodes.Call, filterMethodInfo);
                     }
                     yield return instruction;
