@@ -164,7 +164,7 @@ namespace InventoryMedicine
 
                     float pQuality = MedicineQuality(pMedicine);
                     int pDistance = DistanceToEither(p, healer, patient);
-                    LogMedicine("Inventory", pMedicine, pDistance);
+                    LogMedicine("Inventory", pMedicine, p, pDistance);
 
                     if (pQuality > bestQuality || (pQuality == bestQuality && pDistance < bestDistance))
                     {
@@ -180,7 +180,7 @@ namespace InventoryMedicine
             if (medicine != null)
             {
                 float medQuality = MedicineQuality(medicine);
-                LogMedicine("Picked from " + medicineHolder, medicine, DistanceToEither(medicineHolder, healer, patient));
+                LogMedicine("Picked", medicine, medicineHolder, DistanceToEither(medicineHolder, healer, patient));
 
                 Log.Message("checking if chosen medicine is better");
                 if (chosenQuality > medQuality)
@@ -218,7 +218,7 @@ namespace InventoryMedicine
                         return;
                 }
 
-                LogMedicine("Using", medicine);
+                LogMedicine("Using", medicine, medicineHolder);
 
                 // because The Toil to get this medicine is FailOnDespawnedNullOrForbidden
                 // And Medicine in inventory or carried is despawned
