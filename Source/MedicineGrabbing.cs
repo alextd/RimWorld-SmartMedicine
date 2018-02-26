@@ -228,8 +228,8 @@ namespace InventoryMedicine
 
                 //Drop it!
                 int count = Medicine.GetMedicineCountToFullyHeal(patient);
-                if (medicineHolder.carryTracker.CarriedThing != null)
-                    count -= medicineHolder.carryTracker.CarriedThing.stackCount;
+                if (healer.carryTracker.CarriedThing != null)
+                    count -= healer.carryTracker.CarriedThing.stackCount;
                 count = Mathf.Min(medicine.stackCount, count);
                 Thing droppedMedicine;
                 medicineHolder.inventory.innerContainer.TryDrop(medicine, ThingPlaceMode.Direct, count, out droppedMedicine);
