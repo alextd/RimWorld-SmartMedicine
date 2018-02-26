@@ -13,9 +13,9 @@ namespace InventoryMedicine
         public bool useColonistMedicine = true;
         public bool useAnimalMedicine = true;
         public bool useCloseMedicine = true;
-        public bool useOtherEvenIfFar = false;
+        public bool useOtherEvenIfFar = true;
         public bool minimalMedicineForNonUrgent = false;
-        public bool noMedicineForNonUrgent = true;
+        public bool noMedicineForNonUrgent = false;
         public bool downgradeExcessiveMedicine = true;
         public int distanceToUseEqualOnGround = 5;
 
@@ -47,12 +47,12 @@ namespace InventoryMedicine
             //options.TextFieldNumericLabeled<int>("How far to walk to find nearby medicine", ref distanceToUseEqualOnGround, ref dummy, 0, 999);
 
             //options.CheckboxLabeled("Use minimal medicine for non-urgent care", ref minimalMedicineForNonUrgent,
-            //    "Urgent care is injuries with bleeding, infection chance, or permanent effects");
+            //    "Urgent care is injuries with bleeding, infection chance, or permanent effects - save valuable medicine for these only");
             //if (minimalMedicineForNonUrgent) noMedicineForNonUrgent = false;
 
             options.CheckboxLabeled("No medicine for non-urgent care", ref noMedicineForNonUrgent,
-                "Urgent care is injuries with bleeding, infection chance, or permanent effects - saves valuable medicine, but each injury is healed one at a time");
-                //"Same as above, but without medicine, each injury is healed one at a time");
+                "Urgent care is injuries with bleeding, infection chance, or permanent effects - saves medicine, but each injury is treated one at a time");
+            //"Same as above, but without medicine, each injury is treated one at a time");
             if (noMedicineForNonUrgent) minimalMedicineForNonUrgent = false;
 
             //options.CheckboxLabeled("Downgrade medicine if sufficient", ref downgradeExcessiveMedicine, "Calculate if lesser medicine will do just as well, due to doctor skill, bionics, medical beds, etc");
@@ -67,8 +67,8 @@ namespace InventoryMedicine
             Scribe_Values.Look(ref useColonistMedicine, "useColonistMedicine", true);
             Scribe_Values.Look(ref useAnimalMedicine, "useAnimalMedicine", true);
             Scribe_Values.Look(ref useCloseMedicine, "useCloseMedicine", true);
-            Scribe_Values.Look(ref useOtherEvenIfFar, "useOtherEvenIfFar", false); 
-            Scribe_Values.Look(ref minimalMedicineForNonUrgent, "minimalMedicineForNonUrgent", true);
+            Scribe_Values.Look(ref useOtherEvenIfFar, "useOtherEvenIfFar", true); 
+            Scribe_Values.Look(ref minimalMedicineForNonUrgent, "minimalMedicineForNonUrgent", false);
             Scribe_Values.Look(ref noMedicineForNonUrgent, "noMedicineForNonUrgent", false);
             Scribe_Values.Look(ref downgradeExcessiveMedicine, "downgradeExcessiveMedicine", true);
             Scribe_Values.Look(ref distanceToUseEqualOnGround, "distanceToUseEqualOnGround", 5);

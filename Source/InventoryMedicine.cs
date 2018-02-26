@@ -35,7 +35,7 @@ namespace InventoryMedicine
 
         public override string SettingsCategory()
         {
-            return "Smart Medicine";
+            return "Inventory Medicine";
         }
     }
 }
