@@ -126,23 +126,13 @@ namespace InventoryMedicine
             TraverseParms traverseParams = TraverseParms.For(healer, Danger.Deadly, TraverseMode.ByPawn, false);
             if (Settings.Get().useColonistMedicine || Settings.Get().useAnimalMedicine)
             {
-                List<Pawn> holders;
-                if (Settings.Get().useColonistMedicine && Settings.Get().useAnimalMedicine)
-                {
-                    holders = healer.Map.mapPawns.SpawnedPawnsInFaction(Faction.OfPlayer);
-                }
-                else if (Settings.Get().useColonistMedicine)
-                {
-                    holders = healer.Map.mapPawns.FreeColonists.ToList();
-                }
-                else
-                {
-                    holders = healer.Map.mapPawns.SpawnedPawnsInFaction(Faction.OfPlayer).Where(p => !p.RaceProps.Humanlike).ToList();
-                }
+                List<Pawn> holders = healer.Map.mapPawns.SpawnedPawnsInFaction(Faction.OfPlayer).
+                    Where(p => (Settings.Get().useColonistMedicine && p.IsFreeColonist)
+                    || (Settings.Get().useAnimalMedicine && !p.IsColonist)).ToList();
 
                 foreach (Pawn p in holders)
                 {
-                    Log.Message(p + "??");
+                    Log.Message(p + "?");
                 }
                 holders.RemoveAll(p => p == healer || p == patient || !healer.Map.reachability.CanReach(healer.Position, p, PathEndMode.ClosestTouch, traverseParams));
 
@@ -151,7 +141,7 @@ namespace InventoryMedicine
 
                 foreach (Pawn p in holders)
                 {
-                    Log.Message(p + "?");
+                    Log.Message(p + " available");
                 }
 
                 float bestQuality = medicine != null ? MedicineQuality(medicine) : 0;
