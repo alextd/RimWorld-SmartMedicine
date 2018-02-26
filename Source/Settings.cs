@@ -33,7 +33,8 @@ namespace InventoryMedicine
             options.Begin(rect);
             options.CheckboxLabeled("Use medicine from doctor's inventory", ref useDoctorMedicine);
             options.CheckboxLabeled("Use medicine from patient's inventory", ref usePatientMedicine);
-            options.CheckboxLabeled("Use nearby medicine if same quality", ref useCloseMedicine);
+            if (useDoctorMedicine || usePatientMedicine)
+                options.CheckboxLabeled("... But use nearby medicine if same quality", ref useCloseMedicine);
             options.Gap();
 
             options.CheckboxLabeled("Drop medicine from nearby colonist's inventory", ref useColonistMedicine);
