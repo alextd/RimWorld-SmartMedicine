@@ -16,15 +16,6 @@ namespace SmartMedicine
 #endif
             HarmonyInstance harmony = HarmonyInstance.Create("uuugggg.rimworld.SmartMedicine.main");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
-
-            harmony.Patch(AccessTools.Property(typeof(MapPawns), nameof(MapPawns.AllPawnsSpawned)).GetGetMethod(false),
-                 null, new HarmonyMethod(typeof(HarmonyPatches), nameof(HarmonyPatches.CopyListPostfix)));
-            harmony.Patch(AccessTools.Property(typeof(MapPawns), nameof(MapPawns.PrisonersOfColonySpawned)).GetGetMethod(false),
-                 null, new HarmonyMethod(typeof(HarmonyPatches), nameof(HarmonyPatches.CopyListPostfix)));
-            harmony.Patch(AccessTools.Method(typeof(MapPawns),   nameof(MapPawns.SpawnedPawnsInFaction)),
-                 null, new HarmonyMethod(typeof(HarmonyPatches), nameof(HarmonyPatches.CopyListPostfix)));
-
-
         }
 
         public override void DoSettingsWindowContents(Rect inRect)
