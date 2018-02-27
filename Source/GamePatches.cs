@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Verse;
 
-namespace InventoryMedicine
+namespace SmartMedicine
 {
     static class HarmonyPatches
     {

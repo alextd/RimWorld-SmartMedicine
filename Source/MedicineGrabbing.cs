@@ -10,7 +10,7 @@ using Verse.AI;
 using Harmony;
 
 
-namespace InventoryMedicine
+namespace SmartMedicine
 {
 
     static class Log

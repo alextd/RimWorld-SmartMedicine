@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Verse;
 
-namespace InventoryMedicine
+namespace SmartMedicine
 {
     class Settings : ModSettings
     {
@@ -24,7 +24,7 @@ namespace InventoryMedicine
 
         public static Settings Get()
         {
-            return LoadedModManager.GetMod<InventoryMedicine.Mod>().GetSettings<Settings>();
+            return LoadedModManager.GetMod<SmartMedicine.Mod>().GetSettings<Settings>();
         }
 
         public void DoWindowContents(Rect rect)

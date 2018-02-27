@@ -3,7 +3,7 @@ using Verse;
 using UnityEngine;
 using Harmony;
 
-namespace InventoryMedicine
+namespace SmartMedicine
 {
     public class Mod : Verse.Mod
     {
@@ -14,7 +14,7 @@ namespace InventoryMedicine
 #if DEBUG
             HarmonyInstance.DEBUG = true;
 #endif
-            HarmonyInstance harmony = HarmonyInstance.Create("uuugggg.rimworld.inventorymedicine.main");
+            HarmonyInstance harmony = HarmonyInstance.Create("uuugggg.rimworld.SmartMedicine.main");
             harmony.PatchAll(Assembly.GetExecutingAssembly());
 
             harmony.Patch(AccessTools.Property(typeof(MapPawns), nameof(MapPawns.AllPawnsSpawned)).GetGetMethod(false),
@@ -35,7 +35,7 @@ namespace InventoryMedicine
 
         public override string SettingsCategory()
         {
-            return "Inventory Medicine";
+            return "Smart Medicine";
         }
     }
 }

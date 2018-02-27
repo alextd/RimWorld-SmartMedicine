@@ -7,8 +7,8 @@
     <ProjectGuid>{D7D21B4A-1DA7-41D8-B202-C58CA8FA62AA}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>InventoryMedicine</RootNamespace>
-    <AssemblyName>InventoryMedicine</AssemblyName>
+    <RootNamespace>SmartMedicine</RootNamespace>
+    <AssemblyName>SmartMedicine</AssemblyName>
     <TargetFrameworkVersion>v3.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
@@ -25,7 +25,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>none</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\InventoryMedicine - Release\Assemblies\</OutputPath>
+    <OutputPath>..\..\SmartMedicine - Release\Assemblies\</OutputPath>
     <DefineConstants>
     </DefineConstants>
     <ErrorReport>prompt</ErrorReport>
@@ -55,7 +55,7 @@
   <ItemGroup>
     <Compile Include="GamePatches.cs" />
     <Compile Include="MedicineGrabbing.cs" />
-    <Compile Include="InventoryMedicine.cs" />
+    <Compile Include="SmartMedicine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
   </ItemGroup>
