@@ -17,7 +17,8 @@ namespace SmartMedicine
 		public bool minimalMedicineForNonUrgent = false;
 		public bool noMedicineForNonUrgent = false;
 		public bool downgradeExcessiveMedicine = true;
-		public int distanceToUseEqualOnGround = 5;
+		public int distanceToUseEqualOnGround = 6;
+		public int distanceToUseFromOther = 12;
 
 		//private string dummy;
 
@@ -39,8 +40,12 @@ namespace SmartMedicine
 
 			options.CheckboxLabeled("Drop medicine from nearby colonist's inventory", ref useColonistMedicine);
 			options.CheckboxLabeled("Drop medicine from nearby animal's inventory", ref useAnimalMedicine);
-			if(useColonistMedicine || useAnimalMedicine)
+			if (useColonistMedicine || useAnimalMedicine)
+			{
 				options.CheckboxLabeled("... Even if they are far away", ref useOtherEvenIfFar, "Check to use better medicine from someone else, but at the cost of walking to it");
+				//if(!useOtherEvenIfFar)
+				//	options.TextFieldNumericLabeled<int>("How far to walk to get it", ref distanceToUseFromOther, ref dummy, 0, 999);
+			}
 			options.Gap();
 
 			//TODO: Find a better GUI for this textbox
@@ -55,7 +60,7 @@ namespace SmartMedicine
 			//"Same as above, but without medicine, each injury is treated one at a time");
 			if (noMedicineForNonUrgent) minimalMedicineForNonUrgent = false;
 
-			//options.CheckboxLabeled("Downgrade medicine if sufficient", ref downgradeExcessiveMedicine, "Calculate if lesser medicine will do just as well, due to doctor skill, bionics, medical beds, etc");
+			options.CheckboxLabeled("Downgrade medicine if sufficient", ref downgradeExcessiveMedicine, "Calculate if lesser medicine will do just as well, due to doctor skill, bionics, medical beds, etc");
 
 			options.End();
 		}
@@ -71,7 +76,8 @@ namespace SmartMedicine
 			Scribe_Values.Look(ref minimalMedicineForNonUrgent, "minimalMedicineForNonUrgent", false);
 			Scribe_Values.Look(ref noMedicineForNonUrgent, "noMedicineForNonUrgent", false);
 			Scribe_Values.Look(ref downgradeExcessiveMedicine, "downgradeExcessiveMedicine", true);
-			Scribe_Values.Look(ref distanceToUseEqualOnGround, "distanceToUseEqualOnGround", 5);
+			Scribe_Values.Look(ref distanceToUseEqualOnGround, "distanceToUseEqualOnGround", 6);
+			Scribe_Values.Look(ref distanceToUseFromOther, "distanceToUseFromOther", 12);
 		}
 	}
 }

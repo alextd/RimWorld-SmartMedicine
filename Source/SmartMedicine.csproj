@@ -53,6 +53,7 @@
     <None Include="..\Patches\**" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DebugLog.cs" />
     <Compile Include="MedicineGrabbing.cs" />
     <Compile Include="SmartMedicine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

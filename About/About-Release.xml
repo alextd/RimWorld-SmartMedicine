@@ -7,6 +7,8 @@
 		
 Doctors can also use medicine from the patient's inventory, or anyone else on the map. 
 
+An option to use cheaper medicine, if it will do just as well ( due to doctor skill, bionics, medical bed, etc. ) Note this doesn't affect surgery.
+
 An option to disable medicine for non-urgent wounds.
 
 Now technically, the medicine is dropped and immediately picked back up - but what can you do.</description>
