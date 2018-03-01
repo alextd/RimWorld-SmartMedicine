@@ -5,28 +5,28 @@ using Harmony;
 
 namespace SmartMedicine
 {
-    public class Mod : Verse.Mod
-    {
-        public Mod(ModContentPack content) : base(content)
-        {
-            // initialize settings
-            GetSettings<Settings>();
+	public class Mod : Verse.Mod
+	{
+		public Mod(ModContentPack content) : base(content)
+		{
+			// initialize settings
+			GetSettings<Settings>();
 #if DEBUG
-            HarmonyInstance.DEBUG = true;
+			HarmonyInstance.DEBUG = true;
 #endif
-            HarmonyInstance harmony = HarmonyInstance.Create("uuugggg.rimworld.SmartMedicine.main");
-            harmony.PatchAll(Assembly.GetExecutingAssembly());
-        }
+			HarmonyInstance harmony = HarmonyInstance.Create("uuugggg.rimworld.SmartMedicine.main");
+			harmony.PatchAll(Assembly.GetExecutingAssembly());
+		}
 
-        public override void DoSettingsWindowContents(Rect inRect)
-        {
-            base.DoSettingsWindowContents(inRect);
-            GetSettings<Settings>().DoWindowContents(inRect);
-        }
+		public override void DoSettingsWindowContents(Rect inRect)
+		{
+			base.DoSettingsWindowContents(inRect);
+			GetSettings<Settings>().DoWindowContents(inRect);
+		}
 
-        public override string SettingsCategory()
-        {
-            return "Smart Medicine";
-        }
-    }
+		public override string SettingsCategory()
+		{
+			return "Smart Medicine";
+		}
+	}
 }
