@@ -5,11 +5,11 @@
 	<targetVersion>0.18.0</targetVersion>
 	<description>Doctors will use medicine from their inventory. What a concept!
 		
-Doctors can also use medicine from the patient's inventory, or anyone else on the map. 
+Doctors can also use medicine from the patient's inventory, or anyone else on the map, even pack animals brought on a caravan. 
 
 An option to use cheaper medicine, if it will do just as well ( due to doctor skill, bionics, medical bed, etc. ) Note this doesn't affect surgery.
 
-An option to disable medicine for non-urgent wounds.
+An option to use minimal medicine for non-urgent wounds, or none at all.
 
 Now technically, the medicine is dropped and immediately picked back up - but what can you do.</description>
 	<url>https://steamcommunity.com/id/Uuugggg/myworkshopfiles/?appid=294100</url>
