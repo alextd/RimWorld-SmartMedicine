@@ -51,13 +51,12 @@ namespace SmartMedicine
 			//TODO: Find a better GUI for this textbox
 			//options.TextFieldNumericLabeled<int>("How far to walk to find nearby medicine", ref distanceToUseEqualOnGround, ref dummy, 0, 999);
 
-			//options.CheckboxLabeled("Use minimal medicine for non-urgent care", ref minimalMedicineForNonUrgent,
-			//	"Urgent care is injuries with bleeding, infection chance, or permanent effects - save valuable medicine for these only");
-			//if (minimalMedicineForNonUrgent) noMedicineForNonUrgent = false;
+			options.CheckboxLabeled("Use minimal medicine for non-urgent care", ref minimalMedicineForNonUrgent,
+				"Urgent care is any disease, or injuries with bleeding, infection chance, or permanent effects - save valuable medicine for these only");
+			if (minimalMedicineForNonUrgent) noMedicineForNonUrgent = false;
 
 			options.CheckboxLabeled("No medicine for non-urgent care", ref noMedicineForNonUrgent,
-				"Urgent care is injuries with bleeding, infection chance, or permanent effects - saves medicine, but each injury is treated one at a time");
-			//"Same as above, but without medicine, each injury is treated one at a time");
+				"Same as above, but without medicine, each injury is treated one at a time");
 			if (noMedicineForNonUrgent) minimalMedicineForNonUrgent = false;
 
 			options.CheckboxLabeled("Downgrade medicine if sufficient", ref downgradeExcessiveMedicine, "Calculate if lesser medicine will do just as well, due to doctor skill, bionics, medical beds, etc");

@@ -50,13 +50,23 @@ namespace SmartMedicine
 		//Filter time-sensitive injuries
 		public static void FilterForUrgentInjuries(List<Hediff> hediffs)
 		{
-			if (!Settings.Get().noMedicineForNonUrgent)
-				return;
+			if (Settings.Get().noMedicineForNonUrgent)
+			{
+				hediffs.RemoveAll(h => !h.IsUrgent());
+			}
+			else if (Settings.Get().minimalMedicineForNonUrgent)
+			{
+				if (hediffs.Any(h => h.IsUrgent()))
+					hediffs.RemoveAll(h => !h.IsUrgent());
+			}
+		}
 
-			hediffs.RemoveAll(h => !(!(h is Hediff_Injury)
-				|| (h as Hediff_Injury).Bleeding
-				|| (h as Hediff_Injury).TryGetComp<HediffComp_Infecter>() != null
-				|| (h as Hediff_Injury).TryGetComp<HediffComp_GetsOld>() != null));
+		public static bool IsUrgent(this Hediff h)
+		{
+			return !(h is Hediff_Injury)
+					|| (h as Hediff_Injury).Bleeding
+					|| (h as Hediff_Injury).TryGetComp<HediffComp_Infecter>() != null
+					|| (h as Hediff_Injury).TryGetComp<HediffComp_GetsOld>() != null;
 		}
 	}
 
@@ -89,13 +99,15 @@ namespace SmartMedicine
 			}
 		}
 		static float maxMedicineQuality = 10.0f;
+		static float minMedicineQuality = 00.0f;
 
 		static FindBestMedicine()
 		{
-			maxMedicineQuality = DefDatabase<ThingDef>.AllDefs
+			IEnumerable<float> medQualities = DefDatabase<ThingDef>.AllDefs
 					.Where(td => td.IsWithinCategory(ThingCategoryDefOf.Medicine))
-					.Select(m => m.GetStatValueAbstract(StatDefOf.MedicalPotency, null))
-					.Max();
+					.Select(m => m.GetStatValueAbstract(StatDefOf.MedicalPotency, null));
+			maxMedicineQuality = medQualities.Max();
+			minMedicineQuality = medQualities.Min();
 		}
 		private static bool Prefix(Pawn healer, Pawn patient, ref Thing __result)
 		{
@@ -109,7 +121,15 @@ namespace SmartMedicine
 			if (Settings.Get().downgradeExcessiveMedicine)
 			{
 				sufficientQuality = CalculateSufficientQuality(healer, patient);
-				Log.Message("Sufficient medicine is " + sufficientQuality);
+				Log.Message("Sufficient medicine for best treatment is " + sufficientQuality);
+			}
+			if (Settings.Get().minimalMedicineForNonUrgent)
+			{
+				if (patient.health.hediffSet.hediffs.All(h => !h.TendableNow || !h.IsUrgent()))
+				{
+					sufficientQuality = minMedicineQuality;
+					Log.Message("Sufficient medicine for non-urgent care is " + sufficientQuality);
+				}
 			}
 
 			//Ground
