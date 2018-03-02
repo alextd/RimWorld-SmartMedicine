@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+	<WorkGiverDef>
+		<defName>StockUpOnMedicine</defName>
+		<label>stock up on medicine</label>
+		<giverClass>SmartMedicine.WorkGiver_StockUpOnMedicine</giverClass>
+		<workType>Doctor</workType>
+		<verb>stock up</verb>
+		<gerund>stocking up</gerund>
+		<priorityInType>1</priorityInType>
+		<requiredCapacities>
+			<li>Manipulation</li>
+		</requiredCapacities>
+	</WorkGiverDef>
+
+	<JobDef>
+		<defName>StockUpOnMedicine</defName>
+		<driverClass>SmartMedicine.JobDriver_StockUpOnMedicine</driverClass>
+		<reportString>stocking up on TargetA </reportString>
+		<casualInterruptible>true</casualInterruptible>
+		<suspendable>false</suspendable>
+	</JobDef>
+</Defs>

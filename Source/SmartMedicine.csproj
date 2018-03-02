@@ -56,11 +56,13 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DebugLog.cs" />
+    <Compile Include="JobDriver_StockUpOnMedicine.cs" />
     <Compile Include="Listing_StandardExtensions.cs" />
     <Compile Include="MedicineGrabbing.cs" />
     <Compile Include="SmartMedicine.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings.cs" />
+    <Compile Include="WorkGiver_StockUpOnMedicine.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
