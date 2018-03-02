@@ -113,7 +113,7 @@ namespace SmartMedicine
 		{
 			IEnumerable<float> medQualities = DefDatabase<ThingDef>.AllDefs
 					.Where(td => td.IsWithinCategory(ThingCategoryDefOf.Medicine))
-					.Select(m => m.GetStatValueAbstract(StatDefOf.MedicalPotency, null));
+					.Select(m => m.GetStatValueAbstract(StatDefOf.MedicalPotency));
 			maxMedicineQuality = medQualities.Max();
 			minMedicineQuality = medQualities.Min();
 		}
@@ -314,7 +314,7 @@ namespace SmartMedicine
 
 		private static float MedicineRating(Thing t, float sufficientQuality)
 		{
-			float medQuality = t.def.GetStatValueAbstract(StatDefOf.MedicalPotency, null);
+			float medQuality = t.def.GetStatValueAbstract(StatDefOf.MedicalPotency);
 			if (medQuality >= sufficientQuality)
 				medQuality = (maxMedicineQuality - medQuality) + sufficientQuality;
 			//Flips the desireability to be AT LEAST the sufficient
