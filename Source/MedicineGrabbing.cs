@@ -121,7 +121,7 @@ namespace SmartMedicine
 			if (Settings.Get().downgradeExcessiveMedicine)
 			{
 				sufficientQuality = CalculateSufficientQuality(healer, patient);
-				Log.Message("Sufficient medicine for best treatment is " + sufficientQuality);
+				Log.Message("Sufficient medicine for best treatment is " + sufficientQuality + "(" +Settings.Get().goodEnoughDowngradeFactor + ")");
 			}
 			if (Settings.Get().minimalMedicineForNonUrgent)
 			{
@@ -280,7 +280,7 @@ namespace SmartMedicine
 			float doctorQuality = doctor?.GetStatValue(StatDefOf.MedicalTendQuality, true) ?? 0.75f;
 			float bedOffset = patient.CurrentBed()?.GetStatValue(StatDefOf.MedicalTendQualityOffset, true) ?? 0f;
 			float selfTend = doctor != patient ? 1.0f : 0.7f;
-			return (1 / selfTend - bedOffset) / doctorQuality;
+			return (1 / selfTend - bedOffset) / doctorQuality * Settings.Get().goodEnoughDowngradeFactor;
 		}
 
 		private static Thing FindBestMedicineInInventory(Pawn pawn, Pawn patient, float sufficientQuality)
