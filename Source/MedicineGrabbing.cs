@@ -83,9 +83,9 @@ namespace SmartMedicine
 			public int distance;
 
 			[System.Diagnostics.Conditional("DEBUG")]
-			public void DebugLog()
+			public void DebugLog(string label = null)
 			{
-				Log.Message(thing + "@" + rating + " (dist: " + distance + ")" + (pawn == null ? "" : " by " + pawn));
+				Log.Message((label ?? "") + thing + "@" + rating + " (dist: " + distance + ")" + (pawn == null ? "" : " by " + pawn));
 			}
 			public static bool operator>(MedicineEvaluator l, MedicineEvaluator r)
 			{
@@ -216,18 +216,10 @@ namespace SmartMedicine
 					List<MedicineEvaluator> equalMedicines = groundEvaluators.Where(eval => eval.rating == bestMed.rating).ToList();
 					if (equalMedicines.Count > 0)
 					{
-						if (bestMed.pawn != healer && bestMed.pawn != patient)
-						{
-							MedicineEvaluator closeMed = equalMedicines.MinBy(eval => DistanceTo(eval.thing, bestMed.pawn));
-							if (DistanceTo(closeMed.thing, bestMed.pawn) <= Settings.Get().distanceToUseEqualOnGround) 
-								bestMed = closeMed;
-						}
-						else
-						{
-							MedicineEvaluator closeMed = equalMedicines.MinBy(eval => eval.distance);
-							if (closeMed.distance <= Settings.Get().distanceToUseEqualOnGround * 2) //*2, there and back
-								bestMed = closeMed;
-						}
+						MedicineEvaluator closeMed = equalMedicines.MinBy(eval => eval.distance);
+						closeMed.DebugLog("Nearby med on the way there: ");
+						if (closeMed.distance <= minDistance + Settings.Get().distanceToUseEqualOnGround * 2) //*2, there and back
+							bestMed = closeMed;
 					}
 				}
 
@@ -239,8 +231,7 @@ namespace SmartMedicine
 
 				if (bestMed.pawn != null)
 				{
-					Log.Message("Best Med on hand:");
-					bestMed.DebugLog();
+					bestMed.DebugLog("Best Med on hand: ");
 
 					//Drop it!
 					int count = Medicine.GetMedicineCountToFullyHeal(patient);
@@ -258,8 +249,7 @@ namespace SmartMedicine
 				}
 				else
 				{
-					Log.Message("Best Med on ground:");
-					bestMed.DebugLog();
+					bestMed.DebugLog("Best Med on ground:" );
 					__result = bestMed.thing;
 				}
 
