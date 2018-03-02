@@ -75,7 +75,7 @@ namespace SmartMedicine
 	[StaticConstructorOnStartup]
 	static class FindBestMedicine
 	{
-		struct MedicineEvaluator
+		struct MedicineEvaluator : IComparable
 		{
 			public Thing thing;
 			public Pawn pawn;
@@ -87,6 +87,14 @@ namespace SmartMedicine
 			{
 				Log.Message((label ?? "") + thing + "@" + rating + " (dist: " + distance + ")" + (pawn == null ? "" : " by " + pawn));
 			}
+
+			public int CompareTo(object o)
+			{
+				if (o is MedicineEvaluator other)
+					return this > other ? 1 : this < other ? -1 : 0;
+				return 0;
+			}
+
 			public static bool operator>(MedicineEvaluator l, MedicineEvaluator r)
 			{
 				return l.rating > r.rating
@@ -192,27 +200,23 @@ namespace SmartMedicine
 			}
 
 			//Find best
-			MedicineEvaluator bestMed = new MedicineEvaluator()
-			{
-				thing = null,
-				pawn = null,
-				rating = 0.0f,
-				distance = 0
-			};
+			allMeds.Sort();
+
 
 			foreach (MedicineEvaluator tryMed in allMeds)
 			{
 				tryMed.DebugLog();
-				if (tryMed > bestMed)
-					bestMed = tryMed;
 			}
-			
+
+			MedicineEvaluator bestMed = allMeds.LastOrDefault();
+			allMeds.RemoveLast();
+
 			if (bestMed.thing != null)
 			{
 				if (Settings.Get().useCloseMedicine && bestMed.pawn != null)
 				{
-					Log.Message("checking closeby instead");
-
+					bestMed.DebugLog("Best: ");
+					Log.Message("checking nearby:");
 					List<MedicineEvaluator> equalMedicines = groundEvaluators.Where(eval => eval.rating == bestMed.rating).ToList();
 					if (equalMedicines.Count > 0)
 					{
@@ -223,34 +227,59 @@ namespace SmartMedicine
 					}
 				}
 
-				// because The Toil to get this medicine is FailOnDespawnedNullOrForbidden
-				// And Medicine in inventory or carried is despawned
-				// You can't set the job to use already carried medicine.
-				// Editing the toil would be more difficult.
-				// But we can drop it so the normal job picks it back it  ¯\_(ツ)_/¯ 
-
-				if (bestMed.pawn != null)
+				if (bestMed.pawn == null)
 				{
+					bestMed.DebugLog("Best Med on ground:");
+					__result = bestMed.thing;
+				}
+				else
+				{
+
+					// because The Toil to get this medicine is FailOnDespawnedNullOrForbidden
+					// And Medicine in inventory is despawned
+					// You can't set the job to use already carried medicine.
+					// Editing the toil would be more difficult.
+					// But we can drop it so the normal job picks it back it  ¯\_(ツ)_/¯ 
 					bestMed.DebugLog("Best Med on hand: ");
 
 					//Drop it!
 					int count = Medicine.GetMedicineCountToFullyHeal(patient);
-					if (healer.carryTracker.CarriedThing != null)
-						count -= healer.carryTracker.CarriedThing.stackCount;
-					count = Mathf.Min(bestMed.thing.stackCount, count);
-					Thing droppedMedicine;
-					bestMed.pawn.inventory.innerContainer.TryDrop(bestMed.thing, ThingPlaceMode.Direct, count, out droppedMedicine);
+					int dropCount = Mathf.Min(bestMed.thing.stackCount, count);
+					count -= dropCount;
+					bestMed.pawn.inventory.innerContainer.TryDrop(bestMed.thing, ThingPlaceMode.Direct, dropCount, out Thing droppedMedicine);
 
 					//Whoops dropped onto forbidden / reserved stack
 					if (!droppedMedicine.IsForbidden(healer) && healer.CanReserve(droppedMedicine, 1, -1, null, false))
 						__result = droppedMedicine;
 					else
 						return true;
-				}
-				else
-				{
-					bestMed.DebugLog("Best Med on ground:" );
-					__result = bestMed.thing;
+
+					//Find some more needed nearby
+					if (count > 0)
+					{
+						List<MedicineEvaluator> equalMedicines = allMeds.Where(eval => eval.rating == bestMed.rating).ToList();
+						equalMedicines.SortBy(eval => DistanceTo(droppedMedicine, eval.pawn ?? eval.thing));
+
+						Log.Message("But needs " + count + " more");
+						while (count > 0 && equalMedicines.Count > 0)
+						{
+								MedicineEvaluator closeMed = equalMedicines.First();
+								equalMedicines.RemoveAt(0);
+
+								closeMed.DebugLog("More: ");
+
+								if (DistanceTo(droppedMedicine, closeMed.pawn ?? closeMed.thing) > 8f) //8f as defined in CheckForGetOpportunityDuplicate
+									return false;
+
+								dropCount = Mathf.Min(closeMed.thing.stackCount, count);
+								closeMed.DebugLog("Using: (" + dropCount + ")");
+
+								closeMed.pawn?.inventory.innerContainer.TryDrop(closeMed.thing, ThingPlaceMode.Direct, dropCount, out droppedMedicine);
+								if (!droppedMedicine.IsForbidden(healer) && healer.CanReserve(droppedMedicine, 1, -1, null, false))
+									count -= dropCount;
+							//else return false;
+						}
+					}
 				}
 
 				//Use it!
