@@ -65,7 +65,7 @@ namespace SmartMedicine
 			if (downgradeExcessiveMedicine)
 			{
 				goodEnoughDowngradeFactor *= 100;
-				options.SliderLabeled("... include medicine that is good enough:", ref goodEnoughDowngradeFactor, "{0:0}%", 0, 100);
+				options.SliderLabeled("... include medicine that is good enough:", ref goodEnoughDowngradeFactor, "{0:0}%", 0, 100, "For exmaple, if Herbal Medicine does 90% as good a job as Normal, use Herbal instead");
 				goodEnoughDowngradeFactor /= 100;
 			}
 
