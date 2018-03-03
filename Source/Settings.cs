@@ -98,7 +98,6 @@ namespace SmartMedicine
 					rowIcon.xMax -= iconSize + 3;
 					
 					Widgets.DrawHighlightIfMouseover(rectIcon);
-					if (!included) Widgets.DrawTextureFitted(rectIcon, Widgets.CheckboxOffTex, 1.0f);
 					if (Widgets.ButtonImage(rectIcon, td.uiIcon))
 					{
 						if (included)
@@ -108,6 +107,7 @@ namespace SmartMedicine
 							//stockUpList.Remove(td);
 							stockUpListByIndex.Add(i);
 					}
+					if (!included) Widgets.DrawTextureFitted(rectIcon, Widgets.CheckboxOffTex, 1.0f);
 				}
 			}
 
