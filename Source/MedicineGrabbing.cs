@@ -209,10 +209,10 @@ namespace SmartMedicine
 			}
 
 			MedicineEvaluator bestMed = allMeds.LastOrDefault();
-			allMeds.RemoveLast();
 
 			if (bestMed.thing != null)
 			{
+				allMeds.RemoveLast();
 				if (Settings.Get().useCloseMedicine && bestMed.pawn != null)
 				{
 					bestMed.DebugLog("Best: ");
