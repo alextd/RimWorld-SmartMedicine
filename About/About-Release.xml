@@ -5,7 +5,9 @@
 	<targetVersion>0.18.0</targetVersion>
 	<description>Doctors will use medicine from their inventory. What a concept!
 		
-Doctors can also use medicine from the patient's inventory, or anyone else on the map, even pack animals brought on a caravan. 
+Doctors can also use medicine from the patient's inventory, or anyone else on the map, even pack animals brought on a caravan.
+
+They can also keep their inventory stocked with medicine.
 
 An option to use cheaper medicine, if it will do just as well ( due to doctor skill, bionics, medical bed, etc. ) Note this doesn't affect surgery.
 
