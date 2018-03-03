@@ -35,10 +35,10 @@ namespace SmartMedicine
 			options.CheckboxLabeled("Use medicine from patient's inventory", ref usePatientMedicine);
 			if (useDoctorMedicine || usePatientMedicine)
 			{
-				options.CheckboxLabeled("... But use nearby medicine if same quality", ref useCloseMedicine, "Also checks for medicine on the way to the patient");
+				options.CheckboxLabeled("... But use nearby medicine (if same quality)", ref useCloseMedicine, "This also checks for medicine on the way to the patient (roughly)");
 				if (useCloseMedicine)
 				{
-					options.SliderLabeled("How far to walk to find nearby medicine", ref distanceToUseEqualOnGround, "{0:0} spaces", 0, 99);
+					options.SliderLabeled("How far to walk to find nearby medicine", ref distanceToUseEqualOnGround, "{0:0} spaces", 0, 99, "This is only an override for inventory medicine - if there is no inventory medicine, they will walk to the ends of the map to pick up medicine");
 				}
 			}
 			options.Gap();
@@ -47,7 +47,7 @@ namespace SmartMedicine
 			options.CheckboxLabeled("Drop medicine from nearby animal's inventory", ref useAnimalMedicine);
 			if (useColonistMedicine || useAnimalMedicine)
 			{
-				options.CheckboxLabeled("... Even if they are far away", ref useOtherEvenIfFar, "Check to use better medicine from someone else, but at the cost of walking to it");
+				options.CheckboxLabeled("... No matter how far away", ref useOtherEvenIfFar, "Check to use better medicine from someone else far away, but at the cost of walking to it");
 				if (!useOtherEvenIfFar)
 					options.SliderLabeled("How far to walk to get it", ref distanceToUseFromOther, "{0:0} spaces", 0, 99);
 			}
@@ -65,7 +65,7 @@ namespace SmartMedicine
 			if (downgradeExcessiveMedicine)
 			{
 				goodEnoughDowngradeFactor *= 100;
-				options.SliderLabeled("... include medicine that is good enough:", ref goodEnoughDowngradeFactor, "{0:0}%", 0, 100, "For exmaple, if Herbal Medicine does 90% as good a job as Normal, use Herbal instead");
+				options.SliderLabeled("... include medicine that is good enough:", ref goodEnoughDowngradeFactor, "{0:0}%", 0, 100, "For example, if Herbal Medicine does 90% as good a job as Normal, use Herbal instead");
 				goodEnoughDowngradeFactor /= 100;
 			}
 
