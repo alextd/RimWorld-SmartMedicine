@@ -10,6 +10,8 @@ namespace SmartMedicine
 {
 	public class WorkGiver_StockUpOnMedicine : WorkGiver_Scanner
 	{
+		public override PathEndMode PathEndMode => PathEndMode.ClosestTouch;
+
 		public override ThingRequest PotentialWorkThingRequest
 		{
 			get
@@ -25,53 +27,66 @@ namespace SmartMedicine
 
 		public override bool HasJobOnThing(Pawn pawn, Thing t, bool forced = false)
 		{
-			Log.Message(pawn + " HasJobOnThing " + t + "(" + forced + ")");
-			return StockUpUtility.Needs(pawn, t.def) > 0 && pawn.CanReserve(t) &&
-				MassUtility.CountToPickUpUntilOverEncumbered(pawn, t) > 0;
-
+			return StockUpUtility.Needs(pawn, t.def) > 0 && pawn.CanReserve(t) && MassUtility.CountToPickUpUntilOverEncumbered(pawn, t) > 0;
 		}
 
-		public override Job JobOnThing(Pawn pawn, Thing t, bool forced = false)
+		public override Job JobOnThing(Pawn pawn, Thing thing, bool forced = false)
 		{
-			Log.Message(pawn + " JobOnThing " + t);
+			int needCount = StockUpUtility.Needs(pawn, thing.def);
 
-			int missing = StockUpUtility.Needs(pawn, t.def);
-			missing = Math.Min(missing, MassUtility.CountToPickUpUntilOverEncumbered(pawn, t));
-			if (missing == 0) return null;
+			needCount = Math.Min(needCount, MassUtility.CountToPickUpUntilOverEncumbered(pawn, thing));
+			return new Job(SmartMedicineJobDefOf.StockUpOnMedicine, thing) { count = needCount };
+		}
 
-			return new Job(SmartMedicineJobDefOf.StockUpOnMedicine, t)
-			{ count = missing };
+		public override Job NonScanJob(Pawn pawn)
+		{
+			Thing toReturn = StockUpUtility.CanReturn(pawn);
+			if(toReturn == null) return null;
+			
+			int dropCount = -StockUpUtility.Needs(pawn, toReturn.def);
+			if (StoreUtility.TryFindBestBetterStoreCellFor(toReturn, pawn, pawn.Map, StoragePriority.Unstored, pawn.Faction, out IntVec3 dropLoc, true))
+				return new Job(SmartMedicineJobDefOf.StockDownOnMedicine, toReturn, dropLoc) { count = dropCount };
+			return null;
 		}
 	}
+
 
 	[StaticConstructorOnStartup]
 	public static class StockUpUtility
 	{
-		private static int capacity = 10;
-		private static float maxQuality = 1.0f;
-		private static List<ThingDef> medList;
+		public static List<ThingDef> medList;
 
 		static StockUpUtility()
 		{
-			medList = DefDatabase<ThingDef>.AllDefs
-					.Where(td => td.IsWithinCategory(ThingCategoryDefOf.Medicine) && 
-					td.GetStatValueAbstract(StatDefOf.MedicalPotency) <= maxQuality).ToList();
+			medList = DefDatabase<ThingDef>.AllDefs.Where(td => td.IsWithinCategory(ThingCategoryDefOf.Medicine)).ToList();
+			medList.SortBy(td => - td.GetStatValueAbstract(StatDefOf.MedicalPotency));
 		}
 
 		public static int Needs(Pawn pawn, ThingDef thingDef)
 		{
-			Thing invThing = pawn.inventory.innerContainer.FirstOrDefault(t => t.def == thingDef);
-			return capacity - (invThing?.stackCount ?? 0);
+			int capacity = Settings.Get().stockUpCapacity;
+			if (!Settings.Get().stockUpOnMedicine) capacity = 0;
+			//if (!Settings.Get().stockUpList.Contains(thingDef)) capacity = 0;
+			if (!Settings.Get().stockUpListByIndex.Contains(StockUpUtility.medList.IndexOf(thingDef))) capacity = 0;
+
+			int invCount = pawn.inventory.innerContainer
+				.Where(t => t.def == thingDef)
+				.Select(t => t.stackCount)
+				.Aggregate(0, (a, b) => a + b);
+			return capacity - invCount;
+		}
+
+		public static Thing CanReturn(Pawn pawn)
+		{
+			ThingDef thingDef = medList.FirstOrDefault(td => Needs(pawn, td) < 0);
+			if ( thingDef == null) return null;
+
+			return pawn.inventory.innerContainer.FirstOrDefault(t => t.def == thingDef);
 		}
 
 		public static bool IsFull(Pawn pawn)
 		{
-			foreach(ThingDef td in medList)
-			{
-				if (Needs(pawn, td) > 0)
-					return false;
-			}
-			return true;
+			return !medList.Any(td => Needs(pawn, td) != 0);
 		}
 	}
 
@@ -79,5 +94,6 @@ namespace SmartMedicine
 	public static class SmartMedicineJobDefOf
 	{
 		public static JobDef StockUpOnMedicine;
+		public static JobDef StockDownOnMedicine;
 	}
 }

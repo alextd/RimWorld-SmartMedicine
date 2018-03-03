@@ -8,29 +8,35 @@ namespace SmartMedicine
 	class Settings : ModSettings
 	{
 		//TODO: save per map
-		public bool useDoctorMedicine = true;
-		public bool usePatientMedicine = true;
-		public bool useColonistMedicine = true;
-		public bool useAnimalMedicine = true;
-		public bool useCloseMedicine = true;
-		public bool useOtherEvenIfFar = true;
-		public bool minimalMedicineForNonUrgent = false;
-		public bool noMedicineForNonUrgent = false;
-		public bool downgradeExcessiveMedicine = true;
-		public float goodEnoughDowngradeFactor = 1.0f;
-		public int distanceToUseEqualOnGround = 6;
-		public int distanceToUseFromOther = 12;
+		public bool useDoctorMedicine;
+		public bool usePatientMedicine;
+		public bool useCloseMedicine;
+		public int distanceToUseEqualOnGround;
 
+		public bool useColonistMedicine;
+		public bool useAnimalMedicine;
+		public bool useOtherEvenIfFar;
+		public int distanceToUseFromOther;
+
+		public bool minimalMedicineForNonUrgent;
+		public bool noMedicineForNonUrgent;
+		public bool downgradeExcessiveMedicine;
+		public float goodEnoughDowngradeFactor;
+
+		public bool stockUpOnMedicine;
+		public int stockUpCapacity;
+		//public List<ThingDef> stockUpList;
+		public List<int> stockUpListByIndex;
 
 		public static Settings Get()
 		{
 			return LoadedModManager.GetMod<SmartMedicine.Mod>().GetSettings<Settings>();
 		}
 
-		public void DoWindowContents(Rect rect)
+		public void DoWindowContents(Rect wrect)
 		{
 			var options = new Listing_Standard();
-			options.Begin(rect);
+			options.Begin(wrect);
 			options.CheckboxLabeled("Use medicine from doctor's inventory", ref useDoctorMedicine);
 			options.CheckboxLabeled("Use medicine from patient's inventory", ref usePatientMedicine);
 			if (useDoctorMedicine || usePatientMedicine)
@@ -43,6 +49,7 @@ namespace SmartMedicine
 			}
 			options.Gap();
 
+
 			options.CheckboxLabeled("Drop medicine from nearby colonist's inventory", ref useColonistMedicine);
 			options.CheckboxLabeled("Drop medicine from nearby animal's inventory", ref useAnimalMedicine);
 			if (useColonistMedicine || useAnimalMedicine)
@@ -52,6 +59,7 @@ namespace SmartMedicine
 					options.SliderLabeled("How far to walk to get it", ref distanceToUseFromOther, "{0:0} spaces", 0, 99);
 			}
 			options.Gap();
+
 
 			options.CheckboxLabeled("Use minimal medicine for non-urgent care", ref minimalMedicineForNonUrgent,
 				"Urgent care is any disease, or injuries with bleeding, infection chance, or permanent effects - save valuable medicine for these only");
@@ -68,24 +76,68 @@ namespace SmartMedicine
 				options.SliderLabeled("... include medicine that is good enough:", ref goodEnoughDowngradeFactor, "{0:0}%", 0, 100, "For example, if Herbal Medicine does 90% as good a job as Normal, use Herbal instead");
 				goodEnoughDowngradeFactor /= 100;
 			}
+			options.Gap();
+
+
+			options.CheckboxLabeled("Doctors stock up medicine in their inventory", ref stockUpOnMedicine, "A new job (WorkGiver) for doctors: gather medicine to their inventory, and keep it around for tending");
+			if(stockUpOnMedicine)
+			{
+				options.SliderLabeled("How much medicine to hold", ref stockUpCapacity, "{0}", 1, 75);
+				float iconSize = Text.LineHeight * 2;
+				Rect rowIcon = options.GetRect(iconSize);
+				Widgets.Label(rowIcon, "Stock up on these Medicines:");
+
+				//foreach (ThingDef td in StockUpUtility.medList)
+				for (int i = 0; i < StockUpUtility.medList.Count; i++)
+				{
+					ThingDef td = StockUpUtility.medList[i];
+
+					//bool included = stockUpList.Contains(td);
+					bool included = stockUpListByIndex.Contains(i);
+					Rect rectIcon = rowIcon.RightPartPixels(iconSize);
+					rowIcon.xMax -= iconSize + 3;
+					
+					Widgets.DrawHighlightIfMouseover(rectIcon);
+					if (!included) Widgets.DrawTextureFitted(rectIcon, Widgets.CheckboxOffTex, 1.0f);
+					if (Widgets.ButtonImage(rectIcon, td.uiIcon))
+					{
+						if (included)
+							//stockUpList.Add(td);
+							stockUpListByIndex.Remove(i);
+						else
+							//stockUpList.Remove(td);
+							stockUpListByIndex.Add(i);
+					}
+				}
+			}
 
 			options.End();
 		}
-
+		
 		public override void ExposeData()
 		{
 			Scribe_Values.Look(ref useDoctorMedicine, "useDoctorMedicine", true);
 			Scribe_Values.Look(ref usePatientMedicine, "usePatientMedicine", true);
+			Scribe_Values.Look(ref useCloseMedicine, "useCloseMedicine", true);
+			Scribe_Values.Look(ref distanceToUseEqualOnGround, "distanceToUseEqualOnGround", 6);
+
 			Scribe_Values.Look(ref useColonistMedicine, "useColonistMedicine", true);
 			Scribe_Values.Look(ref useAnimalMedicine, "useAnimalMedicine", true);
-			Scribe_Values.Look(ref useCloseMedicine, "useCloseMedicine", true);
 			Scribe_Values.Look(ref useOtherEvenIfFar, "useOtherEvenIfFar", false);
+			Scribe_Values.Look(ref distanceToUseFromOther, "distanceToUseFromOther", 12);
+
 			Scribe_Values.Look(ref minimalMedicineForNonUrgent, "minimalMedicineForNonUrgent", true);
 			Scribe_Values.Look(ref noMedicineForNonUrgent, "noMedicineForNonUrgent", false);
 			Scribe_Values.Look(ref downgradeExcessiveMedicine, "downgradeExcessiveMedicine", true);
-			Scribe_Values.Look(ref distanceToUseEqualOnGround, "distanceToUseEqualOnGround", 6);
-			Scribe_Values.Look(ref distanceToUseFromOther, "distanceToUseFromOther", 12);
-			Scribe_Values.Look(ref goodEnoughDowngradeFactor, "goodEnoughDowngradeFactor", 1.0f);
+			Scribe_Values.Look(ref goodEnoughDowngradeFactor, "goodEnoughDowngradeFactor", 0.9f);
+
+			Scribe_Values.Look(ref stockUpOnMedicine, "stockUpOnMedicine", false);
+			Scribe_Values.Look(ref stockUpCapacity, "stockUpCapacity", 10);
+			//Scribe_Collections.Look(ref stockUpList, "stockUpList");	//why doesn't this work for List<ThingDef>
+			Scribe_Collections.Look(ref stockUpListByIndex, "stockUpList");
+
+			if (stockUpListByIndex == null)
+				stockUpListByIndex = new List<int>();
 		}
 	}
 }
