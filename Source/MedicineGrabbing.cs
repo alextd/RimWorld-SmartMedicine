@@ -14,7 +14,7 @@ namespace SmartMedicine
 {
 	[HarmonyPatch(typeof(Medicine))]
 	[HarmonyPatch("GetMedicineCountToFullyHeal")]
-	static class GetMedicineCountToFullyHeal
+	static class GetMedicineCountToFullyHeal_Patch
 	{
 		//Insert FilterForUrgentHediffs when counting needed medicine
 		public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
@@ -22,7 +22,7 @@ namespace SmartMedicine
 			MethodInfo SortByTendPriorityInfo = AccessTools.Method(
 				typeof(TendUtility), nameof(TendUtility.SortByTendPriority));
 			MethodInfo filterMethodInfo = AccessTools.Method(
-				typeof(GetMedicineCountToFullyHeal), nameof(FilterForUrgentInjuries));
+				typeof(GetMedicineCountToFullyHeal_Patch), nameof(FilterForUrgentInjuries));
 			FieldInfo filterMethodParameter = AccessTools.Field(typeof(Medicine), "tendableHediffsInTendPriorityOrder");
 
 			List<CodeInstruction> instructionList = instructions.ToList();
@@ -70,10 +70,38 @@ namespace SmartMedicine
 		}
 	}
 
+
+	[HarmonyPatch(typeof(JobDriver_TendPatient))]
+	[HarmonyPatch("TryMakePreToilReservations")]
+	static class TendPatient_TryMakePreToilReservations_Patch
+	{
+		public static void Prefix(JobDriver_TendPatient __instance)
+		{
+			Job job = __instance.job;
+			Pawn healer = __instance.pawn;
+			Thing medicineToDrop = job.targetB.Thing;
+			if (medicineToDrop == null || medicineToDrop.holdingOwner == null) return;
+			if (medicineToDrop.holdingOwner.Owner is Pawn_InventoryTracker holder)
+			{
+				//job.count is not set properly so here we go again:
+				int count = Medicine.GetMedicineCountToFullyHeal(job.targetA.Thing as Pawn);
+				int dropCount = Mathf.Min(medicineToDrop.stackCount, count);
+				holder.innerContainer.TryDrop(medicineToDrop, ThingPlaceMode.Direct, dropCount, out Thing droppedMedicine);
+				
+				//Whoops dropped onto forbidden / reserved stack
+				if (!droppedMedicine.IsForbidden(healer) && healer.CanReserve(droppedMedicine, 1, -1, null, false))
+					__instance.job.targetB = droppedMedicine;
+				else
+					__instance.job.targetB = LocalTargetInfo.Invalid;	
+			}
+		}
+	}
+
+
 	[HarmonyPatch(typeof(HealthAIUtility))]
 	[HarmonyPatch("FindBestMedicine")]
 	[StaticConstructorOnStartup]
-	static class FindBestMedicine
+	static class FindBestMedicine_Patch
 	{
 		struct MedicineEvaluator : IComparable
 		{
@@ -98,18 +126,20 @@ namespace SmartMedicine
 			public static bool operator>(MedicineEvaluator l, MedicineEvaluator r)
 			{
 				return l.rating > r.rating
-					|| (l.rating == r.rating && l.distance < r.distance);
+					|| (l.rating == r.rating && l.distance < r.distance)
+					|| (l.distance == r.distance && l.pawn == null && r.pawn != null);
 			}
 			public static bool operator <(MedicineEvaluator l, MedicineEvaluator r)
 			{
 				return l.rating < r.rating
-					|| (l.rating == r.rating && l.distance > r.distance);
+					|| (l.rating == r.rating && l.distance > r.distance)
+					|| (l.distance == r.distance && l.pawn != null && r.pawn == null);
 			}
 		}
 		static float maxMedicineQuality = 10.0f;
 		static float minMedicineQuality = 00.0f;
 
-		static FindBestMedicine()
+		static FindBestMedicine_Patch()
 		{
 			IEnumerable<float> medQualities = DefDatabase<ThingDef>.AllDefs
 					.Where(td => td.IsWithinCategory(ThingCategoryDefOf.Medicine))
@@ -194,8 +224,7 @@ namespace SmartMedicine
 					thing = t,
 					pawn = p,
 					rating = MedicineRating(t, sufficientQuality),
-					distance = DistanceTo(p, healer, patient) - 1
-					// Nudge the distance to prefer inventory on ties
+					distance = DistanceTo(p, healer, patient)
 				});
 			}
 
@@ -246,37 +275,36 @@ namespace SmartMedicine
 					int count = Medicine.GetMedicineCountToFullyHeal(patient);
 					int dropCount = Mathf.Min(bestMed.thing.stackCount, count);
 					count -= dropCount;
-					bestMed.pawn.inventory.innerContainer.TryDrop(bestMed.thing, ThingPlaceMode.Direct, dropCount, out Thing droppedMedicine);
-
-					//Whoops dropped onto forbidden / reserved stack
-					if (!droppedMedicine.IsForbidden(healer) && healer.CanReserve(droppedMedicine, 1, -1, null, false))
-						__result = droppedMedicine;
-					else
-						return true;
+					__result = bestMed.thing;
+					//	return true;
 
 					//Find some more needed nearby
+					//bestMed is dropped in Pretoil, but these aren't tracked there so they are dropped now.
+
+					//In a very odd case that you right-click assign a tend and a second pawn's medicine is needed, he might drop his entire inventory
+					// That's a vanilla thing though that calls JobOnThing over and over instead of HasJobOnThing
 					if (count > 0)
 					{
 						List<MedicineEvaluator> equalMedicines = allMeds.Where(eval => eval.rating == bestMed.rating).ToList();
-						equalMedicines.SortBy(eval => DistanceTo(droppedMedicine, eval.pawn ?? eval.thing));
-
+						equalMedicines.SortBy(eval => DistanceTo(bestMed.pawn, eval.pawn ?? eval.thing));
+						Thing droppedMedicine = null;
 						Log.Message("But needs " + count + " more");
 						while (count > 0 && equalMedicines.Count > 0)
 						{
-								MedicineEvaluator closeMed = equalMedicines.First();
-								equalMedicines.RemoveAt(0);
+							MedicineEvaluator closeMed = equalMedicines.First();
+							equalMedicines.RemoveAt(0);
 
-								closeMed.DebugLog("More: ");
+							closeMed.DebugLog("More: ");
 
-								if (DistanceTo(droppedMedicine, closeMed.pawn ?? closeMed.thing) > 8f) //8f as defined in CheckForGetOpportunityDuplicate
-									return false;
+							if (DistanceTo(droppedMedicine ?? bestMed.pawn, closeMed.pawn ?? closeMed.thing) > 8f) //8f as defined in CheckForGetOpportunityDuplicate
+								return false;
 
-								dropCount = Mathf.Min(closeMed.thing.stackCount, count);
-								closeMed.DebugLog("Using: (" + dropCount + ")");
+							dropCount = Mathf.Min(closeMed.thing.stackCount, count);
+							closeMed.DebugLog("Using: (" + dropCount + ")");
 
-								closeMed.pawn?.inventory.innerContainer.TryDrop(closeMed.thing, ThingPlaceMode.Direct, dropCount, out droppedMedicine);
-								if (!droppedMedicine.IsForbidden(healer) && healer.CanReserve(droppedMedicine, 1, -1, null, false))
-									count -= dropCount;
+							closeMed.pawn?.inventory.innerContainer.TryDrop(closeMed.thing, ThingPlaceMode.Direct, dropCount, out droppedMedicine);
+							if (!droppedMedicine.IsForbidden(healer) && healer.CanReserve(droppedMedicine, 1, -1, null, false))
+								count -= dropCount;
 							//else return false;
 						}
 					}
