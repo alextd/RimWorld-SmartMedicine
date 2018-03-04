@@ -29,8 +29,7 @@ namespace SmartMedicine
 		{
 			if (MassUtility.CountToPickUpUntilOverEncumbered(pawn, thing) == 0)
 			{
-				JobFailReason.Is("CannotPickUp".Translate(new object[] {thing.Label})
-					+ " (" + "TooHeavy".Translate() + ")");
+				JobFailReason.Is("TooHeavy".Translate());
 				return false;
 			}
 			return StockUpUtility.Needs(pawn, thing.def) > 0 && pawn.CanReserve(thing, 1, -1, null, forced);
