@@ -46,7 +46,7 @@ namespace SmartMedicine
 			
 			int dropCount = -StockUpUtility.Needs(pawn, toReturn.def);
 			if (StoreUtility.TryFindBestBetterStoreCellFor(toReturn, pawn, pawn.Map, StoragePriority.Unstored, pawn.Faction, out IntVec3 dropLoc, true))
-				return new Job(SmartMedicineJobDefOf.StockDownOnMedicine, toReturn, dropLoc) { count = dropCount };
+				return new Job(SmartMedicineJobDefOf.StockDownOnMedicine, dropLoc, toReturn) { count = dropCount };
 			return null;
 		}
 	}
