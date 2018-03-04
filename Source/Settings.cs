@@ -117,8 +117,12 @@ namespace SmartMedicine
 
 
 			options.CheckboxLabeled("Doctors will treat patients if no beds are available", ref fieldTendingForLackOfBed);
-			options.CheckboxLabeled("Doctors can always tend, with or without a bed", ref fieldTendingAlways, "Doctors will prioritize rescusing non-critical patients to a bed, but treatment can still be targeting manually. Emergency treatment will be done automatically in the field");
+			if (fieldTendingForLackOfBed)
+				fieldTendingAlways = false; 
 
+			options.CheckboxLabeled("Doctors can always tend, with or without a bed", ref fieldTendingAlways, "Doctors will prioritize rescusing non-critical patients to a bed, but treatment can still be targeting manually. Emergency treatment will be done automatically in the field");
+			if (fieldTendingAlways)
+				fieldTendingForLackOfBed = false;
 
 			options.End();
 		}
@@ -145,8 +149,8 @@ namespace SmartMedicine
 			//Scribe_Collections.Look(ref stockUpList, "stockUpList");	//why doesn't this work for List<ThingDef>
 			Scribe_Collections.Look(ref stockUpListByIndex, "stockUpList");
 
-			Scribe_Values.Look(ref fieldTendingAlways, "fieldTendingAlways", false);
 			Scribe_Values.Look(ref fieldTendingForLackOfBed, "fieldTendingForLackOfBed", false);
+			Scribe_Values.Look(ref fieldTendingAlways, "fieldTendingAlways", false);
 
 			if (stockUpListByIndex == null)
 				stockUpListByIndex = new List<int>();

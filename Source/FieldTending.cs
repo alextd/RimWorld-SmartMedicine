@@ -18,8 +18,8 @@ namespace SmartMedicine
 		public static void Postfix(Pawn patient, ref bool __result)
 		{
 			if (patient.RaceProps.Humanlike && 
-				(Settings.Get().fieldTendingAlways || 
-				(Settings.Get().fieldTendingForLackOfBed && RestUtility.FindPatientBedFor(patient) == null)))
+				((Settings.Get().fieldTendingForLackOfBed && RestUtility.FindPatientBedFor(patient) == null) ||
+				Settings.Get().fieldTendingAlways))
 				__result = true;
 		}
 	}
