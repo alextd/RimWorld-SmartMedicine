@@ -25,14 +25,15 @@ namespace SmartMedicine
 			return StockUpUtility.IsFull(pawn);
 		}
 
-		public override bool HasJobOnThing(Pawn pawn, Thing t, bool forced = false)
+		public override bool HasJobOnThing(Pawn pawn, Thing thing, bool forced = false)
 		{
-			return StockUpUtility.Needs(pawn, t.def) > 0 && pawn.CanReserve(t) && MassUtility.CountToPickUpUntilOverEncumbered(pawn, t) > 0;
+			return StockUpUtility.Needs(pawn, thing.def) > 0 && pawn.CanReserve(thing) && MassUtility.CountToPickUpUntilOverEncumbered(pawn, thing) > 0;
 		}
 
 		public override Job JobOnThing(Pawn pawn, Thing thing, bool forced = false)
 		{
 			int needCount = StockUpUtility.Needs(pawn, thing.def);
+			if (needCount == 0) return null;
 
 			needCount = Math.Min(needCount, MassUtility.CountToPickUpUntilOverEncumbered(pawn, thing));
 			return new Job(SmartMedicineJobDefOf.StockUpOnMedicine, thing) { count = needCount };
@@ -64,8 +65,10 @@ namespace SmartMedicine
 
 		public static int Needs(Pawn pawn, ThingDef thingDef)
 		{
+			if (pawn.inventory == null) return 0;
+			if (!Settings.Get().stockUpOnMedicine) return 0;
+
 			int capacity = Settings.Get().stockUpCapacity;
-			if (!Settings.Get().stockUpOnMedicine) capacity = 0;
 			//if (!Settings.Get().stockUpList.Contains(thingDef)) capacity = 0;
 			if (!Settings.Get().stockUpListByIndex.Contains(StockUpUtility.medList.IndexOf(thingDef))) capacity = 0;
 
@@ -78,6 +81,8 @@ namespace SmartMedicine
 
 		public static Thing CanReturn(Pawn pawn)
 		{
+			if (pawn.inventory == null) return null;
+
 			ThingDef thingDef = medList.FirstOrDefault(td => Needs(pawn, td) < 0);
 			if ( thingDef == null) return null;
 

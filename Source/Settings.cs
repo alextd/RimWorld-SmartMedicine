@@ -82,7 +82,7 @@ namespace SmartMedicine
 			options.CheckboxLabeled("Doctors stock up medicine in their inventory", ref stockUpOnMedicine, "A new job (WorkGiver) for doctors: gather medicine to their inventory, and keep it around for tending");
 			if(stockUpOnMedicine)
 			{
-				options.SliderLabeled("How much medicine to hold", ref stockUpCapacity, "{0}", 1, 75);
+				options.SliderLabeled("How much medicine to hold:", ref stockUpCapacity, "{0}", 0, 75);
 				float iconSize = Text.LineHeight * 2;
 				Rect rowIcon = options.GetRect(iconSize);
 				Widgets.Label(rowIcon, "Stock up on these Medicines:");
