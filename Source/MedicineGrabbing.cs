@@ -75,24 +75,37 @@ namespace SmartMedicine
 	[HarmonyPatch("TryMakePreToilReservations")]
 	static class TendPatient_TryMakePreToilReservations_Patch
 	{
-		public static void Prefix(JobDriver_TendPatient __instance)
+		public static bool Prefix(JobDriver_TendPatient __instance, ref bool __result)
 		{
 			Job job = __instance.job;
 			Pawn healer = __instance.pawn;
 			Thing medicineToDrop = job.targetB.Thing;
-			if (medicineToDrop == null || medicineToDrop.holdingOwner == null) return;
+			if (medicineToDrop == null || medicineToDrop.holdingOwner == null) return true;
+
+			//job.count is not set properly so here we go again:
+			int count = Medicine.GetMedicineCountToFullyHeal(job.targetA.Thing as Pawn);
+			int dropCount = Mathf.Min(medicineToDrop.stackCount, count);
+			Thing droppedMedicine = null;
 			if (medicineToDrop.holdingOwner.Owner is Pawn_InventoryTracker holder)
 			{
-				//job.count is not set properly so here we go again:
-				int count = Medicine.GetMedicineCountToFullyHeal(job.targetA.Thing as Pawn);
-				int dropCount = Mathf.Min(medicineToDrop.stackCount, count);
-				holder.innerContainer.TryDrop(medicineToDrop, ThingPlaceMode.Direct, dropCount, out Thing droppedMedicine);
-				
+				holder.innerContainer.TryDrop(medicineToDrop, ThingPlaceMode.Direct, dropCount, out droppedMedicine);
+			}
+			else if (medicineToDrop.holdingOwner.Owner is Pawn_CarryTracker carrier)
+			{
+				carrier.innerContainer.TryDrop(medicineToDrop, ThingPlaceMode.Direct, dropCount, out droppedMedicine);
+			}
+			else return true;
+
+			job.targetB = droppedMedicine;
+			if (!droppedMedicine.IsForbidden(healer) && healer.CanReserve(droppedMedicine, 1, -1, null, false))
+			{
+				return true;
+			}
+			else
+			{
 				//Whoops dropped onto forbidden / reserved stack
-				if (!droppedMedicine.IsForbidden(healer) && healer.CanReserve(droppedMedicine, 1, -1, null, false))
-					__instance.job.targetB = droppedMedicine;
-				else
-					__instance.job.targetB = LocalTargetInfo.Invalid;	
+				__result = true;	//Job will fail on forbidden naturally
+				return false;
 			}
 		}
 	}
@@ -217,7 +230,7 @@ namespace SmartMedicine
 			//Add best from each pawn
 			foreach (Pawn p in pawns)
 			{
-				Thing t = FindBestMedicineInInventory(p, patient, sufficientQuality);
+				Thing t = FindBestMedicineInInventory(p, patient, sufficientQuality, p == healer);
 				if (t == null) continue;
 				allMeds.Add(new MedicineEvaluator()
 				{
@@ -303,7 +316,7 @@ namespace SmartMedicine
 							closeMed.DebugLog("Using: (" + dropCount + ")");
 
 							closeMed.pawn?.inventory.innerContainer.TryDrop(closeMed.thing, ThingPlaceMode.Direct, dropCount, out droppedMedicine);
-							if (!droppedMedicine.IsForbidden(healer) && healer.CanReserve(droppedMedicine, 1, -1, null, false))
+							if (droppedMedicine != null && !droppedMedicine.IsForbidden(healer) && healer.CanReserve(droppedMedicine, 1, -1, null, false))
 								count -= dropCount;
 							//else return false;
 						}
@@ -330,14 +343,16 @@ namespace SmartMedicine
 			return (1 / selfTend - bedOffset) / doctorQuality * Settings.Get().goodEnoughDowngradeFactor;
 		}
 
-		private static Thing FindBestMedicineInInventory(Pawn pawn, Pawn patient, float sufficientQuality)
+		private static Thing FindBestMedicineInInventory(Pawn pawn, Pawn patient, float sufficientQuality, bool isHealer)
 		{
 			if (pawn == null || pawn.inventory == null || patient == null || patient.playerSettings == null)
 				return null;
 
-			return pawn.inventory.innerContainer.InnerListForReading
-				.Where(t => t.def.IsMedicine && patient.playerSettings.medCare.AllowsMedicine(t.def))
-				.MaxByWithFallback(t => MedicineRating(t, sufficientQuality));
+			List<Thing> items = new List<Thing>(pawn.inventory.innerContainer.InnerListForReading);
+			if (isHealer && pawn.carryTracker != null && pawn.carryTracker.CarriedThing != null)
+				items.Add(pawn.carryTracker.CarriedThing);
+			return items.Where(t => t.def.IsMedicine && patient.playerSettings.medCare.AllowsMedicine(t.def))
+			.MaxByWithFallback(t => MedicineRating(t, sufficientQuality));
 		}
 
 		private static float MedicineRating(Thing t, float sufficientQuality)
