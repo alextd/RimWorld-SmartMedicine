@@ -27,7 +27,13 @@ namespace SmartMedicine
 
 		public override bool HasJobOnThing(Pawn pawn, Thing thing, bool forced = false)
 		{
-			return StockUpUtility.Needs(pawn, thing.def) > 0 && pawn.CanReserve(thing) && MassUtility.CountToPickUpUntilOverEncumbered(pawn, thing) > 0;
+			if (MassUtility.CountToPickUpUntilOverEncumbered(pawn, thing) == 0)
+			{
+				JobFailReason.Is("CannotPickUp".Translate(new object[] {thing.Label})
+					+ " (" + "TooHeavy".Translate() + ")");
+				return false;
+			}
+			return StockUpUtility.Needs(pawn, thing.def) > 0 && pawn.CanReserve(thing, 1, -1, null, forced);
 		}
 
 		public override Job JobOnThing(Pawn pawn, Thing thing, bool forced = false)
