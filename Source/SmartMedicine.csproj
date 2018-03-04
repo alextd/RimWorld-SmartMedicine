@@ -56,6 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DebugLog.cs" />
+    <Compile Include="FieldTending.cs" />
     <Compile Include="JobDriver_StockUpOnMedicine.cs" />
     <Compile Include="Listing_StandardExtensions.cs" />
     <Compile Include="MedicineGrabbing.cs" />

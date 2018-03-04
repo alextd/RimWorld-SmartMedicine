@@ -28,6 +28,9 @@ namespace SmartMedicine
 		//public List<ThingDef> stockUpList;
 		public List<int> stockUpListByIndex;
 
+		public bool fieldTendingForLackOfBed;
+		public bool fieldTendingAlways;
+
 		public static Settings Get()
 		{
 			return LoadedModManager.GetMod<SmartMedicine.Mod>().GetSettings<Settings>();
@@ -110,6 +113,12 @@ namespace SmartMedicine
 					if (!included) Widgets.DrawTextureFitted(rectIcon, Widgets.CheckboxOffTex, 1.0f);
 				}
 			}
+			options.Gap();
+
+
+			options.CheckboxLabeled("Doctors will treat patients if no beds are available", ref fieldTendingForLackOfBed);
+			options.CheckboxLabeled("Doctors can always tend, with or without a bed", ref fieldTendingAlways, "Doctors will prioritize rescusing non-critical patients to a bed, but treatment can still be targeting manually. Emergency treatment will be done automatically in the field");
+
 
 			options.End();
 		}
@@ -135,6 +144,9 @@ namespace SmartMedicine
 			Scribe_Values.Look(ref stockUpCapacity, "stockUpCapacity", 10);
 			//Scribe_Collections.Look(ref stockUpList, "stockUpList");	//why doesn't this work for List<ThingDef>
 			Scribe_Collections.Look(ref stockUpListByIndex, "stockUpList");
+
+			Scribe_Values.Look(ref fieldTendingAlways, "fieldTendingAlways", false);
+			Scribe_Values.Look(ref fieldTendingForLackOfBed, "fieldTendingForLackOfBed", false);
 
 			if (stockUpListByIndex == null)
 				stockUpListByIndex = new List<int>();
