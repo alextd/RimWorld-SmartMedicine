@@ -199,7 +199,7 @@ namespace SmartMedicine
 			map.reachability.CanReach(patient.Position, t, PathEndMode.ClosestTouch, traverseParams)
 			&& !t.IsForbidden(healer) && patient.playerSettings.medCare.AllowsMedicine(t.def) && healer.CanReserve(t);
 			Func<Thing, float> priorityGetter = (Thing t) => MedicineRating(t, sufficientQuality);
-			List<Thing> groundMedicines = patient.Map.listerThings.ThingsInGroup(ThingRequestGroup.Medicine).Where(t => validator(t)).ToList();
+			List<Thing> groundMedicines = patient.Map.listerThings.ThingsInGroup(ThingRequestGroup.Medicine).FindAll(t => validator(t));
 
 			//Pawns
 			Predicate<Pawn> validatorHolder = (Pawn p) =>
@@ -268,7 +268,7 @@ namespace SmartMedicine
 				{
 					bestMed.DebugLog("Best: ");
 					Log.Message("checking nearby:");
-					List<MedicineEvaluator> equalMedicines = groundEvaluators.Where(eval => eval.rating == bestMed.rating).ToList();
+					List<MedicineEvaluator> equalMedicines = groundEvaluators.FindAll(eval => eval.rating == bestMed.rating);
 					if (equalMedicines.Count > 0)
 					{
 						MedicineEvaluator closeMed = equalMedicines.MinBy(eval => eval.distance);
@@ -307,7 +307,7 @@ namespace SmartMedicine
 					// That's a vanilla thing though that calls JobOnThing over and over instead of HasJobOnThing
 					if (count > 0)
 					{
-						List<MedicineEvaluator> equalMedicines = allMeds.Where(eval => eval.rating == bestMed.rating).ToList();
+						List<MedicineEvaluator> equalMedicines = allMeds.FindAll(eval => eval.rating == bestMed.rating);
 						equalMedicines.SortBy(eval => DistanceTo(bestMed.pawn, eval.pawn ?? eval.thing));
 						Thing droppedMedicine = null;
 						Log.Message("But needs " + count + " more");
