@@ -18,7 +18,7 @@ namespace SmartMedicine
 		public static void Postfix(Pawn patient, ref bool __result)
 		{
 			if (Settings.Get().FieldTendingActive(patient))
-				__result = patient.GetPosture() != PawnPosture.Standing;
+				__result = patient.Drafted || patient.GetPosture() != PawnPosture.Standing;
 		}
 	}
 
