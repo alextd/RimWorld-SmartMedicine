@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Verse;
+using RimWorld;
 
 namespace SmartMedicine
 {
@@ -30,6 +31,13 @@ namespace SmartMedicine
 
 		public bool fieldTendingForLackOfBed;
 		public bool fieldTendingAlways;
+
+		public bool FieldTendingActive(Pawn patient)
+		{
+			return patient.RaceProps.Humanlike && 
+				(fieldTendingAlways || 
+				(fieldTendingForLackOfBed && RestUtility.FindPatientBedFor(patient) == null));
+		}
 
 		public static Settings Get()
 		{
