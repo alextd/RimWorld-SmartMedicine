@@ -9,28 +9,28 @@ namespace SmartMedicine
 	class Settings : ModSettings
 	{
 		//TODO: save per map
-		public bool useDoctorMedicine;
-		public bool usePatientMedicine;
-		public bool useCloseMedicine;
-		public int distanceToUseEqualOnGround;
+		public bool useDoctorMedicine = true;
+		public bool usePatientMedicine = true;
+		public bool useCloseMedicine = true;
+		public int distanceToUseEqualOnGround = 6;
 
-		public bool useColonistMedicine;
-		public bool useAnimalMedicine;
-		public bool useOtherEvenIfFar;
-		public int distanceToUseFromOther;
+		public bool useColonistMedicine = true;
+		public bool useAnimalMedicine = true;
+		public bool useOtherEvenIfFar = false;
+		public int distanceToUseFromOther = 12;
 
-		public bool minimalMedicineForNonUrgent;
-		public bool noMedicineForNonUrgent;
-		public bool downgradeExcessiveMedicine;
-		public float goodEnoughDowngradeFactor;
+		public bool minimalMedicineForNonUrgent = false;
+		public bool noMedicineForNonUrgent = false;
+		public bool downgradeExcessiveMedicine = true;
+		public float goodEnoughDowngradeFactor = 1.0f;
 
-		public bool stockUpOnMedicine;
-		public int stockUpCapacity;
+		public bool stockUpOnMedicine = false;
+		public int stockUpCapacity = 6;
 		//public List<ThingDef> stockUpList;
-		public List<int> stockUpListByIndex;
+		public List<int> stockUpListByIndex = new List<int>();
 
-		public bool fieldTendingForLackOfBed;
-		public bool fieldTendingAlways;
+		public bool fieldTendingForLackOfBed = false;
+		public bool fieldTendingAlways = false;
 
 		public bool FieldTendingActive(Pawn patient)
 		{
@@ -124,11 +124,11 @@ namespace SmartMedicine
 			options.Gap();
 
 
-			options.CheckboxLabeled("Doctors will treat patients if no beds are available", ref fieldTendingForLackOfBed);
+			options.CheckboxLabeled("Doctors will treat patients if no beds are available", ref fieldTendingForLackOfBed, "The patient must be resting, downed, or drafted to target");
 			if (fieldTendingForLackOfBed)
 				fieldTendingAlways = false; 
 
-			options.CheckboxLabeled("Doctors can always tend, with or without a bed", ref fieldTendingAlways, "Doctors will prioritize rescusing non-critical patients to a bed, but treatment can still be targeting manually. Emergency treatment will be done automatically in the field");
+			options.CheckboxLabeled("Doctors can always tend, with or without a bed", ref fieldTendingAlways, "Colonists will prioritize going to a bed, but you may draft patients to keep them in place.");
 			if (fieldTendingAlways)
 				fieldTendingForLackOfBed = false;
 
@@ -147,13 +147,13 @@ namespace SmartMedicine
 			Scribe_Values.Look(ref useOtherEvenIfFar, "useOtherEvenIfFar", false);
 			Scribe_Values.Look(ref distanceToUseFromOther, "distanceToUseFromOther", 12);
 
-			Scribe_Values.Look(ref minimalMedicineForNonUrgent, "minimalMedicineForNonUrgent", true);
+			Scribe_Values.Look(ref minimalMedicineForNonUrgent, "minimalMedicineForNonUrgent", false);
 			Scribe_Values.Look(ref noMedicineForNonUrgent, "noMedicineForNonUrgent", false);
 			Scribe_Values.Look(ref downgradeExcessiveMedicine, "downgradeExcessiveMedicine", true);
-			Scribe_Values.Look(ref goodEnoughDowngradeFactor, "goodEnoughDowngradeFactor", 0.9f);
+			Scribe_Values.Look(ref goodEnoughDowngradeFactor, "goodEnoughDowngradeFactor", 1.0f);
 
 			Scribe_Values.Look(ref stockUpOnMedicine, "stockUpOnMedicine", false);
-			Scribe_Values.Look(ref stockUpCapacity, "stockUpCapacity", 10);
+			Scribe_Values.Look(ref stockUpCapacity, "stockUpCapacity", 6);
 			//Scribe_Collections.Look(ref stockUpList, "stockUpList");	//why doesn't this work for List<ThingDef>
 			Scribe_Collections.Look(ref stockUpListByIndex, "stockUpList");
 
