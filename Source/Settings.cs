@@ -109,7 +109,8 @@ namespace SmartMedicine
 					rowIcon.xMax -= iconSize + 3;
 					
 					Widgets.DrawHighlightIfMouseover(rectIcon);
-					if (Widgets.ButtonImage(rectIcon, td.uiIcon))
+					Widgets.ThingIcon(rectIcon, td);
+					if (Widgets.ButtonInvisible(rectIcon, false))
 					{
 						if (included)
 							//stockUpList.Add(td);
