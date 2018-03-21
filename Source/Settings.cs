@@ -52,7 +52,7 @@ namespace SmartMedicine
 			options.CheckboxLabeled("Use medicine from patient's inventory", ref usePatientMedicine);
 			if (useDoctorMedicine || usePatientMedicine)
 			{
-				options.CheckboxLabeled("... But use nearby medicine (if same quality)", ref useCloseMedicine, "This also checks for medicine on the way to the patient (roughly)");
+				options.CheckboxLabeled("... But use nearby medicine (if same quality)", ref useCloseMedicine, "This also checks for medicine on the way to the patient (roughly based on distance, not actual path)");
 				if (useCloseMedicine)
 				{
 					options.SliderLabeled("How far to walk to find nearby medicine", ref distanceToUseEqualOnGround, "{0:0} spaces", 0, 99, "This is only an override for inventory medicine - if there is no inventory medicine, they will walk to the ends of the map to pick up medicine");
