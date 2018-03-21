@@ -149,13 +149,13 @@ namespace SmartMedicine
 			{
 				return l.rating > r.rating
 					|| (l.rating == r.rating && l.distance < r.distance)
-					|| (l.distance == r.distance && l.pawn == null && r.pawn != null);
+					|| (l.distance == r.distance && l.pawn != null && r.pawn == null);
 			}
 			public static bool operator <(MedicineEvaluator l, MedicineEvaluator r)
 			{
 				return l.rating < r.rating
 					|| (l.rating == r.rating && l.distance > r.distance)
-					|| (l.distance == r.distance && l.pawn != null && r.pawn == null);
+					|| (l.distance == r.distance && l.pawn == null && r.pawn != null);
 			}
 		}
 		static float maxMedicineQuality = 10.0f;
