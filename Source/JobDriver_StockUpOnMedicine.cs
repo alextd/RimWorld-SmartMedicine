@@ -25,7 +25,7 @@ namespace SmartMedicine
 	{
 		public override bool TryMakePreToilReservations()
 		{
-			return this.pawn.Reserve(job.targetA, job, FindBestMedicine.maxPawns, job.count, null);
+			return this.pawn.Reserve(job.targetA, job);
 		}
 
 		protected override IEnumerable<Toil> MakeNewToils()
