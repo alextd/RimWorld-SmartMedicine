@@ -88,34 +88,42 @@ namespace SmartMedicine
 
 			//job.count is not set properly so here we go again:
 			int count = Medicine.GetMedicineCountToFullyHeal(patient);
-			int dropCount = Mathf.Min(medicineToDrop.stackCount, count);
+			int needCount = Mathf.Min(medicineToDrop.stackCount, count);
 			Thing droppedMedicine = null;
 			if (medicineToDrop.holdingOwner.Owner is Pawn_InventoryTracker holder)
 			{
 				Log.Message(holder.pawn + " dropping " + medicineToDrop);
-				holder.innerContainer.TryDrop(medicineToDrop, ThingPlaceMode.Direct, dropCount, out droppedMedicine);
+				holder.innerContainer.TryDrop(medicineToDrop, ThingPlaceMode.Direct, needCount, out droppedMedicine);
 			}
 			else if (medicineToDrop.holdingOwner.Owner is Pawn_CarryTracker carrier)
 			{
 				Log.Message(carrier.pawn + " dropping " + medicineToDrop);
-				carrier.innerContainer.TryDrop(medicineToDrop, ThingPlaceMode.Direct, dropCount, out droppedMedicine);
+				carrier.innerContainer.TryDrop(medicineToDrop, ThingPlaceMode.Direct, needCount, out droppedMedicine);
 			}
-			else return true;
 
-			Log.Message(healer + " now tending with " + droppedMedicine);
-			job.targetB = droppedMedicine;
-			if (droppedMedicine.IsForbidden(healer))
+			if (droppedMedicine != null)
 			{
-				Log.Message(droppedMedicine + " is Forbidden, job will restart");
-				//Whoops dropped onto forbidden / reserved stack
-				__result = true;  //Job will fail on forbidden naturally
-				return false;
+				Log.Message(healer + " now tending with " + droppedMedicine);
+				job.targetB = droppedMedicine;
+				if (droppedMedicine.IsForbidden(healer))
+				{
+					Log.Message(droppedMedicine + " is Forbidden, job will restart");
+					//Whoops dropped onto forbidden / reserved stack
+					__result = true;  //Job will fail on forbidden naturally
+					return false;
+				}
+
+				if (!healer.CanReserve(droppedMedicine, FindBestMedicine.maxPawns, needCount))
+				{
+					Verse.Log.Warning("Needed medicine " + droppedMedicine + " for " + healer + " was dropped onto a reserved stack. Job will fail and try again, so ignore the error please.");
+					return true;
+				}
 			}
-			if (!healer.CanReserve(droppedMedicine))
-			{
-				Verse.Log.Warning("Needed medicine " + droppedMedicine + " for " + healer + " was dropped onto a reserved stack. Job will fail and try again, so ignore the error please.");
-			}
-			return true;
+
+			Log.Message("Okay, doing reservations");
+			__result = healer.Reserve(patient, job) && healer.Reserve(job.targetB.Thing, job, FindBestMedicine.maxPawns, needCount, null);
+
+			return false;
 		}
 	}
 
@@ -123,8 +131,9 @@ namespace SmartMedicine
 	[HarmonyPatch(typeof(HealthAIUtility))]
 	[HarmonyPatch("FindBestMedicine")]
 	[StaticConstructorOnStartup]
-	static class FindBestMedicine_Patch
+	public static class FindBestMedicine
 	{
+		public const int maxPawns = 100;
 		struct MedicineEvaluator : IComparable
 		{
 			public Thing thing;
@@ -161,7 +170,7 @@ namespace SmartMedicine
 		static float maxMedicineQuality = 10.0f;
 		static float minMedicineQuality = 00.0f;
 
-		static FindBestMedicine_Patch()
+		static FindBestMedicine()
 		{
 			IEnumerable<float> medQualities = DefDatabase<ThingDef>.AllDefs
 					.Where(td => td.IsWithinCategory(ThingCategoryDefOf.Medicine))
@@ -191,13 +200,15 @@ namespace SmartMedicine
 					Log.Message("Sufficient medicine for non-urgent care is " + sufficientQuality);
 				}
 			}
+			
+			int count = Medicine.GetMedicineCountToFullyHeal(patient);
 
 			//Ground
 			Map map = patient.Map;
 			TraverseParms traverseParams = TraverseParms.For(healer, Danger.Deadly, TraverseMode.ByPawn, false);
 			Predicate<Thing> validator = (Thing t) =>
 			map.reachability.CanReach(patient.Position, t, PathEndMode.ClosestTouch, traverseParams)
-			&& !t.IsForbidden(healer) && patient.playerSettings.medCare.AllowsMedicine(t.def) && healer.CanReserve(t);
+			&& !t.IsForbidden(healer) && patient.playerSettings.medCare.AllowsMedicine(t.def) && healer.CanReserve(t, FindBestMedicine.maxPawns, count);
 			Func<Thing, float> priorityGetter = (Thing t) => MedicineRating(t, sufficientQuality);
 			List<Thing> groundMedicines = patient.Map.listerThings.ThingsInGroup(ThingRequestGroup.Medicine).FindAll(t => validator(t));
 
@@ -294,7 +305,6 @@ namespace SmartMedicine
 					bestMed.DebugLog("Best Med on hand: ");
 
 					//Drop it!
-					int count = Medicine.GetMedicineCountToFullyHeal(patient);
 					int dropCount = Mathf.Min(bestMed.thing.stackCount, count);
 					count -= dropCount;
 					__result = bestMed.thing;
@@ -325,7 +335,7 @@ namespace SmartMedicine
 							closeMed.DebugLog("Using: (" + dropCount + ")");
 
 							closeMed.pawn?.inventory.innerContainer.TryDrop(closeMed.thing, ThingPlaceMode.Near, dropCount, out droppedMedicine);
-							if (droppedMedicine != null && !droppedMedicine.IsForbidden(healer) && healer.CanReserve(droppedMedicine))
+							if (droppedMedicine != null && !droppedMedicine.IsForbidden(healer) && healer.CanReserve(droppedMedicine, maxPawns, count))
 								count -= dropCount;
 							//else return false;
 						}

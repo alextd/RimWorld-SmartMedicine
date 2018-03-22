@@ -32,7 +32,8 @@ namespace SmartMedicine
 				JobFailReason.Is("TooHeavy".Translate());
 				return false;
 			}
-			return StockUpUtility.Needs(pawn, thing.def) > 0 && pawn.CanReserve(thing, 1, -1, null, forced);
+			int needCount = StockUpUtility.Needs(pawn, thing.def);
+			return needCount > 0 && pawn.CanReserve(thing, FindBestMedicine.maxPawns, needCount, null, forced);
 		}
 
 		public override Job JobOnThing(Pawn pawn, Thing thing, bool forced = false)
