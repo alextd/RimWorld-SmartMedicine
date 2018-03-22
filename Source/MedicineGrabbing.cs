@@ -72,19 +72,19 @@ namespace SmartMedicine
 
 
 	[HarmonyPatch(typeof(JobDriver_TendPatient))]
-	[HarmonyPatch("TryMakePreToilReservations")]
-	static class TendPatient_TryMakePreToilReservations_Patch
+	[HarmonyPatch("Notify_Starting")]
+	static class TendPatient_Notify_Starting_Patch
 	{
-		public static bool Prefix(JobDriver_TendPatient __instance, ref bool __result)
+		public static void Prefix(JobDriver_TendPatient __instance)
 		{
 			Job job = __instance.job;
 			Pawn healer = __instance.pawn;
 			Pawn patient = job.targetA.Thing as Pawn;
 			Thing medicineToDrop = job.targetB.Thing;
 
-			Log.Message(healer + " TryMakePreToilReservations " + medicineToDrop);
+			Log.Message(healer + " Starting Tend with  (" + medicineToDrop + ")");
 
-			if (medicineToDrop == null || medicineToDrop.holdingOwner == null) return true;
+			if (medicineToDrop == null || medicineToDrop.holdingOwner == null) return;
 
 			//job.count is not set properly so here we go again:
 			int count = Medicine.GetMedicineCountToFullyHeal(patient);
@@ -106,24 +106,12 @@ namespace SmartMedicine
 				Log.Message(healer + " now tending with " + droppedMedicine);
 				job.targetB = droppedMedicine;
 				if (droppedMedicine.IsForbidden(healer))
-				{
 					Log.Message(droppedMedicine + " is Forbidden, job will restart");
-					//Whoops dropped onto forbidden / reserved stack
-					__result = true;  //Job will fail on forbidden naturally
-					return false;
-				}
 
-				if (!healer.CanReserve(droppedMedicine, FindBestMedicine.maxPawns, needCount))
-				{
+				Log.Message("Okay, doing reservations");
+				if (!healer.Reserve(job.targetB.Thing, job, FindBestMedicine.maxPawns, needCount, null))
 					Verse.Log.Warning("Needed medicine " + droppedMedicine + " for " + healer + " was dropped onto a reserved stack. Job will fail and try again, so ignore the error please.");
-					return true;
-				}
 			}
-
-			Log.Message("Okay, doing reservations");
-			__result = healer.Reserve(patient, job) && healer.Reserve(job.targetB.Thing, job, FindBestMedicine.maxPawns, needCount, null);
-
-			return false;
 		}
 	}
 
@@ -310,8 +298,11 @@ namespace SmartMedicine
 					__result = bestMed.thing;
 					//	return true;
 
+					//Todo: mid-job getting new medicine fails since this isn't dropped mid-toil. Sokay since it just fails and restarts.
+					//if healer job is tend maybe?
+
 					//Find some more needed nearby
-					//bestMed is dropped in Pretoil, but these aren't tracked there so they are dropped now.
+					//bestMed is dropped in Notify_Start, but these aren't tracked there so they are dropped now.
 
 					//In a very odd case that you right-click assign a tend and a second pawn's medicine is needed, he might drop his entire inventory
 					// That's a vanilla thing though that calls JobOnThing over and over instead of HasJobOnThing
