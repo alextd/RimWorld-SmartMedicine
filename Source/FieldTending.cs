@@ -51,7 +51,7 @@ namespace SmartMedicine
 				typeof(PatientGoToBed_Patch), nameof(LayDownInPlace));
 
 			bool lookedForBed = false;
-			foreach(CodeInstruction instruction in instructions)
+			foreach (CodeInstruction instruction in instructions)
 			{
 				if (instruction.opcode == OpCodes.Call && instruction.operand == FindPatientBedForInfo)
 					lookedForBed = true;
@@ -63,6 +63,32 @@ namespace SmartMedicine
 					yield return new CodeInstruction(OpCodes.Ldarg_0);
 					instruction.operand = LayDownInPlaceInfo;
 				}
+				yield return instruction;
+			}
+		}
+	}
+
+
+	[HarmonyPatch(typeof(FeedPatientUtility))]
+	[HarmonyPatch("ShouldBeFed")]
+	static class ShouldBeFed_Patch
+	{
+		public static bool InBed_Patch(Pawn pawn)
+		{
+			return pawn.InBed() || Settings.Get().FieldTendingActive(pawn);
+		}
+		public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+		{
+			MethodInfo InBedInfo = AccessTools.Method(
+				typeof(RestUtility), nameof(RestUtility.InBed));
+
+			MethodInfo InBed_PatchInfo = AccessTools.Method(
+				typeof(ShouldBeFed_Patch), nameof(InBed_Patch));
+			
+			foreach (CodeInstruction instruction in instructions)
+			{
+				if (instruction.opcode == OpCodes.Call && instruction.operand == InBedInfo)
+					instruction.operand = InBed_PatchInfo;
 				yield return instruction;
 			}
 		}
