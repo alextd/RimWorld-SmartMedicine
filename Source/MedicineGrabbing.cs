@@ -347,8 +347,14 @@ namespace SmartMedicine
 			// solve for medQuality,
 			// medQuality = (1 / selfTend - bedOffset) / doctorQuality
 			// this quality is sufficient.
-			float doctorQuality = doctor?.GetStatValue(StatDefOf.MedicalTendQuality, true) ?? 0.75f;
-			float bedOffset = patient.CurrentBed()?.GetStatValue(StatDefOf.MedicalTendQualityOffset, true) ?? 0f;
+			StatDef statDef = StatDefOf.MedicalTendQuality;
+			float doctorQuality = statDef.defaultBaseValue;
+
+			StatWorker statWorker = statDef.Worker;
+			if (!statWorker.IsDisabledFor(doctor))
+				doctorQuality = statWorker.GetValue(doctor);
+
+			float bedOffset = patient.CurrentBed()?.GetStatValue(StatDefOf.MedicalTendQualityOffset) ?? 0f;
 			float selfTend = doctor != patient ? 1.0f : 0.7f;
 			return (1 / selfTend - bedOffset) / doctorQuality * Settings.Get().goodEnoughDowngradeFactor;
 		}
