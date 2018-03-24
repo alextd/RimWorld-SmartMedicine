@@ -34,7 +34,7 @@ namespace SmartMedicine
 
 		public bool FieldTendingActive(Pawn patient)
 		{
-			return patient.RaceProps.Humanlike && 
+			return patient.IsFreeColonist && 
 				(fieldTendingAlways || 
 				(fieldTendingForLackOfBed && RestUtility.FindPatientBedFor(patient) == null));
 		}
