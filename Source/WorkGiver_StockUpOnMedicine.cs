@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Reflection.Emit;
 using System.Linq;
 using System.Text;
 using RimWorld;
@@ -24,7 +25,7 @@ namespace SmartMedicine
 
 		public override bool ShouldSkip(Pawn pawn)
 		{
-			return StockUpUtility.IsFull(pawn);
+			return pawn.IsAtFullStock();
 		}
 
 		public override bool HasJobOnThing(Pawn pawn, Thing thing, bool forced = false)
@@ -34,13 +35,13 @@ namespace SmartMedicine
 				JobFailReason.Is("TooHeavy".Translate());
 				return false;
 			}
-			int needCount = StockUpUtility.Needs(pawn, thing);
+			int needCount = pawn.Needs(thing);
 			return needCount > 0 && pawn.CanReserve(thing, FindBestMedicine.maxPawns, needCount, null, forced);
 		}
 
 		public override Job JobOnThing(Pawn pawn, Thing thing, bool forced = false)
 		{
-			int needCount = StockUpUtility.Needs(pawn, thing);
+			int needCount = pawn.Needs(thing);
 			if (needCount == 0) return null;
 
 			needCount = Math.Min(needCount, MassUtility.CountToPickUpUntilOverEncumbered(pawn, thing));
@@ -49,10 +50,10 @@ namespace SmartMedicine
 
 		public override Job NonScanJob(Pawn pawn)
 		{
-			Thing toReturn = StockUpUtility.ThingToReturn(pawn);
+			Thing toReturn = pawn.ThingToReturn();
 			if(toReturn == null) return null;
 			
-			int dropCount = -StockUpUtility.Needs(pawn, toReturn);
+			int dropCount = -pawn.Needs(toReturn);
 			if (StoreUtility.TryFindBestBetterStoreCellFor(toReturn, pawn, pawn.Map, StoragePriority.Unstored, pawn.Faction, out IntVec3 dropLoc, true))
 				return new Job(SmartMedicineJobDefOf.StockDownOnMedicine, toReturn, dropLoc) { count = dropCount };
 			return null;
@@ -71,25 +72,35 @@ namespace SmartMedicine
 			medList.SortBy(td => - td.GetStatValueAbstract(StatDefOf.MedicalPotency));
 		}
 
-		public static bool StockingUpOn(Pawn pawn, Thing thing)
+		public static bool StockingUpOn(this Pawn pawn, Thing thing) => StockingUpOn(pawn, thing.def);
+
+		public static bool StockingUpOn(this Pawn pawn, ThingDef thingDef)
 		{
 			if (!Settings.Get().stockUpOnMedicine) return false;
-			//Once each pawn gets their own count:
-			//return true;
+
+			if (pawn.inventory == null) return false;
+
+			if (!medList.Contains(thingDef)) return false;
+
+			//if (!Settings.Get().stockUpList.Contains(thingDef)) capacity = 0;
+			if (!Settings.Get().stockUpListByIndex.Contains(StockUpUtility.medList.IndexOf(thingDef))) return false;
 
 			return pawn.workSettings?.WorkGiversInOrderNormal.Any(wg => wg is WorkGiver_StockUpOnMedicine) ?? false;
 		}
 
-		public static int Needs(Pawn pawn, Thing thing) => Needs(pawn, thing.def);
-
-		public static int Needs(Pawn pawn, ThingDef thingDef)
+		public static int StockUpCount(this Pawn pawn, Thing thing) => pawn.StockUpCount(thing.def);
+		public static int StockUpCount(this Pawn pawn, ThingDef thingDef)
 		{
-			if (pawn.inventory == null) return 0;
-			if (!Settings.Get().stockUpOnMedicine) return 0;
+			return Settings.Get().stockUpCapacity;
+		}
 
-			int capacity = Settings.Get().stockUpCapacity;
-			//if (!Settings.Get().stockUpList.Contains(thingDef)) capacity = 0;
-			if (!Settings.Get().stockUpListByIndex.Contains(StockUpUtility.medList.IndexOf(thingDef))) capacity = 0;
+		public static int Needs(this Pawn pawn, Thing thing) => Needs(pawn, thing.def);
+
+		public static int Needs(this Pawn pawn, ThingDef thingDef)
+		{
+			if (!pawn.StockingUpOn(thingDef)) return 0;
+
+			int capacity = pawn.StockUpCount(thingDef);
 
 			int invCount = pawn.inventory.innerContainer
 				.Where(t => t.def == thingDef)
@@ -98,7 +109,7 @@ namespace SmartMedicine
 			return capacity - invCount;
 		}
 
-		public static Thing ThingToReturn(Pawn pawn)
+		public static Thing ThingToReturn(this Pawn pawn)
 		{
 			if (pawn.inventory == null) return null;
 
@@ -108,7 +119,7 @@ namespace SmartMedicine
 			return pawn.inventory.innerContainer.FirstOrDefault(t => t.def == thingDef);
 		}
 
-		public static bool IsFull(Pawn pawn)
+		public static bool IsAtFullStock(this Pawn pawn)
 		{
 			return !medList.Any(td => Needs(pawn, td) != 0);
 		}
@@ -137,6 +148,48 @@ namespace SmartMedicine
 						pawn.inventory.innerContainer.TryAddOrTransfer(pawn.carryTracker.CarriedThing);
 				}
 			}
+		}
+	}
+
+	//ITab_Pawn_Gear
+	//private void DrawThingRow(ref float y, float width, Thing thing, bool inventory = false)
+	[HarmonyPatch(typeof(ITab_Pawn_Gear), "DrawThingRow")]
+	public static class DrawThingRow_Patch
+	{
+		public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il, MethodBase mb)
+		{
+			IList<LocalVariableInfo> locals = mb.GetMethodBody().LocalVariables;
+			int textIndex = locals.First(l => l.LocalType == typeof(string)).LocalIndex;
+			
+			MethodInfo SelPawnForGearInfo = AccessTools.Property(typeof(ITab_Pawn_Gear), "SelPawnForGear").GetGetMethod(true);
+
+			MethodInfo AddStockTextInfo = AccessTools.Method(typeof(DrawThingRow_Patch), nameof(DrawThingRow_Patch.AddStockText));
+
+			bool setStr = false;
+			foreach (CodeInstruction i in instructions)
+			{
+				yield return i;
+
+				//stloc.s str1
+				if (!setStr && i.opcode == OpCodes.Stloc_S && i.operand is LocalBuilder lb && lb.LocalIndex == textIndex)
+				{
+					yield return new CodeInstruction(OpCodes.Ldarg_0);//this
+					yield return new CodeInstruction(OpCodes.Call, SelPawnForGearInfo);//this.SelPawnForGearInfo
+					yield return new CodeInstruction(OpCodes.Ldarg_3);//thing
+					yield return new CodeInstruction(OpCodes.Ldloc_S, textIndex);//text
+					yield return new CodeInstruction(OpCodes.Call, AddStockTextInfo);//AddStockText(pawn, thing, text)
+					yield return new CodeInstruction(OpCodes.Stloc_S, textIndex);//text = AddStockText(pawn, thing, text);
+
+					setStr = true;
+				}
+			}
+		}
+
+		public static string AddStockText(Pawn pawn, Thing thing, string text)
+		{
+			if (!pawn.StockingUpOn(thing)) return text;
+
+			return text + String.Format(" / {0}", pawn.StockUpCount(thing));
 		}
 	}
 }
