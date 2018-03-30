@@ -22,18 +22,16 @@ namespace SmartMedicine
 			harmony.PatchAll(Assembly.GetExecutingAssembly());
 
 			{
-				Type[] nestedTypes = typeof(Toils_Tend).GetNestedTypes(BindingFlags.NonPublic);
-				Type nestedType = new List<Type>(nestedTypes).FirstOrDefault(t => t.Name == "<PickupMedicine>c__AnonStorey0");
+				Type nestedType = AccessTools.Inner(typeof(Toils_Tend), "<PickupMedicine>c__AnonStorey0");
+				Log.Message("TYPE IS " + nestedType);
 				harmony.Patch(AccessTools.Method(nestedType, "<>m__0"),
 					null, null, new HarmonyMethod(typeof(PickupMedicine_Patch), "Transpiler"));
 			}
 
 			{
-				Type[] nestedTypes = typeof(JobDriver_TendPatient).GetNestedTypes(BindingFlags.NonPublic);
-				Type nestedType = new List<Type>(nestedTypes).FirstOrDefault(t => t.Name == "<MakeNewToils>c__Iterator0");
-				Type[] nestedTypes2 = nestedType.GetNestedTypes(BindingFlags.NonPublic);
-				Type nestedType2 = new List<Type>(nestedTypes2).FirstOrDefault(t => t.Name == "<MakeNewToils>c__AnonStorey1");
-				harmony.Patch(AccessTools.Method(nestedType2, "<>m__2"),
+				Type nestedType = AccessTools.Inner(typeof(JobDriver_TendPatient), "<MakeNewToils>c__Iterator0");
+				nestedType = AccessTools.Inner(nestedType, "<MakeNewToils>c__AnonStorey1");
+				harmony.Patch(AccessTools.Method(nestedType, "<>m__2"),
 					null, null, new HarmonyMethod(typeof(MakeNewToils_Patch), "Transpiler"));
 			}
 		}
