@@ -390,8 +390,7 @@ namespace SmartMedicine
 				}
 
 				//Check if any minimal medicine exists
-				float minimalRating = allMeds.MinBy(m => m.rating).rating;
-				if (bestMed.rating == minimalRating)
+				if (allMeds.Count == 0 || bestMed.rating == allMeds.MinBy(m => m.rating).rating)
 				{
 					GetMedicineCountToFullyHeal_Patch.__beep_beep_MinimalMedicineAvailable = false;
 					Log.Message("No minimal medicine available");
