@@ -158,7 +158,7 @@ namespace SmartMedicine
 				if (i.opcode == OpCodes.Call && i.operand == GetMedicineCountToFullyHealInfo)
 				{
 					yield return new CodeInstruction(OpCodes.Pop);//pawn
-					
+
 					yield return new CodeInstruction(OpCodes.Ldloc_1);//job
 					yield return new CodeInstruction(OpCodes.Ldfld, countInfo);//job.count
 				}
@@ -196,7 +196,7 @@ namespace SmartMedicine
 					yield return new CodeInstruction(OpCodes.Stloc, localCountInfo);
 					yield return new CodeInstruction(OpCodes.Ldloc, localCountInfo);
 				}
-				if(i.opcode == OpCodes.Ldfld && i.operand == jobFieldInfo)
+				if (i.opcode == OpCodes.Ldfld && i.operand == jobFieldInfo)
 				{
 					yield return new CodeInstruction(OpCodes.Stloc, localJobInfo);
 					yield return new CodeInstruction(OpCodes.Ldloc, localJobInfo);
@@ -238,7 +238,7 @@ namespace SmartMedicine
 				return 0;
 			}
 
-			public static bool operator>(MedicineEvaluator l, MedicineEvaluator r)
+			public static bool operator >(MedicineEvaluator l, MedicineEvaluator r)
 			{
 				return l.rating > r.rating
 					|| (l.rating == r.rating && l.distance < r.distance)
@@ -274,7 +274,7 @@ namespace SmartMedicine
 			if (Settings.Get().downgradeExcessiveMedicine)
 			{
 				sufficientQuality = CalculateSufficientQuality(healer, patient);
-				Log.Message("Sufficient medicine for best treatment is " + sufficientQuality + "(" +Settings.Get().goodEnoughDowngradeFactor + ")");
+				Log.Message("Sufficient medicine for best treatment is " + sufficientQuality + "(" + Settings.Get().goodEnoughDowngradeFactor + ")");
 			}
 			if (Settings.Get().minimalMedicineForNonUrgent)
 			{
@@ -321,7 +321,8 @@ namespace SmartMedicine
 			//Add each ground
 			foreach (Thing t in groundMedicines)
 				allMeds.Add(new MedicineEvaluator()
-				{ thing = t,
+				{
+					thing = t,
 					pawn = null,
 					rating = MedicineRating(t, sufficientQuality),
 					distance = DistanceTo(t, healer, patient)
