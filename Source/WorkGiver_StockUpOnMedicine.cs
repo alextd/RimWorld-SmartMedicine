@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Linq;
 using System.Text;
 using RimWorld;
 using Verse;
 using Verse.AI;
+using Harmony;
 
 namespace SmartMedicine
 {
@@ -32,13 +34,13 @@ namespace SmartMedicine
 				JobFailReason.Is("TooHeavy".Translate());
 				return false;
 			}
-			int needCount = StockUpUtility.Needs(pawn, thing.def);
+			int needCount = StockUpUtility.Needs(pawn, thing);
 			return needCount > 0 && pawn.CanReserve(thing, FindBestMedicine.maxPawns, needCount, null, forced);
 		}
 
 		public override Job JobOnThing(Pawn pawn, Thing thing, bool forced = false)
 		{
-			int needCount = StockUpUtility.Needs(pawn, thing.def);
+			int needCount = StockUpUtility.Needs(pawn, thing);
 			if (needCount == 0) return null;
 
 			needCount = Math.Min(needCount, MassUtility.CountToPickUpUntilOverEncumbered(pawn, thing));
@@ -50,7 +52,7 @@ namespace SmartMedicine
 			Thing toReturn = StockUpUtility.CanReturn(pawn);
 			if(toReturn == null) return null;
 			
-			int dropCount = -StockUpUtility.Needs(pawn, toReturn.def);
+			int dropCount = -StockUpUtility.Needs(pawn, toReturn);
 			if (StoreUtility.TryFindBestBetterStoreCellFor(toReturn, pawn, pawn.Map, StoragePriority.Unstored, pawn.Faction, out IntVec3 dropLoc, true))
 				return new Job(SmartMedicineJobDefOf.StockDownOnMedicine, dropLoc, toReturn) { count = dropCount };
 			return null;
@@ -68,6 +70,17 @@ namespace SmartMedicine
 			medList = DefDatabase<ThingDef>.AllDefs.Where(td => td.IsWithinCategory(ThingCategoryDefOf.Medicine)).ToList();
 			medList.SortBy(td => - td.GetStatValueAbstract(StatDefOf.MedicalPotency));
 		}
+
+		public static bool StockingUpOn(Pawn pawn, Thing thing)
+		{
+			if (!Settings.Get().stockUpOnMedicine) return false;
+			//Once each pawn gets their own count:
+			//return true;
+
+			return pawn.workSettings?.WorkGiversInOrderNormal.Any(wg => wg is WorkGiver_StockUpOnMedicine) ?? false;
+		}
+
+		public static int Needs(Pawn pawn, Thing thing) => Needs(pawn, thing.def);
 
 		public static int Needs(Pawn pawn, ThingDef thingDef)
 		{
@@ -106,5 +119,24 @@ namespace SmartMedicine
 	{
 		public static JobDef StockUpOnMedicine;
 		public static JobDef StockDownOnMedicine;
+	}
+	
+	//private void CleanupCurrentJob(JobCondition condition, bool releaseReservations, bool cancelBusyStancesSoft = true)
+	[HarmonyPatch(typeof(Pawn_JobTracker), "CleanupCurrentJob")]
+	public static class CleanupCurrentJob_Patch
+	{
+		public static void Prefix(Pawn_JobTracker __instance)
+		{
+			if (__instance.curJob?.def == JobDefOf.TendPatient)
+			{
+				FieldInfo pawnField = AccessTools.Field(typeof(Pawn_JobTracker), "pawn");
+				Pawn pawn = (Pawn)pawnField.GetValue(__instance);
+				if (!pawn.Destroyed && pawn.carryTracker != null && pawn.carryTracker.CarriedThing != null)
+				{
+					if (StockUpUtility.StockingUpOn(pawn, pawn.carryTracker.CarriedThing))
+						pawn.inventory.innerContainer.TryAddOrTransfer(pawn.carryTracker.CarriedThing);
+				}
+			}
+		}
 	}
 }
