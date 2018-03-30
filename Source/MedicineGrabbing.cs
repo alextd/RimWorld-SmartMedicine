@@ -150,11 +150,23 @@ namespace SmartMedicine
 		{
 			MethodInfo GetMedicineCountToFullyHealInfo = AccessTools.Method(
 				typeof(Medicine), nameof(Medicine.GetMedicineCountToFullyHeal));
+			MethodInfo GetCarriedThingInfo = AccessTools.Property(
+				typeof(Pawn_CarryTracker), nameof(Pawn_CarryTracker.CarriedThing)).GetGetMethod();
 			FieldInfo countInfo = AccessTools.Field(
 				typeof(Job), nameof(Job.count));
 
+			bool branchNext = false;
+			bool branched = false;
 			foreach (CodeInstruction i in instructions)
 			{
+				if (branchNext)
+				{
+					yield return new CodeInstruction(OpCodes.Pop);//carriedthing
+					yield return new CodeInstruction(OpCodes.Ldc_I4_0);//false
+					branchNext = false;
+					branched = true;
+				}
+
 				if (i.opcode == OpCodes.Call && i.operand == GetMedicineCountToFullyHealInfo)
 				{
 					yield return new CodeInstruction(OpCodes.Pop);//pawn
@@ -164,6 +176,11 @@ namespace SmartMedicine
 				}
 				else
 					yield return i;
+
+				if (!branched && i.opcode == OpCodes.Callvirt && i.operand == GetCarriedThingInfo)
+				{
+					branchNext = true;
+				}
 			}
 		}
 	}
@@ -372,6 +389,18 @@ namespace SmartMedicine
 					}
 				}
 
+				//Check if any minimal medicine exists
+				float minimalRating = allMeds.MinBy(m => m.rating).rating;
+				if (bestMed.rating == minimalRating)
+				{
+					GetMedicineCountToFullyHeal_Patch.__beep_beep_MinimalMedicineAvailable = false;
+					Log.Message("No minimal medicine available");
+				}
+				int count = Medicine.GetMedicineCountToFullyHeal(patient);
+
+				JobOnThing_Patch.medCount = count;
+				Log.Message("FindBestMedicine count = " + count);
+
 				if (bestMed.pawn == null)
 				{
 					bestMed.DebugLog("Best Med on ground:");
@@ -379,25 +408,12 @@ namespace SmartMedicine
 				}
 				else
 				{
-
 					// because The Toil to get this medicine is FailOnDespawnedNullOrForbidden
 					// And Medicine in inventory is despawned
 					// You can't set the job to use already carried medicine.
 					// Editing the toil would be more difficult.
 					// But we can drop it so the normal job picks it back it  ¯\_(ツ)_/¯ 
 					bestMed.DebugLog("Best Med on hand: ");
-
-					//Check if any minimal medicine exists
-					float minimalRating = allMeds.MinBy(m => m.rating).rating;
-					if (bestMed.rating == minimalRating)
-					{
-						GetMedicineCountToFullyHeal_Patch.__beep_beep_MinimalMedicineAvailable = false;
-						Log.Message("No minimal medicine available");
-					}
-					int count = Medicine.GetMedicineCountToFullyHeal(patient);
-
-					JobOnThing_Patch.medCount = count;
-					Log.Message("FindBestMedicine count = " + count);
 
 					//Drop it!
 					int dropCount = Mathf.Min(bestMed.thing.stackCount, count);
