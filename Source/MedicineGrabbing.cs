@@ -132,11 +132,11 @@ namespace SmartMedicine
 				job.targetB = droppedMedicine;
 				if (droppedMedicine.IsForbidden(healer))
 					Log.Message(droppedMedicine + " is Forbidden, job will restart");
-
-				Log.Message("Okay, doing reservations");
-				if (!healer.Reserve(job.targetB.Thing, job, FindBestMedicine.maxPawns, needCount, null))
-					Verse.Log.Warning("Needed medicine " + droppedMedicine + " for " + healer + " was dropped onto a reserved stack. Job will fail and try again, so ignore the error please.");
 			}
+
+			Log.Message("Okay, doing reservations");
+			if (!healer.Reserve(job.targetB.Thing, job, FindBestMedicine.maxPawns, needCount))
+				Verse.Log.Warning("Needed medicine " + droppedMedicine + " for " + healer + " was dropped onto a reserved stack. Job will fail and try again, so ignore the error please.");
 		}
 	}
 
