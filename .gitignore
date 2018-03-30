@@ -1,6 +1,6 @@
 .vs
 *.cache
 Source/obj
-/Assemblies/SmartMedicine.dll
+/Assemblies/*
 /About/About.xml
 *.csproj.user
