@@ -12,6 +12,30 @@ using Harmony;
 
 namespace SmartMedicine
 {
+
+	[HarmonyPatch(typeof(WorkGiver_Tend))]
+	[HarmonyPatch("JobOnThing")]
+	public static class JobOnThing_Patch
+	{
+		public static int medCount = 0;
+		//Stupid re-write because I want count.
+		//public override Job JobOnThing(Pawn pawn, Thing t, bool forced = false)
+		public static bool Prefix(Pawn pawn, Thing t, ref Job __result)
+		{
+			medCount = 0;
+			Pawn patient = t as Pawn;
+			Thing thing = null;
+			if (Medicine.GetMedicineCountToFullyHeal(patient) > 0)
+				thing = HealthAIUtility.FindBestMedicine(pawn, patient);
+
+			Log.Message("JobOnThing count = " + medCount);
+			__result = new Job(JobDefOf.TendPatient, patient, thing)
+			{ count = medCount };
+
+			return false;
+		}
+	}
+
 	[HarmonyPatch(typeof(Medicine))]
 	[HarmonyPatch("GetMedicineCountToFullyHeal")]
 	static class GetMedicineCountToFullyHeal_Patch
@@ -47,6 +71,8 @@ namespace SmartMedicine
 			}
 		}
 
+		// beep beep warning static bool hacks
+		public static bool __beep_beep_MinimalMedicineAvailable = true;
 		//Filter time-sensitive injuries
 		public static void FilterForUrgentInjuries(List<Hediff> hediffs)
 		{
@@ -54,11 +80,12 @@ namespace SmartMedicine
 			{
 				hediffs.RemoveAll(h => !h.IsUrgent());
 			}
-			else if (Settings.Get().minimalMedicineForNonUrgent)
+			else if (Settings.Get().minimalMedicineForNonUrgent && __beep_beep_MinimalMedicineAvailable)
 			{
 				if (hediffs.Any(h => h.IsUrgent()))
 					hediffs.RemoveAll(h => !h.IsUrgent());
 			}
+			__beep_beep_MinimalMedicineAvailable = true;
 		}
 
 		public static bool IsUrgent(this Hediff h)
@@ -86,18 +113,16 @@ namespace SmartMedicine
 
 			if (medicineToDrop == null || medicineToDrop.holdingOwner == null) return;
 
-			//job.count is not set properly so here we go again:
-			int count = Medicine.GetMedicineCountToFullyHeal(patient);
-			int needCount = Mathf.Min(medicineToDrop.stackCount, count);
+			int needCount = Mathf.Min(medicineToDrop.stackCount, job.count);
 			Thing droppedMedicine = null;
 			if (medicineToDrop.holdingOwner.Owner is Pawn_InventoryTracker holder)
 			{
-				Log.Message(holder.pawn + " dropping " + medicineToDrop);
+				Log.Message(holder.pawn + " dropping " + medicineToDrop + "x" + needCount);
 				holder.innerContainer.TryDrop(medicineToDrop, ThingPlaceMode.Direct, needCount, out droppedMedicine);
 			}
 			else if (medicineToDrop.holdingOwner.Owner is Pawn_CarryTracker carrier)
 			{
-				Log.Message(carrier.pawn + " dropping " + medicineToDrop);
+				Log.Message(carrier.pawn + " dropping carried " + medicineToDrop + "x" + needCount);
 				carrier.innerContainer.TryDrop(medicineToDrop, ThingPlaceMode.Direct, needCount, out droppedMedicine);
 			}
 
@@ -111,6 +136,77 @@ namespace SmartMedicine
 				Log.Message("Okay, doing reservations");
 				if (!healer.Reserve(job.targetB.Thing, job, FindBestMedicine.maxPawns, needCount, null))
 					Verse.Log.Warning("Needed medicine " + droppedMedicine + " for " + healer + " was dropped onto a reserved stack. Job will fail and try again, so ignore the error please.");
+			}
+		}
+	}
+
+
+	//[HarmonyPatch(typeof(Toils_Tend), "PickupMedicine")]
+	//[HarmonyPatch("<PickupMedicine>c__AnonStorey0", "<>m__0")]
+	static class PickupMedicine_Patch
+	{
+		//Insert FilterForUrgentHediffs when counting needed medicine
+		public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+		{
+			MethodInfo GetMedicineCountToFullyHealInfo = AccessTools.Method(
+				typeof(Medicine), nameof(Medicine.GetMedicineCountToFullyHeal));
+			FieldInfo countInfo = AccessTools.Field(
+				typeof(Job), nameof(Job.count));
+
+			foreach (CodeInstruction i in instructions)
+			{
+				if (i.opcode == OpCodes.Call && i.operand == GetMedicineCountToFullyHealInfo)
+				{
+					yield return new CodeInstruction(OpCodes.Pop);//pawn
+					
+					yield return new CodeInstruction(OpCodes.Ldloc_1);//job
+					yield return new CodeInstruction(OpCodes.Ldfld, countInfo);//job.count
+				}
+				else
+					yield return i;
+			}
+		}
+	}
+
+
+	//[HarmonyPatch(typeof(JobDriver_TendPatient), "MakeNewToils")]
+	static class MakeNewToils_Patch
+	{
+		//Insert FilterForUrgentHediffs when counting needed medicine
+		public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+		{
+			LocalBuilder localCountInfo = generator.DeclareLocal(typeof(int));
+			LocalBuilder localJobInfo = generator.DeclareLocal(typeof(Job));
+
+			MethodInfo GetMedicineCountToFullyHealInfo = AccessTools.Method(
+				typeof(Medicine), nameof(Medicine.GetMedicineCountToFullyHeal));
+			FieldInfo jobFieldInfo = AccessTools.Field(
+				typeof(JobDriver), nameof(JobDriver.job));
+			FieldInfo jobCountInfo = AccessTools.Field(
+				typeof(Job), nameof(Job.count));
+
+			MethodInfo JumpToToilInfo = AccessTools.Method(
+				typeof(JobDriver), nameof(JobDriver.JumpToToil));
+
+			foreach (CodeInstruction i in instructions)
+			{
+				yield return i;
+				if (i.opcode == OpCodes.Call && i.operand == GetMedicineCountToFullyHealInfo)
+				{
+					yield return new CodeInstruction(OpCodes.Stloc, localCountInfo);
+					yield return new CodeInstruction(OpCodes.Ldloc, localCountInfo);
+				}
+				if(i.opcode == OpCodes.Ldfld && i.operand == jobFieldInfo)
+				{
+					yield return new CodeInstruction(OpCodes.Stloc, localJobInfo);
+					yield return new CodeInstruction(OpCodes.Ldloc, localJobInfo);
+				}
+				if (i.opcode == OpCodes.Call && i.operand == JumpToToilInfo)
+				{
+					yield return new CodeInstruction(OpCodes.Ldloc, localJobInfo);
+					yield return new CodeInstruction(OpCodes.Ldloc, localCountInfo);
+					yield return new CodeInstruction(OpCodes.Stfld, jobCountInfo);
+				}
 			}
 		}
 	}
@@ -188,15 +284,13 @@ namespace SmartMedicine
 					Log.Message("Sufficient medicine for non-urgent care is " + sufficientQuality);
 				}
 			}
-			
-			int count = Medicine.GetMedicineCountToFullyHeal(patient);
 
 			//Ground
 			Map map = patient.Map;
 			TraverseParms traverseParams = TraverseParms.For(healer, Danger.Deadly, TraverseMode.ByPawn, false);
 			Predicate<Thing> validator = (Thing t) =>
 			map.reachability.CanReach(patient.Position, t, PathEndMode.ClosestTouch, traverseParams)
-			&& !t.IsForbidden(healer) && patient.playerSettings.medCare.AllowsMedicine(t.def) && healer.CanReserve(t, FindBestMedicine.maxPawns, count);
+			&& !t.IsForbidden(healer) && patient.playerSettings.medCare.AllowsMedicine(t.def) && healer.CanReserve(t, FindBestMedicine.maxPawns, 1);
 			Func<Thing, float> priorityGetter = (Thing t) => MedicineRating(t, sufficientQuality);
 			List<Thing> groundMedicines = patient.Map.listerThings.ThingsInGroup(ThingRequestGroup.Medicine).FindAll(t => validator(t));
 
@@ -291,6 +385,18 @@ namespace SmartMedicine
 					// Editing the toil would be more difficult.
 					// But we can drop it so the normal job picks it back it  ¯\_(ツ)_/¯ 
 					bestMed.DebugLog("Best Med on hand: ");
+
+					//Check if any minimal medicine exists
+					float minimalRating = allMeds.MinBy(m => m.rating).rating;
+					if (bestMed.rating == minimalRating)
+					{
+						GetMedicineCountToFullyHeal_Patch.__beep_beep_MinimalMedicineAvailable = false;
+						Log.Message("No minimal medicine available");
+					}
+					int count = Medicine.GetMedicineCountToFullyHeal(patient);
+
+					JobOnThing_Patch.medCount = count;
+					Log.Message("FindBestMedicine count = " + count);
 
 					//Drop it!
 					int dropCount = Mathf.Min(bestMed.thing.stackCount, count);
@@ -387,7 +493,7 @@ namespace SmartMedicine
 
 		private static int DistanceTo(Thing t, Thing t1, Thing t2)
 		{
-			return DistanceTo(t, t1) +  DistanceTo(t, t2);
+			return DistanceTo(t, t1) + DistanceTo(t, t2);
 		}
 	}
 }
