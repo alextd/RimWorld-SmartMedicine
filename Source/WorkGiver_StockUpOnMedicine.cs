@@ -49,12 +49,12 @@ namespace SmartMedicine
 
 		public override Job NonScanJob(Pawn pawn)
 		{
-			Thing toReturn = StockUpUtility.CanReturn(pawn);
+			Thing toReturn = StockUpUtility.ThingToReturn(pawn);
 			if(toReturn == null) return null;
 			
 			int dropCount = -StockUpUtility.Needs(pawn, toReturn);
 			if (StoreUtility.TryFindBestBetterStoreCellFor(toReturn, pawn, pawn.Map, StoragePriority.Unstored, pawn.Faction, out IntVec3 dropLoc, true))
-				return new Job(SmartMedicineJobDefOf.StockDownOnMedicine, dropLoc, toReturn) { count = dropCount };
+				return new Job(SmartMedicineJobDefOf.StockDownOnMedicine, toReturn, dropLoc) { count = dropCount };
 			return null;
 		}
 	}
@@ -98,7 +98,7 @@ namespace SmartMedicine
 			return capacity - invCount;
 		}
 
-		public static Thing CanReturn(Pawn pawn)
+		public static Thing ThingToReturn(Pawn pawn)
 		{
 			if (pawn.inventory == null) return null;
 

@@ -7,25 +7,20 @@ using UnityEngine;
 
 namespace SmartMedicine
 {
-	public class JobDriver_StockUpOnMedicine : JobDriver
+	//Just custom job need to do this for the job.count
+	public class JobDriver_StockUpOnMedicine : JobDriver_TakeInventory
 	{
 		public override bool TryMakePreToilReservations()
 		{
 			return this.pawn.Reserve(job.targetA, job, FindBestMedicine.maxPawns, job.count);
 		}
-
-		protected override IEnumerable<Toil> MakeNewToils()
-		{
-			yield return Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.ClosestTouch).FailOnDespawnedNullOrForbidden(TargetIndex.A);
-			yield return Toils_Haul.TakeToInventory(TargetIndex.A, job.count);
-		}
 	}
 
-	public class JobDriver_StockDownOnMedicine : JobDriver
+	public class JobDriver_StockDownOnMedicine : JobDriver_HaulToCell
 	{
 		public override bool TryMakePreToilReservations()
 		{
-			return this.pawn.Reserve(job.targetA, job);
+			return this.pawn.Reserve(job.targetB, job);
 		}
 
 		protected override IEnumerable<Toil> MakeNewToils()
@@ -36,7 +31,7 @@ namespace SmartMedicine
 				{
 					Pawn actor = this.pawn;
 					Job curJob = this.job;
-					Thing thing = curJob.GetTarget(TargetIndex.B).Thing;
+					Thing thing = curJob.GetTarget(TargetIndex.A).Thing;
 					int dropCount = curJob.count;
 					int carriedCount = actor.carryTracker.CarriedThing?.stackCount ?? 0;
 					if (dropCount == 0 && carriedCount > 0)
@@ -59,8 +54,8 @@ namespace SmartMedicine
 			};
 
 			yield return carryToil;
-			yield return Toils_Goto.GotoThing(TargetIndex.A, PathEndMode.ClosestTouch).FailOnForbidden(TargetIndex.A);
-			yield return Toils_Haul.PlaceHauledThingInCell(TargetIndex.A, carryToil, true);
+			yield return Toils_Haul.CarryHauledThingToCell(TargetIndex.B);
+			yield return Toils_Haul.PlaceHauledThingInCell(TargetIndex.B, carryToil, true);
 		}
 	}
 }
