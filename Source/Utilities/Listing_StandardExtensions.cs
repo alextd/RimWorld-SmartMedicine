@@ -5,9 +5,8 @@ using System.Text;
 using UnityEngine;
 using Verse;
 
-namespace SmartMedicine
+namespace TD.Utilities
 {
-
 	public static class Listing_StandardExtensions
 	{
 		public static void SliderLabeled(this Listing_Standard ls, string label, ref int val, string format, float min = 0f, float max = 100f, string tooltip = null)

@@ -5,7 +5,7 @@ using System.Text;
 using Verse;
 using Verse.AI;
 
-namespace SmartMedicine
+namespace TD.Utilities
 {
 	public static class ReservationUtility
 	{

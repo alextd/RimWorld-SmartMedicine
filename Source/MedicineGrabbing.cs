@@ -8,11 +8,10 @@ using UnityEngine;
 using Verse;
 using Verse.AI;
 using Harmony;
-
+using TD.Utilities;
 
 namespace SmartMedicine
 {
-
 	[HarmonyPatch(typeof(WorkGiver_Tend))]
 	[HarmonyPatch("JobOnThing")]
 	public static class JobOnThing_Patch
