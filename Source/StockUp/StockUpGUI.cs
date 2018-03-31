@@ -264,7 +264,7 @@ namespace SmartMedicine
 				{
 					int count = pawn.StockUpCount(td);
 					string dummyStr = "" + count;
-					Widgets.TextFieldNumeric<int>(countRect, ref count, ref dummyStr, 1, 9999);
+					Widgets.TextFieldNumeric<int>(countRect, ref count, ref dummyStr, 0, 9999);
 					pawn.SetStockCount(td, count);
 				}
 			}

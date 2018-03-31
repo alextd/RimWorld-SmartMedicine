@@ -75,7 +75,7 @@ namespace SmartMedicine
 		public static bool Missing(this Pawn pawn, Thing thing) => pawn.Missing(thing.def);
 		public static bool Missing(this Pawn pawn, ThingDef thingDef)
 		{
-			if (!pawn.StockingUpOn(thingDef)) return false;
+			if (!pawn.StockingUpOn(thingDef) || pawn.StockUpCount(thingDef) == 0) return false;
 			return !pawn.inventory.innerContainer.Contains(thingDef);
 		}
 
