@@ -24,11 +24,7 @@ namespace SmartMedicine
 		public bool downgradeExcessiveMedicine = true;
 		public float goodEnoughDowngradeFactor = 1.0f;
 
-		public bool stockUpOnMedicine = false;
-		public bool stockUpPerPawn = false;
-		public int stockUpCapacity = 6;
-		//public List<ThingDef> stockUpList;
-		public List<int> stockUpListByIndex = new List<int>();
+		public bool stockUp = true;
 
 		public bool fieldTendingForLackOfBed = false;
 		public bool fieldTendingAlways = false;
@@ -90,43 +86,8 @@ namespace SmartMedicine
 			}
 			options.Gap();
 
-
-			options.CheckboxLabeled("Doctors stock up medicine in their inventory", ref stockUpOnMedicine, "A new job (WorkGiver) for doctors: gather medicine to their inventory, and keep it around for tending");
-			if(stockUpOnMedicine)
-			{
-				options.CheckboxLabeled("Settings for each pawn (on gear tab)", ref stockUpPerPawn);
-				if (!stockUpPerPawn)
-				{
-					options.SliderLabeled("How much medicine to hold:", ref stockUpCapacity, "{0}", 0, 75);
-					float iconSize = Text.LineHeight * 2;
-					Rect rowIcon = options.GetRect(iconSize);
-					Widgets.Label(rowIcon, "Stock up on these Medicines:");
-
-					//foreach (ThingDef td in StockUpUtility.medList)
-					for (int i = 0; i < StockUpUtility.medList.Count; i++)
-					{
-						ThingDef td = StockUpUtility.medList[i];
-
-						//bool included = stockUpList.Contains(td);
-						bool included = stockUpListByIndex.Contains(i);
-						Rect rectIcon = rowIcon.RightPartPixels(iconSize);
-						rowIcon.xMax -= iconSize + 3;
-
-						Widgets.DrawHighlightIfMouseover(rectIcon);
-						Widgets.ThingIcon(rectIcon, td);
-						if (Widgets.ButtonInvisible(rectIcon, false))
-						{
-							if (included)
-								//stockUpList.Add(td);
-								stockUpListByIndex.Remove(i);
-							else
-								//stockUpList.Remove(td);
-								stockUpListByIndex.Add(i);
-						}
-						if (!included) Widgets.DrawTextureFitted(rectIcon, Widgets.CheckboxOffTex, 1.0f);
-					}
-				}
-			}
+			options.CheckboxLabeled("Stock Up on Things", ref stockUp);
+			options.Label("Stock Up settings are in the colonist's Gear Tab");
 			options.Gap();
 
 
@@ -157,18 +118,11 @@ namespace SmartMedicine
 			Scribe_Values.Look(ref noMedicineForNonUrgent, "noMedicineForNonUrgent", false);
 			Scribe_Values.Look(ref downgradeExcessiveMedicine, "downgradeExcessiveMedicine", true);
 			Scribe_Values.Look(ref goodEnoughDowngradeFactor, "goodEnoughDowngradeFactor", 1.0f);
-
-			Scribe_Values.Look(ref stockUpOnMedicine, "stockUpOnMedicine", false);
-			Scribe_Values.Look(ref stockUpPerPawn, "stockUpPerPawn", false);
-			Scribe_Values.Look(ref stockUpCapacity, "stockUpCapacity", 6);
-			//Scribe_Collections.Look(ref stockUpList, "stockUpList");	//why doesn't this work for List<ThingDef>
-			Scribe_Collections.Look(ref stockUpListByIndex, "stockUpList");
+			
+			Scribe_Values.Look(ref stockUp, "stockUp", false);
 
 			Scribe_Values.Look(ref fieldTendingForLackOfBed, "fieldTendingForLackOfBed", false);
 			Scribe_Values.Look(ref fieldTendingAlways, "fieldTendingAlways", false);
-
-			if (stockUpListByIndex == null)
-				stockUpListByIndex = new List<int>();
 		}
 	}
 }
