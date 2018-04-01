@@ -57,9 +57,9 @@ namespace SmartMedicine
 			return pawn.StockingUpOn(thingDef) ? pawn.StockUpSettings()[thingDef] : 0;
 		}
 
-		public static int Needs(this Pawn pawn, Thing thing) => pawn.Needs(thing.def);
+		public static int StockUpNeeds(this Pawn pawn, Thing thing) => pawn.StockUpNeeds(thing.def);
 
-		public static int Needs(this Pawn pawn, ThingDef thingDef)
+		public static int StockUpNeeds(this Pawn pawn, ThingDef thingDef)
 		{
 			if (!pawn.StockingUpOn(thingDef)) return 0;
 
@@ -72,26 +72,26 @@ namespace SmartMedicine
 			return capacity - invCount;
 		}
 
-		public static bool Missing(this Pawn pawn, Thing thing) => pawn.Missing(thing.def);
-		public static bool Missing(this Pawn pawn, ThingDef thingDef)
+		public static bool StockUpMissing(this Pawn pawn, Thing thing) => pawn.StockUpMissing(thing.def);
+		public static bool StockUpMissing(this Pawn pawn, ThingDef thingDef)
 		{
 			if (!pawn.StockingUpOn(thingDef) || pawn.StockUpCount(thingDef) == 0) return false;
 			return !pawn.inventory.innerContainer.Contains(thingDef);
 		}
 
-		public static Thing ThingToReturn(this Pawn pawn)
+		public static Thing StockUpThingToReturn(this Pawn pawn)
 		{
 			if (pawn.inventory == null) return null;
 
-			ThingDef td = pawn.StockUpSettings().FirstOrDefault(kvp => pawn.Needs(kvp.Key) < 0).Key;
+			ThingDef td = pawn.StockUpSettings().FirstOrDefault(kvp => pawn.StockUpNeeds(kvp.Key) < 0).Key;
 			if (td == null) return null;
 
 			return pawn.inventory.innerContainer.FirstOrDefault(t => t.def == td);
 		}
 
-		public static bool IsAtFullStock(this Pawn pawn)
+		public static bool StockUpIsFull(this Pawn pawn)
 		{
-			return !pawn.StockUpSettings().Any(kvp => Needs(pawn, kvp.Key) != 0);
+			return !pawn.StockUpSettings().Any(kvp => StockUpNeeds(pawn, kvp.Key) != 0);
 		}
 	}
 }

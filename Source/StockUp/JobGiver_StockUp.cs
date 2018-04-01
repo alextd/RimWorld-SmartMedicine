@@ -11,52 +11,35 @@ namespace SmartMedicine
 	[DefOf]
 	public static class SmartMedicineJobDefOf
 	{
-		public static JobDef StockUpOnMedicine;
-		public static JobDef StockDownOnMedicine;
+		public static JobDef StockUp;
+		public static JobDef StockDown;
 	}
 
-	public class WorkGiver_StockUpOnMedicine : WorkGiver_Scanner
+	public class JobGiver_StockUp : ThinkNode_JobGiver
 	{
-		public override PathEndMode PathEndMode => PathEndMode.ClosestTouch;
-
-		public override IEnumerable<Thing> PotentialWorkThingsGlobal(Pawn pawn)
+		protected override Job TryGiveJob(Pawn pawn)
 		{
-			return pawn.Map.listerThings.AllThings.Where(t => t.def.EverHaulable && pawn.StockingUpOn(t));
-		}
+			if (pawn.StockUpIsFull()) return null;
 
-		public override bool ShouldSkip(Pawn pawn)
-		{
-			return pawn.IsAtFullStock();
-		}
+			if (pawn.Map.mapPawns.AllPawnsSpawned.Any(p => HealthAIUtility.ShouldBeTendedNow(p)))
+				return null;
 
-		public override bool HasJobOnThing(Pawn pawn, Thing thing, bool forced = false)
-		{
-			if (MassUtility.CountToPickUpUntilOverEncumbered(pawn, thing) == 0)
+			IEnumerable<Thing> things = pawn.Map.listerThings.ThingsInGroup(ThingRequestGroup.HaulableEver);
+			Predicate<Thing> validator = (Thing t) => pawn.StockingUpOn(t) && pawn.StockUpNeeds(t) > 0 && pawn.CanReserve(t, FindBestMedicine.maxPawns, 1) && !t.IsForbidden(pawn);
+			Thing thing = GenClosest.ClosestThingReachable(pawn.Position, pawn.Map, ThingRequest.ForGroup(ThingRequestGroup.HaulableEver), PathEndMode.ClosestTouch, TraverseParms.For(pawn), 9999, validator);
+			if (thing != null)
 			{
-				JobFailReason.Is("TooHeavy".Translate());
-				return false;
+				int pickupCount = Math.Min(pawn.StockUpNeeds(thing), MassUtility.CountToPickUpUntilOverEncumbered(pawn, thing));
+				if (pickupCount > 0)
+					return new Job(SmartMedicineJobDefOf.StockUp, thing) { count = pickupCount};
 			}
-			int needCount = pawn.Needs(thing);
-			return needCount > 0 && pawn.CanReserve(thing, FindBestMedicine.maxPawns, needCount, null, forced);
-		}
-
-		public override Job JobOnThing(Pawn pawn, Thing thing, bool forced = false)
-		{
-			int needCount = pawn.Needs(thing);
-			if (needCount == 0) return null;
-
-			needCount = Math.Min(needCount, MassUtility.CountToPickUpUntilOverEncumbered(pawn, thing));
-			return new Job(SmartMedicineJobDefOf.StockUpOnMedicine, thing) { count = needCount };
-		}
-
-		public override Job NonScanJob(Pawn pawn)
-		{
-			Thing toReturn = pawn.ThingToReturn();
+			
+			Thing toReturn = pawn.StockUpThingToReturn();
 			if (toReturn == null) return null;
 
-			int dropCount = -pawn.Needs(toReturn);
+			int dropCount = -pawn.StockUpNeeds(toReturn);
 			if (StoreUtility.TryFindBestBetterStoreCellFor(toReturn, pawn, pawn.Map, StoragePriority.Unstored, pawn.Faction, out IntVec3 dropLoc, true))
-				return new Job(SmartMedicineJobDefOf.StockDownOnMedicine, toReturn, dropLoc) { count = dropCount };
+				return new Job(SmartMedicineJobDefOf.StockDown, toReturn, dropLoc) { count = dropCount };
 			return null;
 		}
 	}

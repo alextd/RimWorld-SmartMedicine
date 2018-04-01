@@ -4,19 +4,20 @@ using RimWorld;
 using Verse;
 using Verse.AI;
 using UnityEngine;
+using TD.Utilities;
 
 namespace SmartMedicine
 {
-	//Just custom job need to do this for the job.count
-	public class JobDriver_StockUpOnMedicine : JobDriver_TakeInventory
+	//Custom job just to reserve job.count
+	public class JobDriver_StockUp : JobDriver_TakeInventory
 	{
 		public override bool TryMakePreToilReservations()
 		{
-			return this.pawn.Reserve(job.targetA, job, FindBestMedicine.maxPawns, job.count);
+			return this.pawn.ReserveAsMuchAsPossible(job.targetA, job, FindBestMedicine.maxPawns, job.count) > 0;
 		}
 	}
 
-	public class JobDriver_StockDownOnMedicine : JobDriver_HaulToCell
+	public class JobDriver_StockDown : JobDriver_HaulToCell
 	{
 		public override bool TryMakePreToilReservations()
 		{
@@ -58,4 +59,8 @@ namespace SmartMedicine
 			yield return Toils_Haul.PlaceHauledThingInCell(TargetIndex.B, carryToil, true);
 		}
 	}
+
+	//backward compat
+	public class JobDriver_StockUpOnMedicine : JobDriver_StockUp { }
+	public class JobDriver_StockDownOnMedicine : JobDriver_StockDown { }
 }

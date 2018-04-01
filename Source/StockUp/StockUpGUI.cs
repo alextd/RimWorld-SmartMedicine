@@ -120,7 +120,7 @@ namespace SmartMedicine
 
 			foreach (ThingDef def in DefDatabase<ThingDef>.AllDefsListForReading)
 			{
-				if (pawn.Missing(def))
+				if (pawn.StockUpMissing(def))
 					DrawMissingThingRow(pawn, ref y, width, def);
 			}
 			DrawStockUpButton(pawn, ref y, width);
