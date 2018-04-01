@@ -20,10 +20,10 @@ namespace SmartMedicine
 		protected override Job TryGiveJob(Pawn pawn)
 		{
 			if (pawn.StockUpIsFull()) return null;
-
-			if (pawn.Map.mapPawns.AllPawnsSpawned.Any(p => HealthAIUtility.ShouldBeTendedNow(p)))
+			
+			if (pawn.Map.mapPawns.AllPawnsSpawned.Any(p => HealthAIUtility.ShouldBeTendedNow(p) && pawn.CanReserveAndReach(p, PathEndMode.ClosestTouch, Danger.Deadly)))
 				return null;
-
+			
 			IEnumerable<Thing> things = pawn.Map.listerThings.ThingsInGroup(ThingRequestGroup.HaulableEver);
 			Predicate<Thing> validator = (Thing t) => pawn.StockingUpOn(t) && pawn.StockUpNeeds(t) > 0 && pawn.CanReserve(t, FindBestMedicine.maxPawns, 1) && !t.IsForbidden(pawn);
 			Thing thing = GenClosest.ClosestThingReachable(pawn.Position, pawn.Map, ThingRequest.ForGroup(ThingRequestGroup.HaulableEver), PathEndMode.ClosestTouch, TraverseParms.For(pawn), 9999, validator);
