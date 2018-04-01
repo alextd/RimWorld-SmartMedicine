@@ -48,6 +48,9 @@ namespace SmartMedicine
 			MethodInfo LabelInfo = AccessTools.Method(typeof(Widgets), nameof(Widgets.Label),
 				new Type[] { typeof(Rect), typeof(string) });
 
+			MethodInfo IsNutritionGivingIngestibleInfo = AccessTools.Property(typeof(ThingDef), nameof(ThingDef.IsNutritionGivingIngestible)).GetGetMethod();
+			MethodInfo IsIngestibleInfo = AccessTools.Property(typeof(ThingDef), nameof(ThingDef.IsIngestible)).GetGetMethod();
+
 			MethodInfo AddStockTextInfo = AccessTools.Method(typeof(DrawThingRow_Patch), nameof(DrawThingRow_Patch.AddStockText),
 				new Type[] { typeof(Pawn), typeof(Thing), typeof(string) });
 			MethodInfo AddIncDecButtonInfo = AccessTools.Method(typeof(DrawThingRow_Patch), nameof(DrawThingRow_Patch.AddIncDecButton),
@@ -56,7 +59,9 @@ namespace SmartMedicine
 			bool setStr = false;
 			foreach (CodeInstruction i in instructions)
 			{
-				yield return i;
+				if(i.opcode == OpCodes.Callvirt && i.operand == IsNutritionGivingIngestibleInfo)
+					yield return new CodeInstruction(OpCodes.Callvirt, IsIngestibleInfo);
+				else yield return i;
 
 				//stloc.s str1
 				if (!setStr && i.opcode == OpCodes.Stloc_S && i.operand is LocalBuilder lb && lb.LocalIndex == textIndex)
