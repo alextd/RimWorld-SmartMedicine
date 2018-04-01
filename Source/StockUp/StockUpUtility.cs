@@ -79,6 +79,12 @@ namespace SmartMedicine
 			return !pawn.inventory.innerContainer.Contains(thingDef);
 		}
 
+		public static void StockUpStop(this Pawn pawn, Thing thing) => pawn.StockUpStop(thing.def);
+		public static void StockUpStop(this Pawn pawn, ThingDef thingDef)
+		{
+			pawn.StockUpSettings().Remove(thingDef);
+		}
+
 		public static Thing StockUpThingToReturn(this Pawn pawn)
 		{
 			if (pawn.inventory == null) return null;

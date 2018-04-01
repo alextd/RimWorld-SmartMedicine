@@ -170,6 +170,19 @@ namespace SmartMedicine
 		}
 	}
 
+	[HarmonyPatch(typeof(ITab_Pawn_Gear), "InterfaceDrop")]
+	//private void InterfaceDrop(Thing t)
+	public static class InterfaceDrop_Patch
+	{
+		public static void Postfix(Thing t, ITab_Pawn_Gear __instance)
+		{
+			PropertyInfo SelPawnForGearInfo = AccessTools.Property(typeof(ITab_Pawn_Gear), "SelPawnForGear");
+			Pawn pawn = (Pawn)SelPawnForGearInfo.GetValue(__instance, new object[] { });
+
+			pawn.StockUpStop(t);
+		}
+	}
+
 	public class Dialog_StockUp : Window
 	{
 		private Pawn pawn;
@@ -255,7 +268,7 @@ namespace SmartMedicine
 					}
 					else
 					{
-						pawn.StockUpSettings().Remove(td);
+						pawn.StockUpStop(td);
 						doIt = false;
 					}
 				}
