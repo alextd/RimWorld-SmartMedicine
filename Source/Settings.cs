@@ -120,7 +120,7 @@ namespace SmartMedicine
 			Scribe_Values.Look(ref downgradeExcessiveMedicine, "downgradeExcessiveMedicine", true);
 			Scribe_Values.Look(ref goodEnoughDowngradeFactor, "goodEnoughDowngradeFactor", 1.0f);
 			
-			Scribe_Values.Look(ref stockUp, "stockUp", false);
+			Scribe_Values.Look(ref stockUp, "stockUp", true);
 
 			Scribe_Values.Look(ref fieldTendingForLackOfBed, "fieldTendingForLackOfBed", false);
 			Scribe_Values.Look(ref fieldTendingAlways, "fieldTendingAlways", false);
