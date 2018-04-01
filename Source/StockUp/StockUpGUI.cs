@@ -42,11 +42,16 @@ namespace SmartMedicine
 		{
 			IList<LocalVariableInfo> locals = mb.GetMethodBody().LocalVariables;
 			int textIndex = locals.First(l => l.LocalType == typeof(string)).LocalIndex;
+			int labelRectIndex = 4;
 
 			MethodInfo SelPawnForGearInfo = AccessTools.Property(typeof(ITab_Pawn_Gear), "SelPawnForGear").GetGetMethod(true);
+			MethodInfo LabelInfo = AccessTools.Method(typeof(Widgets), nameof(Widgets.Label),
+				new Type[] { typeof(Rect), typeof(string) });
 
 			MethodInfo AddStockTextInfo = AccessTools.Method(typeof(DrawThingRow_Patch), nameof(DrawThingRow_Patch.AddStockText),
 				new Type[] { typeof(Pawn), typeof(Thing), typeof(string) });
+			MethodInfo AddIncDecButtonInfo = AccessTools.Method(typeof(DrawThingRow_Patch), nameof(DrawThingRow_Patch.AddIncDecButton),
+				new Type[] { typeof(Pawn), typeof(Thing), typeof(Rect) });
 
 			bool setStr = false;
 			foreach (CodeInstruction i in instructions)
@@ -65,6 +70,14 @@ namespace SmartMedicine
 
 					setStr = true;
 				}
+				else if (i.opcode == OpCodes.Call && i.operand == LabelInfo)
+				{
+					yield return new CodeInstruction(OpCodes.Ldarg_0);//this
+					yield return new CodeInstruction(OpCodes.Call, SelPawnForGearInfo);//this.SelPawnForGearInfo
+					yield return new CodeInstruction(OpCodes.Ldarg_3);//thing
+					yield return new CodeInstruction(OpCodes.Ldloc_S, labelRectIndex);// labelRect
+					yield return new CodeInstruction(OpCodes.Call, AddIncDecButtonInfo);//AddIncDecButton(pawn, thing, rect)
+				}
 			}
 		}
 
@@ -76,6 +89,27 @@ namespace SmartMedicine
 
 			return text + String.Format(" / {0}", pawn.StockUpCount(thingDef));
 		}
+
+		public static void AddIncDecButton(Pawn pawn, Thing thing, Rect rect) =>
+			AddIncDecButton(pawn, thing.def, rect);
+		public static void AddIncDecButton(Pawn pawn, ThingDef thingDef, Rect rect)
+		{
+			if (!pawn.StockingUpOn(thingDef)) return;
+
+			Rect iconRect = rect.RightPartPixels(rect.height);
+			if (Widgets.ButtonImage(iconRect, TexButton.ReorderDown))
+				pawn.SetStockCount(thingDef, pawn.StockUpCount(thingDef) - 1);
+
+			iconRect.x -= iconRect.width;
+			if (Widgets.ButtonImage(iconRect, TexButton.ReorderUp))
+				pawn.SetStockCount(thingDef, pawn.StockUpCount(thingDef) + 1);
+		}
+	}
+	[StaticConstructorOnStartup]
+	public static class TexButton
+	{
+		public static readonly Texture2D ReorderUp = ContentFinder<Texture2D>.Get("UI/Buttons/ReorderUp", true);
+		public static readonly Texture2D ReorderDown = ContentFinder<Texture2D>.Get("UI/Buttons/ReorderDown", true);
 	}
 
 
@@ -154,6 +188,9 @@ namespace SmartMedicine
 			Text.WordWrap = false;
 			Widgets.Label(textRect, text.Truncate(textRect.width, null));
 			Text.WordWrap = true;
+
+			DrawThingRow_Patch.AddIncDecButton(pawn, thingDef, textRect);
+
 			y += 28f;
 		}
 
