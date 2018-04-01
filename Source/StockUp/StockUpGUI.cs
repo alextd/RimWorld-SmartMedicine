@@ -102,12 +102,13 @@ namespace SmartMedicine
 			if (!pawn.StockingUpOn(thingDef)) return;
 
 			Rect iconRect = rect.RightPartPixels(rect.height);
-			if (Widgets.ButtonImage(iconRect, TexButton.ReorderDown))
-				pawn.SetStockCount(thingDef, pawn.StockUpCount(thingDef) - 1);
+			int count = pawn.StockUpCount(thingDef);
+			if (count > 0 && Widgets.ButtonImage(iconRect, TexButton.ReorderDown))
+				pawn.SetStockCount(thingDef, count - 1);
 
 			iconRect.x -= iconRect.width;
 			if (Widgets.ButtonImage(iconRect, TexButton.ReorderUp))
-				pawn.SetStockCount(thingDef, pawn.StockUpCount(thingDef) + 1);
+				pawn.SetStockCount(thingDef, count + 1);
 		}
 	}
 	[StaticConstructorOnStartup]
