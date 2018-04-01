@@ -164,6 +164,20 @@ namespace SmartMedicine
 			DrawStockUpButton(pawn, ref y, width);
 		}
 
+		public static void DrawStockUpButton(Pawn pawn, ref float y, float width)
+		{
+			if (!Settings.Get().stockUp) return;
+
+			GUI.color = ThingLabelColor;
+
+			Rect rect = new Rect(width / 3, y, width / 3, 28f);
+
+			if (Widgets.ButtonText(rect, "Stock Up Settings"))
+				Find.WindowStack.Add(new Dialog_StockUp(pawn));
+
+			y += 28f;
+		}
+
 		//From ITab_Pawn_Gear:
 		private static readonly Color ThingLabelColor = new Color(0.9f, 0.9f, 0.9f, 1f);
 		private static readonly Color HighlightColor = new Color(0.5f, 0.5f, 0.5f, 1f);
@@ -194,18 +208,6 @@ namespace SmartMedicine
 			Text.WordWrap = true;
 
 			DrawThingRow_Patch.AddIncDecButton(pawn, thingDef, textRect);
-
-			y += 28f;
-		}
-
-		public static void DrawStockUpButton(Pawn pawn, ref float y, float width)
-		{
-			GUI.color = ThingLabelColor;
-
-			Rect rect = new Rect(width / 3, y, width / 3, 28f);
-
-			if (Widgets.ButtonText(rect, "Stock Up Settings"))
-				Find.WindowStack.Add(new Dialog_StockUp(pawn));
 
 			y += 28f;
 		}
