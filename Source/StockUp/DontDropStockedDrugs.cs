@@ -38,7 +38,7 @@ namespace SmartMedicine.StockUp
 					yield return new CodeInstruction(OpCodes.Ldarg_1);//pawn
 					yield return new CodeInstruction(OpCodes.Ldloc_3);//thing
 					yield return new CodeInstruction(OpCodes.Call, StockingUpInfo);//pawn.StockingUpOn(thing)
-					yield return new CodeInstruction(OpCodes.Brtrue, i.operand); //again
+					yield return new CodeInstruction(OpCodes.Brtrue, i.operand);
 					nextLineIsBranch = false;
 				}
 			}
