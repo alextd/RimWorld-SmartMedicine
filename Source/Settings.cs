@@ -87,7 +87,7 @@ namespace SmartMedicine
 			}
 			options.Gap();
 
-			options.CheckboxLabeled("Stock Up on Things", ref stockUp);
+			options.CheckboxLabeled("Stock Up on medicine & drugs", ref stockUp);
 			options.Label("Stock Up settings are in the colonist's Gear Tab");
 			options.Gap();
 

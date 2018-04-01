@@ -219,6 +219,8 @@ namespace SmartMedicine
 	{
 		public static void Postfix(Thing t, ITab_Pawn_Gear __instance)
 		{
+			if (!Settings.Get().stockUp) return;
+
 			PropertyInfo SelPawnForGearInfo = AccessTools.Property(typeof(ITab_Pawn_Gear), "SelPawnForGear");
 			Pawn pawn = (Pawn)SelPawnForGearInfo.GetValue(__instance, new object[] { });
 

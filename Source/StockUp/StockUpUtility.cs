@@ -40,7 +40,7 @@ namespace SmartMedicine
 
 		public static bool StockingUpOn(this Pawn pawn, ThingDef thingDef)
 		{
-			if (pawn.inventory == null) return false;
+			if (!Settings.Get().stockUp || pawn.inventory == null) return false;
 
 			return pawn.StockUpSettings().ContainsKey(thingDef);
 		}
@@ -87,7 +87,7 @@ namespace SmartMedicine
 
 		public static Thing StockUpThingToReturn(this Pawn pawn)
 		{
-			if (pawn.inventory == null) return null;
+			if (!Settings.Get().stockUp || pawn.inventory == null) return null;
 
 			ThingDef td = pawn.StockUpSettings().FirstOrDefault(kvp => pawn.StockUpNeeds(kvp.Key) < 0).Key;
 			if (td == null) return null;
@@ -97,6 +97,8 @@ namespace SmartMedicine
 
 		public static bool StockUpIsFull(this Pawn pawn)
 		{
+			if (!Settings.Get().stockUp) return true;
+
 			return !pawn.StockUpSettings().Any(kvp => StockUpNeeds(pawn, kvp.Key) != 0);
 		}
 	}
