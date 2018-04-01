@@ -12,8 +12,6 @@ using RimWorld;
 
 namespace SmartMedicine
 {
-
-
 	//private void CleanupCurrentJob(JobCondition condition, bool releaseReservations, bool cancelBusyStancesSoft = true)
 	[HarmonyPatch(typeof(Pawn_JobTracker), "CleanupCurrentJob")]
 	public static class CleanupCurrentJob_Patch
