@@ -1,0 +1,14 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <StockUp.reportString>(SP)stocking up on TargetA</StockUp.reportString>
+  <StockDown.reportString>(SP)putting back TargetA</StockDown.reportString>
+
+
+  <!-- Backward compat -->
+
+  <StockUpOnMedicine.reportString>(SP)stocking up on TargetA</StockUpOnMedicine.reportString>
+  <StockDownOnMedicine.reportString>(SP)putting back TargetA</StockDownOnMedicine.reportString>
+
+
+</LanguageData>
