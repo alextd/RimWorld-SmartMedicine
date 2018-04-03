@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <SettingDoctorInv>Usar medicinas del inventario del doctor</SettingDoctorInv>
+  <SettingPatientInv>Usar medicinas del inventario del paciente</SettingPatientInv>
+  <SettingNearby>... Pero use medicamento cercano (si tiene la misma calidad)</SettingNearby>
+  <SettingNearbyDesc>Esto también verifica si hay medicamentos en el camino hacia el paciente (según la distancia aproximadamente, no segun la ruta real)</SettingNearbyDesc>
+  <SettingNearbyDist>Qué tan lejos deben caminar para encontrar medicina cercana</SettingNearbyDist>
+  <SpacesFormat>{0:0} celdas</SpacesFormat>
+  <SettingNearbyDistDesc>Esto es solo ante una posible privación de encontrar medicina en el inventario: Si no hay medicamentos en el inventario, caminarán hasta los extremos del mapa para recoger los medicamentos.</SettingNearbyDistDesc>
+  <SettingOtherInv>Sacar la medicina del inventario de colonos cercanos</SettingOtherInv>
+  <SettingAnimalInv>Sacar la medicina del inventario de animales cercanos</SettingAnimalInv>
+  <SettingOtherAnyDist>... No importa qué tan lejos esté</SettingOtherAnyDist>
+  <SettingOtherAnyDistDesc>Verifica el uso de mejores medicamentos que se encuentren más lejos, pero a costa de caminar hasta ellos</SettingOtherAnyDistDesc>
+  <SettingOtherDist>Qué tan lejos caminar para obtenerlos</SettingOtherDist>
+  <SettingMinimal>Use el mínimo de medicamentos para cuidados no urgentes</SettingMinimal>
+  <SettingMinimalDesc>Atención de urgencia es cualquier enfermedad o lesiones con hemorragia con posibilidad de infección o efectos permanentes; guarde un medicamento valioso o de calidad solo para estos casos</SettingMinimalDesc>
+  <SettingNoMed>Sin medicamentos para cuidados no urgentes</SettingNoMed>
+  <SettingNoMedDesc>Igual que arriba, pero sin medicamentos, cada lesión se trata de a una sola por vez</SettingNoMedDesc>
+  <SettingDowngrade>Baja la medicina si es suficiente</SettingDowngrade>
+  <SettingDowngradeDesc>Calcula si la medicina menor funcionará igual de bien, debido a la habilidad del médico, la biónica, camas médicas, etc.</SettingDowngradeDesc>
+  <SettingGoodEnough>... incluir medicina que sea lo suficientemente buena:</SettingGoodEnough>
+  <SettingStockUp>Abastecerse de medicina &amp; drogas</SettingStockUp>
+  <SettingStockUpDesc>La configuración de stock está en la pestaña Gear del colono</SettingStockUpDesc>
+  <SettingFieldTendingNoBeds>Los médicos tratarán a los pacientes aún si no hay camas disponibles</SettingFieldTendingNoBeds>
+  <SettingFieldTendingNoBedsDesc>El paciente debe estar descansando, derribado o reclutado, para ser tratado</SettingFieldTendingNoBedsDesc>
+  <SettingFieldTendingAlways>Los médicos siempre pueden atender, con o sin cama</SettingFieldTendingAlways>
+  <SettingFieldTendingAlwaysDesc>Los colonos priorizarán ir a la cama, pero usted puede reclutar pacientes para mantenerlos en su lugar.</SettingFieldTendingAlwaysDesc>
+  <SmartMedicine>Smart Medicine</SmartMedicine>
+  <StockUpSettings>Configuracion de surtido</StockUpSettings>
+  <StockUpSettingsForPawn>Configuracion de surtido para {0}</StockUpSettingsForPawn>
+
+</LanguageData>
