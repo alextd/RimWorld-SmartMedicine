@@ -46,57 +46,57 @@ namespace SmartMedicine
 		{
 			var options = new Listing_Standard();
 			options.Begin(wrect);
-			options.CheckboxLabeled("Use medicine from doctor's inventory", ref useDoctorMedicine);
-			options.CheckboxLabeled("Use medicine from patient's inventory", ref usePatientMedicine);
+			options.CheckboxLabeled("SettingDoctorInv".Translate(), ref useDoctorMedicine);
+			options.CheckboxLabeled("SettingPatientInv".Translate(), ref usePatientMedicine);
 			if (useDoctorMedicine || usePatientMedicine)
 			{
-				options.CheckboxLabeled("... But use nearby medicine (if same quality)", ref useCloseMedicine, "This also checks for medicine on the way to the patient (roughly based on distance, not actual path)");
+				options.CheckboxLabeled("SettingNearby".Translate(), ref useCloseMedicine, "SettingNearbyDesc".Translate());
 				if (useCloseMedicine)
 				{
-					options.SliderLabeled("How far to walk to find nearby medicine", ref distanceToUseEqualOnGround, "{0:0} spaces", 0, 99, "This is only an override for inventory medicine - if there is no inventory medicine, they will walk to the ends of the map to pick up medicine");
+					options.SliderLabeled("SettingNearbyDist".Translate(), ref distanceToUseEqualOnGround, "SpacesFormat".Translate(), 0, 99, "SettingNearbyDistDesc".Translate());
 				}
 			}
 			options.Gap();
 
 
-			options.CheckboxLabeled("Drop medicine from nearby colonist's inventory", ref useColonistMedicine);
-			options.CheckboxLabeled("Drop medicine from nearby animal's inventory", ref useAnimalMedicine);
+			options.CheckboxLabeled("SettingOtherInv".Translate(), ref useColonistMedicine);
+			options.CheckboxLabeled("SettingAnimalInv".Translate(), ref useAnimalMedicine);
 			if (useColonistMedicine || useAnimalMedicine)
 			{
-				options.CheckboxLabeled("... No matter how far away", ref useOtherEvenIfFar, "Check to use better medicine from someone else far away, but at the cost of walking to it");
+				options.CheckboxLabeled("SettingOtherAnyDist".Translate(), ref useOtherEvenIfFar, "SettingOtherAnyDistDesc".Translate());
 				if (!useOtherEvenIfFar)
-					options.SliderLabeled("How far to walk to get it", ref distanceToUseFromOther, "{0:0} spaces", 0, 99);
+					options.SliderLabeled("SettingOtherDist".Translate(), ref distanceToUseFromOther, "SpacesFormat".Translate(), 0, 99);
 			}
 			options.Gap();
 
 
-			options.CheckboxLabeled("Use minimal medicine for non-urgent care", ref minimalMedicineForNonUrgent,
-				"Urgent care is any disease, or injuries with bleeding, infection chance, or permanent effects - save valuable medicine for these only");
+			options.CheckboxLabeled("SettingMinimal".Translate(), ref minimalMedicineForNonUrgent,
+				"SettingMinimalDesc".Translate());
 			if (minimalMedicineForNonUrgent) noMedicineForNonUrgent = false;
 
-			options.CheckboxLabeled("No medicine for non-urgent care", ref noMedicineForNonUrgent,
-				"Same as above, but without medicine, each injury is treated one at a time");
+			options.CheckboxLabeled("SettingNoMed".Translate(), ref noMedicineForNonUrgent,
+				"SettingNoMedDesc".Translate());
 			if (noMedicineForNonUrgent) minimalMedicineForNonUrgent = false;
 
-			options.CheckboxLabeled("Downgrade medicine if sufficient", ref downgradeExcessiveMedicine, "Calculate if lesser medicine will do just as well, due to doctor skill, bionics, medical beds, etc");
+			options.CheckboxLabeled("SettingDowngrade".Translate(), ref downgradeExcessiveMedicine, "SettingDowngradeDesc".Translate());
 			if (downgradeExcessiveMedicine)
 			{
 				goodEnoughDowngradeFactor *= 100;
-				options.SliderLabeled("... include medicine that is good enough:", ref goodEnoughDowngradeFactor, "{0:0}%", 0, 100, "For example, if Herbal Medicine does 90% as good a job as Normal, use Herbal instead");
+				options.SliderLabeled("SettingGoodEnough".Translate(), ref goodEnoughDowngradeFactor, "{0:0}%", 0, 100, "For example, if Herbal Medicine does 90% as good a job as Normal, use Herbal instead");
 				goodEnoughDowngradeFactor /= 100;
 			}
 			options.Gap();
 
-			options.CheckboxLabeled("Stock Up on medicine & drugs", ref stockUp);
-			options.Label("Stock Up settings are in the colonist's Gear Tab");
+			options.CheckboxLabeled("SettingStockUp".Translate(), ref stockUp);
+			options.Label("SettingStockUpDesc".Translate());
 			options.Gap();
 
 
-			options.CheckboxLabeled("Doctors will treat patients if no beds are available", ref fieldTendingForLackOfBed, "The patient must be resting, downed, or drafted to target");
+			options.CheckboxLabeled("SettingFieldTendingNoBeds".Translate(), ref fieldTendingForLackOfBed, "SettingFieldTendingNoBedsDesc".Translate());
 			if (fieldTendingForLackOfBed)
 				fieldTendingAlways = false; 
 
-			options.CheckboxLabeled("Doctors can always tend, with or without a bed", ref fieldTendingAlways, "Colonists will prioritize going to a bed, but you may draft patients to keep them in place.");
+			options.CheckboxLabeled("SettingFieldTendingAlways".Translate(), ref fieldTendingAlways, "SettingFieldTendingAlwaysDesc".Translate());
 			if (fieldTendingAlways)
 				fieldTendingForLackOfBed = false;
 

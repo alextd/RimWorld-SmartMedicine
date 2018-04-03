@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+	
+	<SettingDoctorInv>Use medicine from doctor's inventory</SettingDoctorInv>
+	<SettingPatientInv>Use medicine from patient's inventory</SettingPatientInv>
+	<SettingNearby>... But use nearby medicine (if same quality)</SettingNearby>
+	<SettingNearbyDesc>This also checks for medicine on the way to the patient (roughly based on distance, not actual path)</SettingNearbyDesc>
+	<SettingNearbyDist>How far to walk to find nearby medicine</SettingNearbyDist>
+	<SpacesFormat>{0:0} spaces</SpacesFormat>
+	<SettingNearbyDistDesc>This is only an override for inventory medicine - if there is no inventory medicine, they will walk to the ends of the map to pick up medicine</SettingNearbyDistDesc>
+	<SettingOtherInv>Drop medicine from nearby colonist's inventory</SettingOtherInv>
+	<SettingAnimalInv>Drop medicine from nearby animal's inventory</SettingAnimalInv>
+	<SettingOtherAnyDist>... No matter how far away</SettingOtherAnyDist>
+	<SettingOtherAnyDistDesc>Check to use better medicine from someone else far away, but at the cost of walking to it</SettingOtherAnyDistDesc>
+	<SettingOtherDist>How far to walk to get it</SettingOtherDist>
+	<SettingMinimal>Use minimal medicine for non-urgent care</SettingMinimal>
+	<SettingMinimalDesc>Urgent care is any disease, or injuries with bleeding, infection chance, or permanent effects - save valuable medicine for these only</SettingMinimalDesc>
+	<SettingNoMed>No medicine for non-urgent care</SettingNoMed>
+	<SettingNoMedDesc>Same as above, but without medicine, each injury is treated one at a time</SettingNoMedDesc>
+	<SettingDowngrade>Downgrade medicine if sufficient</SettingDowngrade>
+	<SettingDowngradeDesc>Calculate if lesser medicine will do just as well, due to doctor skill, bionics, medical beds, etc</SettingDowngradeDesc>
+	<SettingGoodEnough>... include medicine that is good enough:</SettingGoodEnough>
+	<SettingStockUp>Stock Up on medicine &amp; drugs</SettingStockUp>
+	<SettingStockUpDesc>Stock Up settings are in the colonist's Gear Tab</SettingStockUpDesc>
+	<SettingFieldTendingNoBeds>Doctors will treat patients if no beds are available</SettingFieldTendingNoBeds>
+	<SettingFieldTendingNoBedsDesc>The patient must be resting, downed, or drafted to target</SettingFieldTendingNoBedsDesc>
+	<SettingFieldTendingAlways>Doctors can always tend, with or without a bed</SettingFieldTendingAlways>
+	<SettingFieldTendingAlwaysDesc>Colonists will prioritize going to a bed, but you may draft patients to keep them in place.</SettingFieldTendingAlwaysDesc>
+	<SmartMedicine>Smart Medicine</SmartMedicine>
+	<StockUpSettings>Stock Up Settings</StockUpSettings>
+	<StockUpSettingsForPawn>Stock Up Settings for {0}</StockUpSettingsForPawn>
+	
+</LanguageData>
