@@ -172,7 +172,7 @@ namespace SmartMedicine
 
 			Rect rect = new Rect(width / 3, y, width / 3, 28f);
 
-			if (Widgets.ButtonText(rect, "Stock Up Settings"))
+			if (Widgets.ButtonText(rect, "StockUpSettings".Translate()))
 				Find.WindowStack.Add(new Dialog_StockUp(pawn));
 
 			y += 28f;
@@ -247,7 +247,7 @@ namespace SmartMedicine
 		public Dialog_StockUp(Pawn p)
 		{
 			pawn = p;
-			title = "Stock Up Settings for " + p.NameStringShort;
+			title = String.Format("StockUpSettingsForPawn".Translate(), p.NameStringShort);
 			//absorbInputAroundWindow = true;
 			closeOnEscapeKey = true;
 			doCloseX = true;

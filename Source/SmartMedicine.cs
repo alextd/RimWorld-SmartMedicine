@@ -43,7 +43,7 @@ namespace SmartMedicine
 
 		public override string SettingsCategory()
 		{
-			return "Smart Medicine";
+			return "SmartMedicine".Translate();
 		}
 	}
 }
