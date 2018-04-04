@@ -90,7 +90,12 @@ namespace SmartMedicine
 		{
 			if (!pawn.StockingUpOn(thingDef)) return text;
 
-			return text + String.Format(" / {0}", pawn.StockUpCount(thingDef));
+			string addedText = String.Format(" / {0}", pawn.StockUpCount(thingDef));
+
+			if (pawn.StockUpNeeds(thingDef) > 0 && !StockUpUtility.EnoughAvailable(thingDef, pawn.Map))
+				addedText += " " + "(Paused)";
+
+			return text + addedText;
 		}
 
 		public static void AddIncDecButton(Pawn pawn, Thing thing, Rect rect) =>
