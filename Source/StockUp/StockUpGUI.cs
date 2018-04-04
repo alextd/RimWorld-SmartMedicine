@@ -170,7 +170,7 @@ namespace SmartMedicine
 
 			GUI.color = ThingLabelColor;
 
-			Rect rect = new Rect(width / 3, y, width / 3, 28f);
+			Rect rect = new Rect(width / 4, y, width / 2, 28f);
 
 			if (Widgets.ButtonText(rect, "StockUpSettings".Translate()))
 				Find.WindowStack.Add(new Dialog_StockUp(pawn));
