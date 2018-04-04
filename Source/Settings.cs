@@ -26,6 +26,7 @@ namespace SmartMedicine
 		public float goodEnoughDowngradeFactor = 1.0f;
 
 		public bool stockUp = true;
+		public float stockUpEnough = 1.5f;
 
 		public bool fieldTendingForLackOfBed = false;
 		public bool fieldTendingAlways = false;
@@ -89,6 +90,7 @@ namespace SmartMedicine
 
 			options.CheckboxLabeled("SettingStockUp".Translate(), ref stockUp);
 			options.Label("SettingStockUpDesc".Translate());
+			options.SliderLabeled("Stock Up only if there's enough available:", ref stockUpEnough, "{0:P0}", 0, 5, "For example, at 150%, Stockpiles need to have enough for everyone to stock up to 100%, plus 50% extra");
 			options.Gap();
 
 
@@ -121,6 +123,7 @@ namespace SmartMedicine
 			Scribe_Values.Look(ref goodEnoughDowngradeFactor, "goodEnoughDowngradeFactor", 1.0f);
 			
 			Scribe_Values.Look(ref stockUp, "stockUp", true);
+			Scribe_Values.Look(ref stockUpEnough, "stockUpEnough", 1.5f);
 
 			Scribe_Values.Look(ref fieldTendingForLackOfBed, "fieldTendingForLackOfBed", false);
 			Scribe_Values.Look(ref fieldTendingAlways, "fieldTendingAlways", false);

@@ -100,11 +100,16 @@ namespace SmartMedicine
 
 			int capacity = pawn.StockUpCount(thingDef);
 
-			int invCount = pawn.inventory.innerContainer
+			int invCount = pawn.HasItemCount(thingDef);
+			return capacity - invCount;
+		}
+
+		public static int HasItemCount(this Pawn pawn, ThingDef thingDef)
+		{
+			return pawn.inventory.innerContainer
 				.Where(t => t.def == thingDef)
 				.Select(t => t.stackCount)
 				.Aggregate(0, (a, b) => a + b);
-			return capacity - invCount;
 		}
 
 		public static bool StockUpMissing(this Pawn pawn, Thing thing) => pawn.StockUpMissing(thing.def);
@@ -138,5 +143,23 @@ namespace SmartMedicine
 
 			return !pawn.StockUpSettings().Any(kvp => StockUpNeeds(pawn, kvp.Key) != 0);
 		}
+
+		public static bool StockUpEnoughAvailable(Thing thing) => StockUpEnoughAvailable(thing.def, thing.Map);
+		public static bool StockUpEnoughAvailable(ThingDef thingDef, Map map)
+		{
+			float enough = Settings.Get().stockUpEnough;
+			if (enough == 0.0f) return true;
+
+			float stockUpCount = 0;
+			float available = map.resourceCounter.GetCount(thingDef);
+			foreach (Pawn p in map.mapPawns.FreeColonistsSpawned)
+			{
+				stockUpCount += p.StockUpCount(thingDef);
+				available += p.HasItemCount(thingDef);
+			}
+			
+			return available >= stockUpCount * enough;
+		}
+
 	}
 }
