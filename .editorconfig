@@ -2,5 +2,6 @@
 root = true
 
 # 4 space indentation
-[*.cs]
+[*.cs,*.xml]
 indent_style = tab
+indent_size = 2
