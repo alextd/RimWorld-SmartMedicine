@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+	
+	<StockUp.reportString>stocking up on TargetA</StockUp.reportString>
+	<StockDown.reportString>putting back TargetA</StockDown.reportString>
+	<StockUpOnMedicine.reportString>stocking up on TargetA</StockUpOnMedicine.reportString>
+	<StockDownOnMedicine.reportString>putting back TargetA</StockDownOnMedicine.reportString>
+	
+</LanguageData>
