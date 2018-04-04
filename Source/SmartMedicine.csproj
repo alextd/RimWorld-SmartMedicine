@@ -53,12 +53,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\About\**" />
-    <None Include="..\Defs\**" />
-    <None Include="..\Languages\**" />
-    <None Include="..\Patches\**" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="**\*.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
