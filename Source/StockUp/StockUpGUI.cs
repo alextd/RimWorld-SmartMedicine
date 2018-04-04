@@ -184,7 +184,7 @@ namespace SmartMedicine
 			if (pawn.StockingUpOnAnything())
 			{
 				iconRect.x += 28f;
-				TooltipHandler.TipRegion(iconRect, "Clear All Stock Up Settings");
+				TooltipHandler.TipRegion(iconRect, "ClearStockUp".Translate());
 				if (Widgets.ButtonImage(iconRect, TexButton.Abandon))
 					pawn.StockUpClearSettings();
 			}
@@ -192,7 +192,7 @@ namespace SmartMedicine
 			iconRect.x = rect.x - 28f;
 			if (StockUpUtility.CopiedPawn() == pawn)
 			{
-				TooltipHandler.TipRegion(iconRect, String.Format("Cancel Copying Settings From {0}", pawn.NameStringShort));
+				TooltipHandler.TipRegion(iconRect, String.Format("CancelCopyStockUp".Translate(), pawn.NameStringShort));
 				if (Widgets.ButtonImage(iconRect, TexButton.Ignore))
 					StockUpUtility.StockUpCopySettings(null);
 			}
@@ -200,7 +200,7 @@ namespace SmartMedicine
 			{
 				if (StockUpUtility.CopiedPawn() != null)
 				{
-					TooltipHandler.TipRegion(iconRect, String.Format("Copy Stock Up Settings from {0}", StockUpUtility.CopiedPawn().NameStringShort));
+					TooltipHandler.TipRegion(iconRect, String.Format("CopyStockUpFrom".Translate(), StockUpUtility.CopiedPawn().NameStringShort));
 					if (Widgets.ButtonImage(iconRect, TexButton.Paste))
 						pawn.StockUpPasteSettings();
 				}

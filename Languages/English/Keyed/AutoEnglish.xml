@@ -29,5 +29,8 @@
 	<SmartMedicine>Smart Medicine</SmartMedicine>
 	<StockUpSettings>Stock Up Settings</StockUpSettings>
 	<StockUpSettingsForPawn>Stock Up Settings for {0}</StockUpSettingsForPawn>
+	<ClearStockUp>Clear All Stock Up Settings</ClearStockUp>
+	<CancelCopyStockUp>Cancel Copying Settings From {0}</CancelCopyStockUp>
+	<CopyStockUpFrom>Copy Stock Up Settings from {0}</CopyStockUpFrom>
 	
 </LanguageData>
