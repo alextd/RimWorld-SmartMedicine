@@ -114,6 +114,10 @@ namespace SmartMedicine
 	{
 		public static readonly Texture2D ReorderUp = ContentFinder<Texture2D>.Get("UI/Buttons/ReorderUp", true);
 		public static readonly Texture2D ReorderDown = ContentFinder<Texture2D>.Get("UI/Buttons/ReorderDown", true);
+		public static readonly Texture2D Copy = ContentFinder<Texture2D>.Get("UI/Buttons/Copy");
+		public static readonly Texture2D Paste = ContentFinder<Texture2D>.Get("UI/Buttons/Paste");
+		public static readonly Texture2D Ignore = Resources.Load<Texture2D>("Textures/UI/Icons/HostilityResponse/Ignore");
+		public static readonly Texture2D Abandon = ContentFinder<Texture2D>.Get("UI/Buttons/Abandon");
 	}
 
 
@@ -174,6 +178,36 @@ namespace SmartMedicine
 
 			if (Widgets.ButtonText(rect, "StockUpSettings".Translate()))
 				Find.WindowStack.Add(new Dialog_StockUp(pawn));
+
+
+			Rect iconRect = rect.RightPartPixels(28f);
+			if (pawn.StockingUpOnAnything())
+			{
+				iconRect.x += 28f;
+				TooltipHandler.TipRegion(iconRect, "Clear All Stock Up Settings");
+				if (Widgets.ButtonImage(iconRect, TexButton.Abandon))
+					pawn.StockUpClearSettings();
+			}
+
+			iconRect.x = rect.x - 28f;
+			if (StockUpUtility.CopiedPawn() == pawn)
+			{
+				TooltipHandler.TipRegion(iconRect, String.Format("Cancel Copying Settings From {0}", pawn.NameStringShort));
+				if (Widgets.ButtonImage(iconRect, TexButton.Ignore))
+					StockUpUtility.StockUpCopySettings(null);
+			}
+			else
+			{
+				if (StockUpUtility.CopiedPawn() != null)
+				{
+					TooltipHandler.TipRegion(iconRect, String.Format("Copy Stock Up Settings from {0}", StockUpUtility.CopiedPawn().NameStringShort));
+					if (Widgets.ButtonImage(iconRect, TexButton.Paste))
+						pawn.StockUpPasteSettings();
+				}
+				iconRect.x -= 28f;
+				if (pawn.StockingUpOnAnything() && Widgets.ButtonImage(iconRect, TexButton.Copy))
+					pawn.StockUpCopySettings();
+			}
 
 			y += 28f;
 		}

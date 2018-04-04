@@ -10,6 +10,7 @@ namespace SmartMedicine
 	public class SmartMedicineGameComp : GameComponent
 	{
 		public ExDictionary<Pawn, ExDictionary<ThingDef, int>> settings = new ExDictionary<Pawn, ExDictionary<ThingDef, int>>() { keyMode = LookMode.Reference };
+		public Pawn copiedPawn;
 
 		public SmartMedicineGameComp(Game game) { }
 
@@ -19,7 +20,12 @@ namespace SmartMedicine
 			settings.ExposeData();
 		}
 
-		public static Dictionary<Pawn, ExDictionary<ThingDef, int>> Get()
+		public static SmartMedicineGameComp Get()
+		{
+			return Current.Game.GetComponent<SmartMedicineGameComp>();
+		}
+
+		public static Dictionary<Pawn, ExDictionary<ThingDef, int>> Settings()
 		{
 			return Current.Game.GetComponent<SmartMedicineGameComp>().settings;
 		}
@@ -30,10 +36,39 @@ namespace SmartMedicine
 	{
 		public static Dictionary<ThingDef, int> StockUpSettings(this Pawn pawn)
 		{
-			Dictionary<Pawn, ExDictionary<ThingDef, int>> settings = SmartMedicineGameComp.Get();
+			var settings = SmartMedicineGameComp.Settings();
 			if (!settings.TryGetValue(pawn, out ExDictionary<ThingDef, int> pawnSettings))
 				settings[pawn] = pawnSettings = new ExDictionary<ThingDef, int>();
 			return pawnSettings;
+		}
+
+		public static void StockUpCopySettings(this Pawn pawn)
+		{
+			SmartMedicineGameComp.Get().copiedPawn = pawn;
+		}
+
+		public static void StockUpPasteSettings(this Pawn pawn)
+		{
+			Dictionary<Pawn, ExDictionary<ThingDef, int>> settings = SmartMedicineGameComp.Settings();
+			if (settings.ContainsKey(SmartMedicineGameComp.Get().copiedPawn))
+				settings[pawn] = new ExDictionary<ThingDef, int>(settings[SmartMedicineGameComp.Get().copiedPawn]);
+		}
+
+		public static Pawn CopiedPawn()
+		{
+			return SmartMedicineGameComp.Get().copiedPawn;
+		}
+
+		public static void StockUpClearSettings(this Pawn pawn)
+		{
+			SmartMedicineGameComp.Settings().Remove(pawn);
+			StockUpCopySettings(null);
+		}
+		public static bool StockingUpOnAnything(this Pawn pawn)
+		{
+			if (!Settings.Get().stockUp || pawn.inventory == null) return false;
+
+			return pawn.StockUpSettings().Count > 0;
 		}
 
 		public static bool StockingUpOn(this Pawn pawn, Thing thing) => pawn.StockingUpOn(thing.def);
@@ -83,6 +118,8 @@ namespace SmartMedicine
 		public static void StockUpStop(this Pawn pawn, ThingDef thingDef)
 		{
 			pawn.StockUpSettings().Remove(thingDef);
+			if(CopiedPawn() == pawn && !pawn.StockingUpOnAnything())
+				StockUpCopySettings(null);
 		}
 
 		public static Thing StockUpThingToReturn(this Pawn pawn)

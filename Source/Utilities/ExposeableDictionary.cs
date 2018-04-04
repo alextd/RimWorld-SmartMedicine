@@ -37,7 +37,11 @@ namespace TD.Utilities
 		public string exposeString = "dict";
 		public LookMode keyMode = LookMode.Undefined;
 		public LookMode valMode = LookMode.Undefined;
-
+		
+		public ExDictionary(Dictionary<K, V> otherDict) : this()
+		{
+			intDict = new Dictionary<K, V>(otherDict);
+		}
 		public ExDictionary(string s) : this()
 		{
 			exposeString = s;
