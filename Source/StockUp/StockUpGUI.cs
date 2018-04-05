@@ -40,6 +40,7 @@ namespace SmartMedicine
 		{
 			IList<LocalVariableInfo> locals = mb.GetMethodBody().LocalVariables;
 			int textIndex = locals.First(l => l.LocalType == typeof(string)).LocalIndex;
+			int tipIndex = locals.Where(l => l.LocalType == typeof(string)).Skip(1).First().LocalIndex;
 			int labelRectIndex = 4;
 
 			MethodInfo SelPawnForGearInfo = AccessTools.Property(typeof(ITab_Pawn_Gear), "SelPawnForGear").GetGetMethod(true);
@@ -51,18 +52,22 @@ namespace SmartMedicine
 
 			MethodInfo AddStockTextInfo = AccessTools.Method(typeof(DrawThingRow_Patch), nameof(DrawThingRow_Patch.AddStockText),
 				new Type[] { typeof(Pawn), typeof(Thing), typeof(string) });
+			MethodInfo AddStockTipInfo = AccessTools.Method(typeof(DrawThingRow_Patch), nameof(DrawThingRow_Patch.AddStockTip),
+				new Type[] { typeof(Pawn), typeof(Thing), typeof(string) });
 			MethodInfo AddIncDecButtonInfo = AccessTools.Method(typeof(DrawThingRow_Patch), nameof(DrawThingRow_Patch.AddIncDecButton),
 				new Type[] { typeof(Pawn), typeof(Thing), typeof(Rect) });
 
-			bool setStr = false;
+			bool setStr1 = false;
+			bool foundStr2 = false;
+			bool setStr2 = false;
 			foreach (CodeInstruction i in instructions)
 			{
-				if(i.opcode == OpCodes.Callvirt && i.operand == IsNutritionGivingIngestibleInfo)
+				if (i.opcode == OpCodes.Callvirt && i.operand == IsNutritionGivingIngestibleInfo)
 					yield return new CodeInstruction(OpCodes.Callvirt, IsIngestibleInfo);
 				else yield return i;
 
 				//stloc.s str1
-				if (!setStr && i.opcode == OpCodes.Stloc_S && i.operand is LocalBuilder lb && lb.LocalIndex == textIndex)
+				if (!setStr1 && i.opcode == OpCodes.Stloc_S && i.operand is LocalBuilder lb1 && lb1.LocalIndex == textIndex)
 				{
 					yield return new CodeInstruction(OpCodes.Ldarg_0);//this
 					yield return new CodeInstruction(OpCodes.Call, SelPawnForGearInfo);//this.SelPawnForGearInfo
@@ -71,7 +76,22 @@ namespace SmartMedicine
 					yield return new CodeInstruction(OpCodes.Call, AddStockTextInfo);//AddStockText(pawn, thing, text)
 					yield return new CodeInstruction(OpCodes.Stloc_S, textIndex);//text = AddStockText(pawn, thing, text);
 
-					setStr = true;
+					setStr1 = true;
+				}
+				if (!setStr2 && i.opcode == OpCodes.Stloc_S && i.operand is LocalBuilder lb2 && lb2.LocalIndex == tipIndex)
+				{
+					if (!foundStr2) foundStr2 = true;
+					else
+					{
+						yield return new CodeInstruction(OpCodes.Ldarg_0);//this
+						yield return new CodeInstruction(OpCodes.Call, SelPawnForGearInfo);//this.SelPawnForGearInfo
+						yield return new CodeInstruction(OpCodes.Ldarg_3);//thing
+						yield return new CodeInstruction(OpCodes.Ldloc_S, tipIndex);//text
+						yield return new CodeInstruction(OpCodes.Call, AddStockTipInfo);//AddStockText(pawn, thing, text)
+						yield return new CodeInstruction(OpCodes.Stloc_S, tipIndex);//text = AddStockText(pawn, thing, text);
+
+						setStr2 = true;
+					}
 				}
 				else if (i.opcode == OpCodes.Call && i.operand == LabelInfo)
 				{
@@ -94,6 +114,20 @@ namespace SmartMedicine
 
 			if (pawn.StockUpWants(thingDef) > 0 && !StockUpUtility.EnoughAvailable(thingDef, pawn.Map))
 				addedText += " " + "(Paused)";
+
+			return text + addedText;
+		}
+
+		public static string AddStockTip(Pawn pawn, Thing thing, string text) =>
+			AddStockTip(pawn, thing.def, text);
+		public static string AddStockTip(Pawn pawn, ThingDef thingDef, string text)
+		{
+			string addedText = "";
+			if (pawn.StockUpWants(thingDef) > 0 && !StockUpUtility.EnoughAvailable(thingDef, pawn.Map))
+				addedText = "Not enough available to stock up";
+
+			if (text != "" && addedText != "")
+				return text + "\n" + addedText;
 
 			return text + addedText;
 		}
@@ -245,6 +279,10 @@ namespace SmartMedicine
 			Text.WordWrap = false;
 			Widgets.Label(textRect, text.Truncate(textRect.width, null));
 			Text.WordWrap = true;
+
+			string tip = DrawThingRow_Patch.AddStockTip(pawn, thingDef, "");
+			if (tip != "")
+				TooltipHandler.TipRegion(textRect, tip);
 
 			DrawThingRow_Patch.AddIncDecButton(pawn, thingDef, textRect);
 
