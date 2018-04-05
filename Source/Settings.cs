@@ -84,15 +84,15 @@ namespace SmartMedicine
 			if (downgradeExcessiveMedicine)
 			{
 				goodEnoughDowngradeFactor *= 100;
-				options.SliderLabeled("SettingGoodEnough".Translate(), ref goodEnoughDowngradeFactor, "{0:0}%", 0, 100, "For example, if Herbal Medicine does 90% as good a job as Normal, use Herbal instead");
+				options.SliderLabeled("SettingGoodEnough".Translate(), ref goodEnoughDowngradeFactor, "{0:0}%", 0, 100, "SettingsGoodEnoughDesc".Translate());
 				goodEnoughDowngradeFactor /= 100;
 			}
 			options.Gap();
 
 			options.CheckboxLabeled("SettingStockUp".Translate(), ref stockUp);
 			options.Label("SettingStockUpDesc".Translate());
-			options.SliderLabeled("Stock Up only if there's enough available:", ref stockUpEnough, "{0:P0}", 0, 5, "For example, at 150%, Stockpiles need to have enough for everyone to stock up to 100%, plus 50% extra");
-			options.CheckboxLabeled("Return items if not enough available", ref stockUpReturn);
+			options.SliderLabeled("SettingStockUpEnough".Translate(), ref stockUpEnough, "{0:P0}", 0, 5, "SettingStockUpEnoughDesc".Translate());
+			options.CheckboxLabeled("SettingStockUpReturn".Translate(), ref stockUpReturn);
 			options.Gap();
 
 

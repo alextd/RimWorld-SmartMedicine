@@ -32,5 +32,11 @@
 	<ClearStockUp>Clear All Stock Up Settings</ClearStockUp>
 	<CancelCopyStockUp>Cancel Copying Settings From {0}</CancelCopyStockUp>
 	<CopyStockUpFrom>Copy Stock Up Settings from {0}</CopyStockUpFrom>
+	<SettingsGoodEnoughDesc>For example, if Herbal Medicine does 90% as good a job as Normal, use Herbal instead</SettingsGoodEnoughDesc>
+	<SettingStockUpEnough>Stock Up only if there's enough available:</SettingStockUpEnough>
+	<SettingStockUpEnoughDesc>For example, at 150%, Stockpiles need to have enough for everyone to stock up to 100%, plus 50% extra</SettingStockUpEnoughDesc>
+	<SettingStockUpReturn>Return items if not enough available</SettingStockUpReturn>
+	<Paused>Paused</Paused>
+	<NotEnoughStockUp>Not enough available to stock up</NotEnoughStockUp>
 	
 </LanguageData>

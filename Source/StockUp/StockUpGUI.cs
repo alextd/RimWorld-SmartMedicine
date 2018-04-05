@@ -113,7 +113,7 @@ namespace SmartMedicine
 			string addedText = String.Format(" / {0}", pawn.StockUpCount(thingDef));
 
 			if (pawn.StockUpWants(thingDef) > 0 && !StockUpUtility.EnoughAvailable(thingDef, pawn.Map))
-				addedText += " " + "(Paused)";
+				addedText += " (" + "Paused".Translate() + ")";
 
 			return text + addedText;
 		}
@@ -124,7 +124,7 @@ namespace SmartMedicine
 		{
 			string addedText = "";
 			if (pawn.StockUpWants(thingDef) > 0 && !StockUpUtility.EnoughAvailable(thingDef, pawn.Map))
-				addedText = "Not enough available to stock up";
+				addedText = "NotEnoughStockUp".Translate();
 
 			if (text != "" && addedText != "")
 				return text + "\n" + addedText;
