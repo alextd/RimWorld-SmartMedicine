@@ -92,7 +92,7 @@ namespace SmartMedicine
 
 			string addedText = String.Format(" / {0}", pawn.StockUpCount(thingDef));
 
-			if (pawn.StockUpNeeds(thingDef) > 0 && !StockUpUtility.EnoughAvailable(thingDef, pawn.Map))
+			if (pawn.StockUpWants(thingDef) > 0 && !StockUpUtility.EnoughAvailable(thingDef, pawn.Map))
 				addedText += " " + "(Paused)";
 
 			return text + addedText;

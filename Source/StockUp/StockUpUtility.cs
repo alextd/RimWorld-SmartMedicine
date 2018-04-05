@@ -101,7 +101,22 @@ namespace SmartMedicine
 			int capacity = pawn.StockUpCount(thingDef);
 
 			int invCount = pawn.HasItemCount(thingDef);
+
+			if (invCount > capacity) return capacity - invCount;
+
+			if (!EnoughAvailable(thingDef, pawn.Map))
+				return Settings.Get().stockUpReturn ? -invCount : 0;
+
 			return capacity - invCount;
+		}
+
+		public static int StockUpWants(this Pawn pawn, Thing thing) => pawn.StockUpWants(thing.def);
+
+		public static int StockUpWants(this Pawn pawn, ThingDef thingDef)
+		{
+			if (!pawn.StockingUpOn(thingDef)) return 0;
+
+			return pawn.StockUpCount(thingDef) - pawn.HasItemCount(thingDef);
 		}
 
 		public static int HasItemCount(this Pawn pawn, ThingDef thingDef)
@@ -141,11 +156,11 @@ namespace SmartMedicine
 		{
 			if (!Settings.Get().stockUp) return true;
 
-			return !pawn.StockUpSettings().Any(kvp => StockUpNeeds(pawn, kvp.Key) != 0);
+			return !pawn.StockUpSettings().Any(kvp => pawn.StockUpNeeds(kvp.Key) != 0);
 		}
 
-		public static bool StockUpEnoughAvailable(Thing thing) => StockUpEnoughAvailable(thing.def, thing.Map);
-		public static bool StockUpEnoughAvailable(ThingDef thingDef, Map map)
+		public static bool EnoughAvailable(Thing thing) => EnoughAvailable(thing.def, thing.Map);
+		public static bool EnoughAvailable(ThingDef thingDef, Map map)
 		{
 			float enough = Settings.Get().stockUpEnough;
 			if (enough == 0.0f) return true;
