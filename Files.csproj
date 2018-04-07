@@ -1,13 +1,11 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <OutputPath>.vs\unused\</OutputPath>
-  </PropertyGroup>
-  <PropertyGroup>
-		<BaseIntermediateOutputPath>.vs\unused\</BaseIntermediateOutputPath>
-  </PropertyGroup>
-  <PropertyGroup>
+    <BaseIntermediateOutputPath>.vs\unused\</BaseIntermediateOutputPath>
     <ProjectGuid>{AA1EF112-E817-4ED1-849A-EE55B8DAF3C0}</ProjectGuid>
+  </PropertyGroup>
+  <PropertyGroup>
+    <OutputPath>..\UseBedrolls - Release\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <None Include="About\**" />
@@ -17,7 +15,19 @@
     <None Include="Sounds\**" />
     <None Include="Textures\**" />
   </ItemGroup>
-	<Target Name="RMOBJ" AfterTargets="Build">
-    <RemoveDir Directories="obj"/>
-	</Target>
+  <Target Name="PostBuild" AfterTargets="Build">
+    <RemoveDir Directories="obj" />
+    <Exec WorkingDirectory="$(ProjectDir)" Command="$(PostBuildEvent)" />
+  </Target>
+  <Target Name="Clean" />
+  <Target Name="Rebuild" />
+  <PropertyGroup>
+    <PostBuildEvent>echo F|xcopy "$(ProjectDir)About\About-Release.xml" "$(OutputPath)About\About.xml" /C /Y /K /Q /D
+echo F|xcopy "$(ProjectDir)About\Preview.png" "$(OutputPath)About\Preview.png" /S /C /Y /K /Q /D
+xcopy "$(ProjectDir)Defs" "$(OutputPath)Defs" /S /C /Y /K  /I /Q /D
+xcopy "$(ProjectDir)Patches" "$(OutputPath)Patches" /S /C /Y /K  /I /Q /D
+xcopy "$(ProjectDir)Languages" "$(OutputPath)Languages" /S /C /Y /K  /I /Q /D
+xcopy "$(ProjectDir)Sounds" "$(OutputPath)Sounds" /S /C /Y /K  /I /Q /D
+xcopy "$(ProjectDir)Textures" "$(OutputPath)Textures" /S /C /Y /K /I /Q /D</PostBuildEvent>
+  </PropertyGroup>
 </Project>
