@@ -4,7 +4,10 @@
     <BaseIntermediateOutputPath>.vs\unused\</BaseIntermediateOutputPath>
     <ProjectGuid>{AA1EF112-E817-4ED1-849A-EE55B8DAF3C0}</ProjectGuid>
   </PropertyGroup>
-  <PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>.vs\unused\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <OutputPath>..\UseBedrolls - Release\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
@@ -22,12 +25,17 @@
   <Target Name="Clean" />
   <Target Name="Rebuild" />
   <PropertyGroup>
-    <PostBuildEvent>echo F|xcopy "$(ProjectDir)About\About-Release.xml" "$(OutputPath)About\About.xml" /C /Y /K /Q /D
+    <PostBuildEvent>if $(Configuration) == Release (
+echo F|xcopy "$(ProjectDir)About\About-Release.xml" "$(OutputPath)About\About.xml" /C /Y /K /Q /D
 echo F|xcopy "$(ProjectDir)About\Preview.png" "$(OutputPath)About\Preview.png" /S /C /Y /K /Q /D
 xcopy "$(ProjectDir)Defs" "$(OutputPath)Defs" /S /C /Y /K  /I /Q /D
 xcopy "$(ProjectDir)Patches" "$(OutputPath)Patches" /S /C /Y /K  /I /Q /D
 xcopy "$(ProjectDir)Languages" "$(OutputPath)Languages" /S /C /Y /K  /I /Q /D
 xcopy "$(ProjectDir)Sounds" "$(OutputPath)Sounds" /S /C /Y /K  /I /Q /D
-xcopy "$(ProjectDir)Textures" "$(OutputPath)Textures" /S /C /Y /K /I /Q /D</PostBuildEvent>
+xcopy "$(ProjectDir)Textures" "$(OutputPath)Textures" /S /C /Y /K /I /Q /D
+)</PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
   </PropertyGroup>
 </Project>
