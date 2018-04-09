@@ -8,7 +8,7 @@
     <OutputPath>.vs\unused\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-    <OutputPath>..\UseBedrolls - Release\</OutputPath>
+    <OutputPath>..\SmartMedicine - Release\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <None Include="About\**" />
