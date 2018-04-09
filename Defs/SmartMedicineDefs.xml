@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <Defs>
 
+	<ThinkTreeDef>
+		<defName>StockUpTree</defName>
+		<insertTag>Humanlike_PostDuty</insertTag>
+		<insertPriority>100</insertPriority>
+		<thinkRoot Class="SmartMedicine.JobGiver_StockUp" />
+	</ThinkTreeDef>
+
 	<JobDef>
 		<defName>StockUp</defName>
 		<driverClass>SmartMedicine.JobDriver_StockUp</driverClass>

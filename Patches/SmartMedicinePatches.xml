@@ -6,11 +6,4 @@
 			<suspendable>false</suspendable>
 		</value>
 	</Operation>
-	
-	<Operation Class="PatchOperationInsert">
-		<xpath>Defs/ThinkTreeDef[defName="Humanlike"]/thinkRoot[@Class="ThinkNode_Priority"]/subNodes/li[@Class="ThinkNode_ConditionalColonist"]/subNodes/li[@Class="ThinkNode_ConditionalNeedPercentageAbove"]</xpath>
-		<value>
-			<li Class="SmartMedicine.JobGiver_StockUp" />
-		</value>
-	</Operation>
 </Patch>
