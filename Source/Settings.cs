@@ -48,59 +48,59 @@ namespace SmartMedicine
 		{
 			var options = new Listing_Standard();
 			options.Begin(wrect);
-			options.CheckboxLabeled("SettingDoctorInv".Translate(), ref useDoctorMedicine);
-			options.CheckboxLabeled("SettingPatientInv".Translate(), ref usePatientMedicine);
+			options.CheckboxLabeled("TD.SettingDoctorInv".Translate(), ref useDoctorMedicine);
+			options.CheckboxLabeled("TD.SettingPatientInv".Translate(), ref usePatientMedicine);
 			if (useDoctorMedicine || usePatientMedicine)
 			{
-				options.CheckboxLabeled("SettingNearby".Translate(), ref useCloseMedicine, "SettingNearbyDesc".Translate());
+				options.CheckboxLabeled("TD.SettingNearby".Translate(), ref useCloseMedicine, "TD.SettingNearbyDesc".Translate());
 				if (useCloseMedicine)
 				{
-					options.SliderLabeled("SettingNearbyDist".Translate(), ref distanceToUseEqualOnGround, "SpacesFormat".Translate(), 0, 99, "SettingNearbyDistDesc".Translate());
+					options.SliderLabeled("TD.SettingNearbyDist".Translate(), ref distanceToUseEqualOnGround, "TD.SpacesFormat".Translate(), 0, 99, "TD.SettingNearbyDistDesc".Translate());
 				}
 			}
 			options.Gap();
 
 
-			options.CheckboxLabeled("SettingOtherInv".Translate(), ref useColonistMedicine);
-			options.CheckboxLabeled("SettingAnimalInv".Translate(), ref useAnimalMedicine);
+			options.CheckboxLabeled("TD.SettingOtherInv".Translate(), ref useColonistMedicine);
+			options.CheckboxLabeled("TD.SettingAnimalInv".Translate(), ref useAnimalMedicine);
 			if (useColonistMedicine || useAnimalMedicine)
 			{
-				options.CheckboxLabeled("SettingOtherAnyDist".Translate(), ref useOtherEvenIfFar, "SettingOtherAnyDistDesc".Translate());
+				options.CheckboxLabeled("TD.SettingOtherAnyDist".Translate(), ref useOtherEvenIfFar, "TD.SettingOtherAnyDistDesc".Translate());
 				if (!useOtherEvenIfFar)
-					options.SliderLabeled("SettingOtherDist".Translate(), ref distanceToUseFromOther, "SpacesFormat".Translate(), 0, 99);
+					options.SliderLabeled("TD.SettingOtherDist".Translate(), ref distanceToUseFromOther, "TD.SpacesFormat".Translate(), 0, 99);
 			}
 			options.Gap();
 
 
-			options.CheckboxLabeled("SettingMinimal".Translate(), ref minimalMedicineForNonUrgent,
-				"SettingMinimalDesc".Translate());
+			options.CheckboxLabeled("TD.SettingMinimal".Translate(), ref minimalMedicineForNonUrgent,
+				"TD.SettingMinimalDesc".Translate());
 			if (minimalMedicineForNonUrgent) noMedicineForNonUrgent = false;
 
-			options.CheckboxLabeled("SettingNoMed".Translate(), ref noMedicineForNonUrgent,
-				"SettingNoMedDesc".Translate());
+			options.CheckboxLabeled("TD.SettingNoMed".Translate(), ref noMedicineForNonUrgent,
+				"TD.SettingNoMedDesc".Translate());
 			if (noMedicineForNonUrgent) minimalMedicineForNonUrgent = false;
 
-			options.CheckboxLabeled("SettingDowngrade".Translate(), ref downgradeExcessiveMedicine, "SettingDowngradeDesc".Translate());
+			options.CheckboxLabeled("TD.SettingDowngrade".Translate(), ref downgradeExcessiveMedicine, "TD.SettingDowngradeDesc".Translate());
 			if (downgradeExcessiveMedicine)
 			{
 				goodEnoughDowngradeFactor *= 100;
-				options.SliderLabeled("SettingGoodEnough".Translate(), ref goodEnoughDowngradeFactor, "{0:0}%", 0, 100, "SettingsGoodEnoughDesc".Translate());
+				options.SliderLabeled("TD.SettingGoodEnough".Translate(), ref goodEnoughDowngradeFactor, "{0:0}%", 0, 100, "TD.SettingsGoodEnoughDesc".Translate());
 				goodEnoughDowngradeFactor /= 100;
 			}
 			options.Gap();
 
-			options.CheckboxLabeled("SettingStockUp".Translate(), ref stockUp);
-			options.Label("SettingStockUpDesc".Translate());
-			options.SliderLabeled("SettingStockUpEnough".Translate(), ref stockUpEnough, "{0:P0}", 0, 5, "SettingStockUpEnoughDesc".Translate());
-			options.CheckboxLabeled("SettingStockUpReturn".Translate(), ref stockUpReturn);
+			options.CheckboxLabeled("TD.SettingStockUp".Translate(), ref stockUp);
+			options.Label("TD.SettingStockUpDesc".Translate());
+			options.SliderLabeled("TD.SettingStockUpEnough".Translate(), ref stockUpEnough, "{0:P0}", 0, 5, "TD.SettingStockUpEnoughDesc".Translate());
+			options.CheckboxLabeled("TD.SettingStockUpReturn".Translate(), ref stockUpReturn);
 			options.Gap();
 
 
-			options.CheckboxLabeled("SettingFieldTendingNoBeds".Translate(), ref fieldTendingForLackOfBed, "SettingFieldTendingNoBedsDesc".Translate());
+			options.CheckboxLabeled("TD.SettingFieldTendingNoBeds".Translate(), ref fieldTendingForLackOfBed, "TD.SettingFieldTendingNoBedsDesc".Translate());
 			if (fieldTendingForLackOfBed)
 				fieldTendingAlways = false; 
 
-			options.CheckboxLabeled("SettingFieldTendingAlways".Translate(), ref fieldTendingAlways, "SettingFieldTendingAlwaysDesc".Translate());
+			options.CheckboxLabeled("TD.SettingFieldTendingAlways".Translate(), ref fieldTendingAlways, "TD.SettingFieldTendingAlwaysDesc".Translate());
 			if (fieldTendingAlways)
 				fieldTendingForLackOfBed = false;
 

@@ -113,7 +113,7 @@ namespace SmartMedicine
 			string addedText = String.Format(" / {0}", pawn.StockUpCount(thingDef));
 
 			if (pawn.StockUpWants(thingDef) > 0 && !StockUpUtility.EnoughAvailable(thingDef, pawn.Map))
-				addedText += " (" + "Paused".Translate() + ")";
+				addedText += " (" + "TD.Paused".Translate() + ")";
 
 			return text + addedText;
 		}
@@ -124,7 +124,7 @@ namespace SmartMedicine
 		{
 			string addedText = "";
 			if (pawn.StockUpWants(thingDef) > 0 && !StockUpUtility.EnoughAvailable(thingDef, pawn.Map))
-				addedText = "NotEnoughStockUp".Translate();
+				addedText = "TD.NotEnoughStockUp".Translate();
 
 			if (text != "" && addedText != "")
 				return text + "\n" + addedText;
@@ -215,7 +215,7 @@ namespace SmartMedicine
 
 			Rect rect = new Rect(width / 4, y, width / 2, 28f);
 
-			if (Widgets.ButtonText(rect, "StockUpSettings".Translate()))
+			if (Widgets.ButtonText(rect, "TD.StockUpSettings".Translate()))
 				Find.WindowStack.Add(new Dialog_StockUp(pawn));
 
 
@@ -223,7 +223,7 @@ namespace SmartMedicine
 			if (pawn.StockingUpOnAnything())
 			{
 				iconRect.x += 28f;
-				TooltipHandler.TipRegion(iconRect, "ClearStockUp".Translate());
+				TooltipHandler.TipRegion(iconRect, "TD.ClearStockUp".Translate());
 				if (Widgets.ButtonImage(iconRect, TexButton.Abandon))
 					pawn.StockUpClearSettings();
 			}
@@ -231,7 +231,7 @@ namespace SmartMedicine
 			iconRect.x = rect.x - 28f;
 			if (StockUpUtility.CopiedPawn() == pawn)
 			{
-				TooltipHandler.TipRegion(iconRect, String.Format("CancelCopyStockUp".Translate(), pawn.NameStringShort));
+				TooltipHandler.TipRegion(iconRect, String.Format("TD.CancelCopyStockUp".Translate(), pawn.NameStringShort));
 				if (Widgets.ButtonImage(iconRect, TexButton.Ignore))
 					StockUpUtility.StockUpCopySettings(null);
 			}
@@ -239,7 +239,7 @@ namespace SmartMedicine
 			{
 				if (StockUpUtility.CopiedPawn() != null)
 				{
-					TooltipHandler.TipRegion(iconRect, String.Format("CopyStockUpFrom".Translate(), StockUpUtility.CopiedPawn().NameStringShort));
+					TooltipHandler.TipRegion(iconRect, String.Format("TD.CopyStockUpFrom".Translate(), StockUpUtility.CopiedPawn().NameStringShort));
 					if (Widgets.ButtonImage(iconRect, TexButton.Paste))
 						pawn.StockUpPasteSettings();
 				}
@@ -324,7 +324,7 @@ namespace SmartMedicine
 		public Dialog_StockUp(Pawn p)
 		{
 			pawn = p;
-			title = String.Format("StockUpSettingsForPawn".Translate(), p.NameStringShort);
+			title = String.Format("TD.StockUpSettingsForPawn".Translate(), p.NameStringShort);
 			//absorbInputAroundWindow = true;
 			closeOnEscapeKey = true;
 			doCloseX = true;
