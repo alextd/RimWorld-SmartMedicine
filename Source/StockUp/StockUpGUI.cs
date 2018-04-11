@@ -108,6 +108,8 @@ namespace SmartMedicine
 			AddStockText(pawn, thing.def, text);
 		public static string AddStockText(Pawn pawn, ThingDef thingDef, string text)
 		{
+			if (!pawn.IsFreeColonist) return text;
+
 			if (!pawn.StockingUpOn(thingDef)) return text;
 
 			string addedText = String.Format(" / {0}", pawn.StockUpCount(thingDef));
@@ -122,6 +124,8 @@ namespace SmartMedicine
 			AddStockTip(pawn, thing.def, text);
 		public static string AddStockTip(Pawn pawn, ThingDef thingDef, string text)
 		{
+			if (!pawn.IsFreeColonist) return text;
+
 			string addedText = "";
 			if (pawn.StockUpWants(thingDef) > 0 && !StockUpUtility.EnoughAvailable(thingDef, pawn.Map))
 				addedText = "TD.NotEnoughStockUp".Translate();
@@ -136,6 +140,8 @@ namespace SmartMedicine
 			AddIncDecButton(pawn, thing.def, rect);
 		public static void AddIncDecButton(Pawn pawn, ThingDef thingDef, Rect rect)
 		{
+			if (!pawn.IsFreeColonist) return;
+
 			if (!pawn.StockingUpOn(thingDef)) return;
 
 			Rect iconRect = rect.RightPartPixels(rect.height);
