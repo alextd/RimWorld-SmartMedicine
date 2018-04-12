@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <SettingDoctorInv>使用医生的储备药物</SettingDoctorInv>
+  <SettingPatientInv>使用病人的储备药物</SettingPatientInv>
+  <SettingNearby>使用附近的药物（如果质量相同）</SettingNearby>
+  <SettingNearbyDesc>检查去病人路上的药物(大致基于距离，而不是实际路径)</SettingNearbyDesc>
+  <SettingNearbyDist>药物寻找范围</SettingNearbyDist>
+  <SpacesFormat>{0:0} 格</SpacesFormat>
+  <SettingNearbyDistDesc>这只是对储备药物的一种无视——如果没有储备药物，他们会走到地图的末端去拿药物。</SettingNearbyDistDesc>
+  <SettingOtherInv>从附近殖民者的货物储备中取出药物</SettingOtherInv>
+  <SettingAnimalInv>从附近动物的货物储备中取出药物</SettingAnimalInv>
+  <SettingOtherAnyDist>无视距离</SettingOtherAnyDist>
+  <SettingOtherAnyDistDesc>检查是否需要从其他人的储备中获得的更好的药物用于治疗，需要走额外的距离。</SettingOtherAnyDistDesc>
+  <SettingOtherDist>允许的额外行走距离</SettingOtherDist>
+  <SettingMinimal>在非紧急治疗中使用最低限度药物</SettingMinimal>
+  <SettingMinimalDesc>紧急护理是指任何有出血、有感染机会或永久性影响的疾病，仅为这些疾病节省宝贵的药物。</SettingMinimalDesc>
+  <SettingNoMed>非紧急治疗中禁止使用药物</SettingNoMed>
+  <SettingNoMedDesc>同上，但不使用药物，每处理一个伤口都需要一次治疗动作。</SettingNoMedDesc>
+  <SettingDowngrade>自动使用低级药物（如果治疗质量够好）</SettingDowngrade>
+  <SettingDowngradeDesc>计算医生的技能，仿生器官，医疗床等的影响，如果不影响医疗质量则使用低级药物。</SettingDowngradeDesc>
+  <SettingGoodEnough>设定治疗质量：</SettingGoodEnough>
+  <SettingStockUp>储备药物 &amp; 成瘾品</SettingStockUp>
+  <SettingStockUpDesc>（储备设置在殖民者的装备栏中）</SettingStockUpDesc>
+  <SettingFieldTendingNoBeds>即使没有床位，医生也会给病人治疗。</SettingFieldTendingNoBeds>
+  <SettingFieldTendingNoBedsDesc>病人必须休息，躺下，或者被征召到目标</SettingFieldTendingNoBedsDesc>
+  <SettingFieldTendingAlways>医生随时可以进行治疗，无论是否有床。</SettingFieldTendingAlways>
+  <SettingFieldTendingAlwaysDesc>殖民者会优先去床上，但是你可以征召病人让他们待在一个地方。</SettingFieldTendingAlwaysDesc>
+  <SmartMedicine>Smart Medicine - 智能医疗</SmartMedicine>
+  <StockUpSettings>储备设置</StockUpSettings>
+  <StockUpSettingsForPawn>设置储备设置于 {0}</StockUpSettingsForPawn>
+  <ClearStockUp>清除所有储备设置</ClearStockUp>
+  <CancelCopyStockUp>从 {0} 清除复制的储备设置</CancelCopyStockUp>
+  <CopyStockUpFrom>从 {0} 复制储备设置</CopyStockUpFrom>
+  <SettingsGoodEnoughDesc>举例，设置在90%时，如果草药的治疗质量是90%，那么就用草药代替。</SettingsGoodEnoughDesc>
+  <SettingStockUpEnough>仅在有足够库存物资的情况下进行储备:</SettingStockUpEnough>
+  <SettingStockUpEnoughDesc>举例，设置在150%时，库存需要保证每个人储备100%物资，额外加上50%。</SettingStockUpEnoughDesc>
+  <SettingStockUpReturn>退还物品，如果没有足够的物资。</SettingStockUpReturn>
+  <!--[Core] <Paused>已暂停</Paused>-->
+  <NotEnoughStockUp>没有足够的物资用于储备</NotEnoughStockUp>
+
+</LanguageData>
