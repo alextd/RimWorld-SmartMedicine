@@ -14,7 +14,7 @@
   <SettingOtherAnyDistDesc>检查是否需要从其他人的储备中获得的更好的药物用于治疗，需要走额外的距离。</SettingOtherAnyDistDesc>
   <SettingOtherDist>允许的额外行走距离</SettingOtherDist>
   <SettingMinimal>在非紧急治疗中使用最低限度药物</SettingMinimal>
-  <SettingMinimalDesc>紧急护理是指任何有出血、有感染机会或永久性影响的疾病，仅为这些疾病节省宝贵的药物。</SettingMinimalDesc>
+  <SettingMinimalDesc>紧急治疗是指任何有出血、有感染机会或永久性影响的疾病，仅为这些疾病节省宝贵的药物。</SettingMinimalDesc>
   <SettingNoMed>非紧急治疗中禁止使用药物</SettingNoMed>
   <SettingNoMedDesc>同上，但不使用药物，每处理一个伤口都需要一次治疗动作。</SettingNoMedDesc>
   <SettingDowngrade>自动使用低级药物（如果治疗质量够好）</SettingDowngrade>
