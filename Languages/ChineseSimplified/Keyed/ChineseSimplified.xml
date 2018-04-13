@@ -36,7 +36,7 @@
 	<TD.SettingStockUpEnough>仅在有足够库存物资的情况下进行储备:</TD.SettingStockUpEnough>
 	<TD.SettingStockUpEnoughDesc>举例，设置在150%时，库存需要保证每个人储备100%物资，额外加上50%。</TD.SettingStockUpEnoughDesc>
 	<TD.SettingStockUpReturn>退还物品，如果没有足够的物资。</TD.SettingStockUpReturn>
-	<TD.!--[Core] <Paused>已暂停</TD.!--[Core] <Paused>
+	<TD.Paused>已暂停</TD.Paused>
 	<TD.NotEnoughStockUp>没有足够的物资用于储备</TD.NotEnoughStockUp>
 
 </LanguageData>
