@@ -20,7 +20,7 @@ namespace SmartMedicine
 			if (!__result && Settings.Get().FieldTendingActive(patient))
 				__result = (patient.GetPosture() != PawnPosture.Standing)
 					|| (patient.Drafted && patient.jobs.curDriver is JobDriver_Wait
-					&& !patient.stances.FullBodyBusy&& !patient.stances.Staggered);
+					&& !patient.stances.FullBodyBusy && !patient.stances.Staggered);
 		}
 	}
 
