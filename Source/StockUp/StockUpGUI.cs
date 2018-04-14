@@ -203,6 +203,8 @@ namespace SmartMedicine
 
 		public static void DrawMissingThings(Pawn pawn, ref float y, float width)
 		{
+			if (!pawn.IsFreeColonist) return;
+
 			if (!Settings.Get().stockUp) return;
 
 			foreach (ThingDef def in DefDatabase<ThingDef>.AllDefsListForReading)
