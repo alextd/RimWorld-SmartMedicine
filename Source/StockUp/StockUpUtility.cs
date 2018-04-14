@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Verse;
 using TD.Utilities;
+using Harmony;
 
 namespace SmartMedicine
 {
@@ -175,6 +176,15 @@ namespace SmartMedicine
 			
 			return available >= stockUpCount * enough;
 		}
+	}
 
+	[HarmonyPatch(typeof(Pawn), "Destroy")]
+	public static class Destroy_Pawn_Patch
+	{
+		//public override void Destroy(DestroyMode mode = DestroyMode.Vanish)
+		public static void Postfix(Pawn __instance)
+		{
+			__instance.StockUpClearSettings();
+		}
 	}
 }
