@@ -108,7 +108,7 @@ namespace SmartMedicine
 			AddStockText(pawn, thing.def, text);
 		public static string AddStockText(Pawn pawn, ThingDef thingDef, string text)
 		{
-			if (!pawn.IsFreeColonist) return text;
+			if (!pawn.IsFreeColonist || pawn.Dead) return text;
 
 			if (!pawn.StockingUpOn(thingDef)) return text;
 
@@ -124,7 +124,7 @@ namespace SmartMedicine
 			AddStockTip(pawn, thing.def, text);
 		public static string AddStockTip(Pawn pawn, ThingDef thingDef, string text)
 		{
-			if (!pawn.IsFreeColonist) return text;
+			if (!pawn.IsFreeColonist || pawn.Dead) return text;
 
 			string addedText = "";
 			if (pawn.StockUpWants(thingDef) > 0 && !StockUpUtility.EnoughAvailable(thingDef, pawn.Map))
@@ -140,7 +140,7 @@ namespace SmartMedicine
 			AddIncDecButton(pawn, thing.def, rect);
 		public static void AddIncDecButton(Pawn pawn, ThingDef thingDef, Rect rect)
 		{
-			if (!pawn.IsFreeColonist) return;
+			if (!pawn.IsFreeColonist || pawn.Dead) return;
 
 			if (!pawn.StockingUpOn(thingDef)) return;
 
@@ -203,7 +203,7 @@ namespace SmartMedicine
 
 		public static void DrawMissingThings(Pawn pawn, ref float y, float width)
 		{
-			if (!pawn.IsFreeColonist) return;
+			if (!pawn.IsFreeColonist || pawn.Dead) return;
 
 			if (!Settings.Get().stockUp) return;
 
