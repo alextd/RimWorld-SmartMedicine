@@ -76,7 +76,7 @@ namespace SmartMedicine
 
 		public static bool StockingUpOn(this Pawn pawn, ThingDef thingDef)
 		{
-			if (!Settings.Get().stockUp || pawn.inventory == null) return false;
+			if (!Settings.Get().stockUp || pawn.inventory == null || pawn.inventory.UnloadEverything) return false;
 
 			return pawn.StockUpSettings().ContainsKey(thingDef);
 		}
