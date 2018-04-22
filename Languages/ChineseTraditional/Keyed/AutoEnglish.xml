@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <SettingDoctorInv>使用醫生的儲備藥物</SettingDoctorInv>
+  <SettingPatientInv>使用病人的儲備藥物</SettingPatientInv>
+  <SettingNearby>使用附近的藥物（如果質量相同）</SettingNearby>
+  <SettingNearbyDesc>檢查去病人路上的藥物(大致基於距離，而不是實際路徑)</SettingNearbyDesc>
+  <SettingNearbyDist>藥物尋找範圍</SettingNearbyDist>
+  <SpacesFormat>{0:0} 格</SpacesFormat>
+  <SettingNearbyDistDesc>這只是對儲備藥物的一種無視——如果沒有儲備藥物，他們會走到地圖的末端去拿藥物。</SettingNearbyDistDesc>
+  <SettingOtherInv>從附近殖民者的貨物儲備中取出藥物</SettingOtherInv>
+  <SettingAnimalInv>從附近動物的貨物儲備中取出藥物</SettingAnimalInv>
+  <SettingOtherAnyDist>無視距離</SettingOtherAnyDist>
+  <SettingOtherAnyDistDesc>檢查是否需要從其他人的儲備中獲得的更好的藥物用於治療，需要走額外的距離。</SettingOtherAnyDistDesc>
+  <SettingOtherDist>允許的額外行走距離</SettingOtherDist>
+  <SettingMinimal>在非緊急治療中使用最低限度藥物</SettingMinimal>
+  <SettingMinimalDesc>緊急護理是指任何有出血、有感染機會或永久性影響的疾病，僅為這些疾病節省寶貴的藥物。</SettingMinimalDesc>
+  <SettingNoMed>非緊急治療中禁止使用藥物</SettingNoMed>
+  <SettingNoMedDesc>同上，但不使用藥物，每處理一個傷口都需要一次治療動作。</SettingNoMedDesc>
+  <SettingDowngrade>自動使用低級藥物（如果治療質量夠好）</SettingDowngrade>
+  <SettingDowngradeDesc>計算醫生的技能，仿生器官，醫療床等的影響，如果不影響醫療質量則使用低級藥物。</SettingDowngradeDesc>
+  <SettingGoodEnough>設定治療質量：</SettingGoodEnough>
+  <SettingStockUp>儲備藥物 &amp; 成癮品</SettingStockUp>
+  <SettingStockUpDesc>（儲備設置在殖民者的裝備欄中）</SettingStockUpDesc>
+  <SettingFieldTendingNoBeds>即使沒有床位，醫生也會給病人治療。</SettingFieldTendingNoBeds>
+  <SettingFieldTendingNoBedsDesc>病人必須休息，躺下，或者被徵召到目標</SettingFieldTendingNoBedsDesc>
+  <SettingFieldTendingAlways>醫生隨時可以進行治療，無論是否有床。</SettingFieldTendingAlways>
+  <SettingFieldTendingAlwaysDesc>殖民者會優先去床上，但是你可以徵召病人讓他們待在一個地方。</SettingFieldTendingAlwaysDesc>
+  <SmartMedicine>Smart Medicine - 智能醫療</SmartMedicine>
+  <StockUpSettings>儲備設置</StockUpSettings>
+  <StockUpSettingsForPawn>設置儲備設置於 {0}</StockUpSettingsForPawn>
+  <ClearStockUp>清除所有儲備設置</ClearStockUp>
+  <CancelCopyStockUp>從 {0} 清除複製的儲備設置</CancelCopyStockUp>
+  <CopyStockUpFrom>從 {0} 複製儲備設置</CopyStockUpFrom>
+  <SettingsGoodEnoughDesc>舉例，設置在90%時，如果草藥的治療質量是90%，那麼就用草藥代替。</SettingsGoodEnoughDesc>
+  <SettingStockUpEnough>僅在有足夠庫存物資的情況下進行儲備:</SettingStockUpEnough>
+  <SettingStockUpEnoughDesc>舉例，設置在150%時，庫存需要保證每個人儲備100%物資，額外加上50%。</SettingStockUpEnoughDesc>
+  <SettingStockUpReturn>退還物品，如果沒有足夠的物資。</SettingStockUpReturn>
+  <!--[Core] <Paused>已暫停</Paused>-->
+  <NotEnoughStockUp>沒有足夠的物資用於儲備</NotEnoughStockUp>
+
+</LanguageData>
