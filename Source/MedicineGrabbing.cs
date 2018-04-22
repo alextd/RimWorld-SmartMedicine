@@ -230,6 +230,7 @@ namespace SmartMedicine
 
 	[HarmonyPatch(typeof(HealthAIUtility))]
 	[HarmonyPatch("FindBestMedicine")]
+	[HarmonyBefore(new string[] { "fluffy.rimworld.pharmacist" })]
 	[StaticConstructorOnStartup]
 	public static class FindBestMedicine
 	{
@@ -301,12 +302,24 @@ namespace SmartMedicine
 				}
 			}
 
+			//Med
+			Predicate<Thing> validatorMed = t => patient.playerSettings.medCare.AllowsMedicine(t.def);
+			try
+			{
+				((Action)(() =>
+				{
+					MedicalCareCategory pharmacistAdvice = Pharmacist.PharmacistUtility.TendAdvice(patient);
+					validatorMed = t => pharmacistAdvice.AllowsMedicine(t.def);
+				}))();
+			}
+			catch (Exception) { }
+
 			//Ground
 			Map map = patient.Map;
 			TraverseParms traverseParams = TraverseParms.For(healer, Danger.Deadly, TraverseMode.ByPawn, false);
-			Predicate<Thing> validator = (Thing t) =>
-			map.reachability.CanReach(patient.Position, t, PathEndMode.ClosestTouch, traverseParams)
-			&& !t.IsForbidden(healer) && patient.playerSettings.medCare.AllowsMedicine(t.def) && healer.CanReserve(t, FindBestMedicine.maxPawns, 1);
+			Predicate<Thing> validator = (Thing t) => validatorMed(t)
+			  && map.reachability.CanReach(patient.Position, t, PathEndMode.ClosestTouch, traverseParams)
+			  && !t.IsForbidden(healer) && healer.CanReserve(t, FindBestMedicine.maxPawns, 1);//can reserve at least 1
 			Func<Thing, float> priorityGetter = (Thing t) => MedicineRating(t, sufficientQuality);
 			List<Thing> groundMedicines = patient.Map.listerThings.ThingsInGroup(ThingRequestGroup.Medicine).FindAll(t => validator(t));
 
@@ -349,7 +362,7 @@ namespace SmartMedicine
 			//Add best from each pawn
 			foreach (Pawn p in pawns)
 			{
-				Thing t = FindBestMedicineInInventory(p, patient, sufficientQuality, p == healer);
+				Thing t = FindBestMedicineInInventory(p, patient, validatorMed, sufficientQuality, p == healer);
 				if (t == null) continue;
 				allMeds.Add(new MedicineEvaluator()
 				{
@@ -480,7 +493,7 @@ namespace SmartMedicine
 			return (1 / selfTend - bedOffset) / doctorQuality * Settings.Get().goodEnoughDowngradeFactor;
 		}
 
-		private static Thing FindBestMedicineInInventory(Pawn pawn, Pawn patient, float sufficientQuality, bool isHealer)
+		private static Thing FindBestMedicineInInventory(Pawn pawn, Pawn patient, Predicate<Thing> validatorMed, float sufficientQuality, bool isHealer)
 		{
 			if (pawn == null || pawn.inventory == null || patient == null || patient.playerSettings == null)
 				return null;
@@ -488,7 +501,7 @@ namespace SmartMedicine
 			List<Thing> items = new List<Thing>(pawn.inventory.innerContainer.InnerListForReading);
 			if (isHealer && pawn.carryTracker != null && pawn.carryTracker.CarriedThing != null)
 				items.Add(pawn.carryTracker.CarriedThing);
-			return items.Where(t => t.def.IsMedicine && patient.playerSettings.medCare.AllowsMedicine(t.def))
+			return items.Where(t => t.def.IsMedicine && validatorMed(t))
 			.MaxByWithFallback(t => MedicineRating(t, sufficientQuality));
 		}
 

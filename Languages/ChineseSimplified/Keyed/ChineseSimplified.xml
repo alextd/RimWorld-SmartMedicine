@@ -1,0 +1,42 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+	<TD.SettingDoctorInv>使用医生的储备药物</TD.SettingDoctorInv>
+	<TD.SettingPatientInv>使用病人的储备药物</TD.SettingPatientInv>
+	<TD.SettingNearby>使用附近的药物（如果质量相同）</TD.SettingNearby>
+	<TD.SettingNearbyDesc>检查去病人路上的药物(大致基于距离，而不是实际路径)</TD.SettingNearbyDesc>
+	<TD.SettingNearbyDist>药物寻找范围</TD.SettingNearbyDist>
+	<TD.SpacesFormat>{0:0} 格</TD.SpacesFormat>
+	<TD.SettingNearbyDistDesc>这只是对储备药物的一种无视——如果没有储备药物，他们会走到地图的末端去拿药物。</TD.SettingNearbyDistDesc>
+	<TD.SettingOtherInv>从附近殖民者的货物储备中取出药物</TD.SettingOtherInv>
+	<TD.SettingAnimalInv>从附近动物的货物储备中取出药物</TD.SettingAnimalInv>
+	<TD.SettingOtherAnyDist>无视距离</TD.SettingOtherAnyDist>
+	<TD.SettingOtherAnyDistDesc>检查是否需要从其他人的储备中获得的更好的药物用于治疗，需要走额外的距离。</TD.SettingOtherAnyDistDesc>
+	<TD.SettingOtherDist>允许的额外行走距离</TD.SettingOtherDist>
+	<TD.SettingMinimal>在非紧急治疗中使用最低限度药物</TD.SettingMinimal>
+	<TD.SettingMinimalDesc>紧急治疗是指任何有出血、有感染机会或永久性影响的疾病，仅为这些疾病节省宝贵的药物。</TD.SettingMinimalDesc>
+	<TD.SettingNoMed>非紧急治疗中禁止使用药物</TD.SettingNoMed>
+	<TD.SettingNoMedDesc>同上，但不使用药物，每处理一个伤口都需要一次治疗动作。</TD.SettingNoMedDesc>
+	<TD.SettingDowngrade>自动使用低级药物（如果治疗质量够好）</TD.SettingDowngrade>
+	<TD.SettingDowngradeDesc>计算医生的技能，仿生器官，医疗床等的影响，如果不影响医疗质量则使用低级药物。</TD.SettingDowngradeDesc>
+	<TD.SettingGoodEnough>设定治疗质量：</TD.SettingGoodEnough>
+	<TD.SettingStockUp>储备药物 &amp; 成瘾品</TD.SettingStockUp>
+	<TD.SettingStockUpDesc>（储备设置在殖民者的装备栏中）</TD.SettingStockUpDesc>
+	<TD.SettingFieldTendingNoBeds>即使没有床位，医生也会给病人治疗。</TD.SettingFieldTendingNoBeds>
+	<TD.SettingFieldTendingNoBedsDesc>病人必须休息，躺下，或者被征召到目标</TD.SettingFieldTendingNoBedsDesc>
+	<TD.SettingFieldTendingAlways>医生随时可以进行治疗，无论是否有床。</TD.SettingFieldTendingAlways>
+	<TD.SettingFieldTendingAlwaysDesc>殖民者会优先去床上，但是你可以征召病人让他们待在一个地方。</TD.SettingFieldTendingAlwaysDesc>
+	<TD.SmartMedicine>Smart Medicine - 智能医疗</TD.SmartMedicine>
+	<TD.StockUpSettings>储备设置</TD.StockUpSettings>
+	<TD.StockUpSettingsForPawn>设置储备设置于 {0}</TD.StockUpSettingsForPawn>
+	<TD.ClearStockUp>清除所有储备设置</TD.ClearStockUp>
+	<TD.CancelCopyStockUp>从 {0} 清除复制的储备设置</TD.CancelCopyStockUp>
+	<TD.CopyStockUpFrom>从 {0} 复制储备设置</TD.CopyStockUpFrom>
+	<TD.SettingsGoodEnoughDesc>举例，设置在90%时，如果草药的治疗质量是90%，那么就用草药代替。</TD.SettingsGoodEnoughDesc>
+	<TD.SettingStockUpEnough>仅在有足够库存物资的情况下进行储备:</TD.SettingStockUpEnough>
+	<TD.SettingStockUpEnoughDesc>举例，设置在150%时，库存需要保证每个人储备100%物资，额外加上50%。</TD.SettingStockUpEnoughDesc>
+	<TD.SettingStockUpReturn>退还物品，如果没有足够的物资。</TD.SettingStockUpReturn>
+	<TD.Paused>已暂停</TD.Paused>
+	<TD.NotEnoughStockUp>没有足够的物资用于储备</TD.NotEnoughStockUp>
+
+</LanguageData>
