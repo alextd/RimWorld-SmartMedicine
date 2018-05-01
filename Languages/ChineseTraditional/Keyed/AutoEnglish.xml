@@ -19,7 +19,7 @@
 	<TD.SettingNoMedDesc>同上，但不使用藥物，每處理一個傷口都需要一次治療動作。</TD.SettingNoMedDesc>
 	<TD.SettingDowngrade>自動使用低級藥物（如果治療質量夠好）</TD.SettingDowngrade>
 	<TD.SettingDowngradeDesc>計算醫生的技能，仿生器官，醫療床等的影響，如果不影響醫療質量則使用低級藥物。</TD.SettingDowngradeDesc>
-	<TD.SettingGoodEnough>設定治療質量：</TD.SettingGoodEnough>
+	<TD.SettingMedicineGoodEnough>設定治療質量：</TD.SettingMedicineGoodEnough>
 	<TD.SettingStockUp>儲備藥物 &amp; 成癮品</TD.SettingStockUp>
 	<TD.SettingStockUpDesc>（儲備設置在殖民者的裝備欄中）</TD.SettingStockUpDesc>
 	<TD.SettingFieldTendingNoBeds>即使沒有床位，醫生也會給病人治療。</TD.SettingFieldTendingNoBeds>
@@ -32,7 +32,7 @@
 	<TD.ClearStockUp>清除所有儲備設置</TD.ClearStockUp>
 	<TD.CancelCopyStockUp>從 {0} 清除複製的儲備設置</TD.CancelCopyStockUp>
 	<TD.CopyStockUpFrom>從 {0} 複製儲備設置</TD.CopyStockUpFrom>
-	<TD.SettingsGoodEnoughDesc>舉例，設置在90%時，如果草藥的治療質量是90%，那麼就用草藥代替。</TD.SettingsGoodEnoughDesc>
+	<TD.SettingsMedicineGoodEnoughDesc>舉例，設置在90%時，如果草藥的治療質量是90%，那麼就用草藥代替。</TD.SettingsMedicineGoodEnoughDesc>
 	<TD.SettingStockUpEnough>僅在有足夠庫存物資的情況下進行儲備:</TD.SettingStockUpEnough>
 	<TD.SettingStockUpEnoughDesc>舉例，設置在150%時，庫存需要保證每個人儲備100%物資，額外加上50%。</TD.SettingStockUpEnoughDesc>
 	<TD.SettingStockUpReturn>退還物品，如果沒有足夠的物資。</TD.SettingStockUpReturn>

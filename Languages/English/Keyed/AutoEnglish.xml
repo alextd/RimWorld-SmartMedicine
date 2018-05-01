@@ -19,7 +19,7 @@
 	<TD.SettingNoMedDesc>Same as above, but without medicine, each injury is treated one at a time</TD.SettingNoMedDesc>
 	<TD.SettingDowngrade>Downgrade medicine if sufficient</TD.SettingDowngrade>
 	<TD.SettingDowngradeDesc>Calculate if lesser medicine will do just as well, due to doctor skill, bionics, medical beds, etc</TD.SettingDowngradeDesc>
-	<TD.SettingGoodEnough>... include medicine that is good enough:</TD.SettingGoodEnough>
+	<TD.SettingMedicineGoodEnough>... include medicine that is good enough:</TD.SettingMedicineGoodEnough>
 	<TD.SettingStockUp>Stock Up on medicine &amp; drugs</TD.SettingStockUp>
 	<TD.SettingStockUpDesc>Stock Up settings are in the colonist's Gear Tab</TD.SettingStockUpDesc>
 	<TD.SettingFieldTendingNoBeds>Doctors will treat patients if no beds are available</TD.SettingFieldTendingNoBeds>
@@ -32,7 +32,7 @@
 	<TD.ClearStockUp>Clear All Stock Up Settings</TD.ClearStockUp>
 	<TD.CancelCopyStockUp>Cancel Copying Settings From {0}</TD.CancelCopyStockUp>
 	<TD.CopyStockUpFrom>Copy Stock Up Settings from {0}</TD.CopyStockUpFrom>
-	<TD.SettingsGoodEnoughDesc>For example, if Herbal Medicine does 90% as good a job as Normal, use Herbal instead</TD.SettingsGoodEnoughDesc>
+	<TD.SettingsMedicineGoodEnoughDesc>For example, if Herbal Medicine does 90% as good a job as Normal, use Herbal instead</TD.SettingsMedicineGoodEnoughDesc>
 	<TD.SettingStockUpEnough>Stock Up only if there's enough available:</TD.SettingStockUpEnough>
 	<TD.SettingStockUpEnoughDesc>For example, at 150%, Stockpiles need to have enough for everyone to stock up to 100%, plus 50% extra</TD.SettingStockUpEnoughDesc>
 	<TD.SettingStockUpReturn>Return items if not enough available</TD.SettingStockUpReturn>

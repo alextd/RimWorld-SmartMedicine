@@ -84,7 +84,7 @@ namespace SmartMedicine
 			if (downgradeExcessiveMedicine)
 			{
 				goodEnoughDowngradeFactor *= 100;
-				options.SliderLabeled("TD.SettingGoodEnough".Translate(), ref goodEnoughDowngradeFactor, "{0:0}%", 0, 100, "TD.SettingsGoodEnoughDesc".Translate());
+				options.SliderLabeled("TD.SettingMedicineGoodEnough".Translate(), ref goodEnoughDowngradeFactor, "{0:0}%", 0, 100, "TD.SettingsMedicineGoodEnoughDesc".Translate());
 				goodEnoughDowngradeFactor /= 100;
 			}
 			options.Gap();

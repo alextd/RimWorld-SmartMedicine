@@ -19,7 +19,7 @@
 	<TD.SettingNoMedDesc>Igual que arriba, pero sin medicamentos, cada lesión se trata de a una sola por vez</TD.SettingNoMedDesc>
 	<TD.SettingDowngrade>Baja la medicina si es suficiente</TD.SettingDowngrade>
 	<TD.SettingDowngradeDesc>Calcula si la medicina menor funcionará igual de bien, debido a la habilidad del médico, la biónica, camas médicas, etc.</TD.SettingDowngradeDesc>
-	<TD.SettingGoodEnough>... incluir medicina que sea lo suficientemente buena:</TD.SettingGoodEnough>
+	<TD.SettingMedicineGoodEnough>... incluir medicina que sea lo suficientemente buena:</TD.SettingMedicineGoodEnough>
 	<TD.SettingStockUp>Abastecerse de medicina &amp; drogas</TD.SettingStockUp>
 	<TD.SettingStockUpDesc>La configuración de stock está en la pestaña Gear del colono</TD.SettingStockUpDesc>
 	<TD.SettingFieldTendingNoBeds>Los médicos tratarán a los pacientes aún si no hay camas disponibles</TD.SettingFieldTendingNoBeds>
