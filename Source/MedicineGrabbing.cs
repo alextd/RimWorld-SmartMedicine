@@ -112,6 +112,9 @@ namespace SmartMedicine
 
 			if (medicineToDrop == null || medicineToDrop.holdingOwner == null) return;
 
+			//Well apparently inventory items can be forbidden
+			medicineToDrop.SetForbidden(false);
+
 			int needCount = Mathf.Min(medicineToDrop.stackCount, job.count);
 			Thing droppedMedicine = null;
 			if (medicineToDrop.holdingOwner.Owner is Pawn_InventoryTracker holder)
