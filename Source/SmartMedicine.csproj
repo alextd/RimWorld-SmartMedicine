@@ -33,7 +33,7 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="0Harmony, Version=1.0.9.1, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="0Harmony">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\ThirdParty\0Harmony.dll</HintPath>
       <Private>True</Private>
