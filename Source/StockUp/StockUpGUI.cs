@@ -239,7 +239,7 @@ namespace SmartMedicine
 			iconRect.x = rect.x - 28f;
 			if (StockUpUtility.CopiedPawn() == pawn)
 			{
-				TooltipHandler.TipRegion(iconRect, String.Format("TD.CancelCopyStockUp".Translate(), pawn.NameStringShort));
+				TooltipHandler.TipRegion(iconRect, String.Format("TD.CancelCopyStockUp".Translate(), pawn.Name.ToStringShort));
 				if (Widgets.ButtonImage(iconRect, TexButton.Ignore))
 					StockUpUtility.StockUpCopySettings(null);
 			}
@@ -247,7 +247,7 @@ namespace SmartMedicine
 			{
 				if (StockUpUtility.CopiedPawn() != null)
 				{
-					TooltipHandler.TipRegion(iconRect, String.Format("TD.CopyStockUpFrom".Translate(), StockUpUtility.CopiedPawn().NameStringShort));
+					TooltipHandler.TipRegion(iconRect, String.Format("TD.CopyStockUpFrom".Translate(), StockUpUtility.CopiedPawn().Name.ToStringShort));
 					if (Widgets.ButtonImage(iconRect, TexButton.Paste))
 						pawn.StockUpPasteSettings();
 				}
@@ -332,9 +332,8 @@ namespace SmartMedicine
 		public Dialog_StockUp(Pawn p)
 		{
 			pawn = p;
-			title = String.Format("TD.StockUpSettingsForPawn".Translate(), p.NameStringShort);
+			title = String.Format("TD.StockUpSettingsForPawn".Translate(), p.Name.ToStringShort);
 			//absorbInputAroundWindow = true;
-			closeOnEscapeKey = true;
 			doCloseX = true;
 			draggable = true;
 			preventCameraMotion = false;

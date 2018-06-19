@@ -14,32 +14,26 @@ namespace SmartMedicine.StockUp
 	[HarmonyPatch(typeof(JobGiver_DropUnusedInventory), "TryGiveJob")]
 	public static class DontDropStockedDrugs
 	{
-		public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il, MethodBase mb)
+		public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
 		{
 			MethodInfo IsDrugInfo = AccessTools.Property(typeof(ThingDef), "IsDrug").GetGetMethod();
 
-			bool foundDrugInfo = false;
-			bool nextLineIsBranch = false;
-
 			MethodInfo StockingUpInfo = AccessTools.Method(typeof(StockUpUtility), nameof(StockUpUtility.StockingUpOn),
-				new Type[] { typeof(Pawn), typeof(Thing)});
+				new Type[] { typeof(Pawn), typeof(Thing) });
 
-			foreach (CodeInstruction i in instructions)
+			List<CodeInstruction> instList = instructions.ToList();
+			for (int i = 0; i < instList.Count(); i++)
 			{
-				yield return i;
+				CodeInstruction inst = instList[i];
+				yield return inst;
 				
-				if (i.opcode == OpCodes.Callvirt && i.operand == IsDrugInfo)
-				{
-					if (!foundDrugInfo) foundDrugInfo = true;
-					else nextLineIsBranch = true;
-				}
-				else if (i.opcode == OpCodes.Brfalse && nextLineIsBranch)
+				if (inst.opcode == OpCodes.Brfalse
+					&& instList[i - 1].opcode == OpCodes.Callvirt && instList[i - 1].operand == IsDrugInfo)
 				{
 					yield return new CodeInstruction(OpCodes.Ldarg_1);//pawn
-					yield return new CodeInstruction(OpCodes.Ldloc_3);//thing
+					yield return new CodeInstruction(OpCodes.Ldloc_S, instList[i-3].operand);//thing
 					yield return new CodeInstruction(OpCodes.Call, StockingUpInfo);//pawn.StockingUpOn(thing)
-					yield return new CodeInstruction(OpCodes.Brtrue, i.operand);
-					nextLineIsBranch = false;
+					yield return new CodeInstruction(OpCodes.Brtrue, inst.operand);
 				}
 			}
 		}

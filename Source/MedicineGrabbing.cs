@@ -92,7 +92,7 @@ namespace SmartMedicine
 			return !(h is Hediff_Injury)
 					|| (h as Hediff_Injury).Bleeding
 					|| (h as Hediff_Injury).TryGetComp<HediffComp_Infecter>() != null
-					|| (h as Hediff_Injury).TryGetComp<HediffComp_GetsOld>() != null;
+					|| (h as Hediff_Injury).TryGetComp<HediffComp_GetsPermanent>() != null;
 		}
 	}
 
@@ -194,11 +194,9 @@ namespace SmartMedicine
 		//Insert FilterForUrgentHediffs when counting needed medicine
 		public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
 		{
-			LocalBuilder localCountInfo = generator.DeclareLocal(typeof(int));
 			LocalBuilder localJobInfo = generator.DeclareLocal(typeof(Job));
-
-			MethodInfo GetMedicineCountToFullyHealInfo = AccessTools.Method(
-				typeof(Medicine), nameof(Medicine.GetMedicineCountToFullyHeal));
+			FieldInfo medCountInfo = AccessTools.Field(typeof(JobOnThing_Patch), "medCount");
+			
 			FieldInfo jobFieldInfo = AccessTools.Field(
 				typeof(JobDriver), nameof(JobDriver.job));
 			FieldInfo jobCountInfo = AccessTools.Field(
@@ -210,11 +208,6 @@ namespace SmartMedicine
 			foreach (CodeInstruction i in instructions)
 			{
 				yield return i;
-				if (i.opcode == OpCodes.Call && i.operand == GetMedicineCountToFullyHealInfo)
-				{
-					yield return new CodeInstruction(OpCodes.Stloc, localCountInfo);
-					yield return new CodeInstruction(OpCodes.Ldloc, localCountInfo);
-				}
 				if (i.opcode == OpCodes.Ldfld && i.operand == jobFieldInfo)
 				{
 					yield return new CodeInstruction(OpCodes.Stloc, localJobInfo);
@@ -223,7 +216,7 @@ namespace SmartMedicine
 				if (i.opcode == OpCodes.Call && i.operand == JumpToToilInfo)
 				{
 					yield return new CodeInstruction(OpCodes.Ldloc, localJobInfo);
-					yield return new CodeInstruction(OpCodes.Ldloc, localCountInfo);
+					yield return new CodeInstruction(OpCodes.Ldsfld, medCountInfo);
 					yield return new CodeInstruction(OpCodes.Stfld, jobCountInfo);
 				}
 			}
@@ -237,7 +230,7 @@ namespace SmartMedicine
 	[StaticConstructorOnStartup]
 	public static class FindBestMedicine
 	{
-		public const int maxPawns = 100;
+		public const int maxPawns = 10;
 		struct MedicineEvaluator : IComparable
 		{
 			public Thing thing;
@@ -282,9 +275,11 @@ namespace SmartMedicine
 			maxMedicineQuality = medQualities.Max();
 			minMedicineQuality = medQualities.Min();
 		}
+
+		//FindBestMedicine Replacement
 		private static bool Prefix(Pawn healer, Pawn patient, ref Thing __result)
 		{
-			if (patient.playerSettings == null || patient.playerSettings.medCare <= MedicalCareCategory.NoMeds ||
+			if (patient.playerSettings == null || patient.playerSettings.medCare <= MedicalCareCategory.NoMeds || Medicine.GetMedicineCountToFullyHeal(patient) <= 0 || 
 				!healer.Faction.IsPlayer)
 				return true;
 
@@ -298,7 +293,7 @@ namespace SmartMedicine
 			}
 			if (Settings.Get().minimalMedicineForNonUrgent)
 			{
-				if (patient.health.hediffSet.hediffs.All(h => !h.TendableNow || !h.IsUrgent()))
+				if (patient.health.hediffSet.hediffs.All(h => !h.TendableNow() || !h.IsUrgent()))
 				{
 					sufficientQuality = minMedicineQuality;
 					Log.Message("Sufficient medicine for non-urgent care is " + sufficientQuality);

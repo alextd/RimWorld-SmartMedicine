@@ -23,7 +23,7 @@ namespace SmartMedicine
 			if (pawn.StockUpIsFull()) return null;
 
 			Log.Message("Skip need tend?");
-			if (pawn.Map.mapPawns.AllPawnsSpawned.Any(p => HealthAIUtility.ShouldBeTendedNow(p) && pawn.CanReserveAndReach(p, PathEndMode.ClosestTouch, Danger.Deadly)))
+			if (pawn.Map.mapPawns.AllPawnsSpawned.Any(p => HealthAIUtility.ShouldBeTendedNowByPlayer(p) && pawn.CanReserveAndReach(p, PathEndMode.ClosestTouch, Danger.Deadly)))
 				return null;
 
 			Log.Message("any things?");

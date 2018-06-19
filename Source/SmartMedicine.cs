@@ -22,7 +22,7 @@ namespace SmartMedicine
 			harmony.PatchAll(Assembly.GetExecutingAssembly());
 
 			{
-				Type nestedType = AccessTools.Inner(typeof(Toils_Tend), "<PickupMedicine>c__AnonStorey0");
+				Type nestedType = AccessTools.Inner(typeof(Toils_Tend), "<PickupMedicine>c__AnonStorey1");
 				harmony.Patch(AccessTools.Method(nestedType, "<>m__0"),
 					null, null, new HarmonyMethod(typeof(PickupMedicine_Patch), "Transpiler"));
 			}
