@@ -17,8 +17,6 @@
 	<TD.SettingMinimalDesc>Urgent care is any disease, or injuries with bleeding, infection chance, or permanent effects - save valuable medicine for these only</TD.SettingMinimalDesc>
 	<TD.SettingNoMed>No medicine for non-urgent care</TD.SettingNoMed>
 	<TD.SettingNoMedDesc>Same as above, but without medicine, each injury is treated one at a time</TD.SettingNoMedDesc>
-	<TD.SettingDowngrade>Downgrade medicine if sufficient</TD.SettingDowngrade>
-	<TD.SettingDowngradeDesc>Calculate if lesser medicine will do just as well, due to doctor skill, bionics, medical beds, etc</TD.SettingDowngradeDesc>
 	<TD.SettingMedicineGoodEnough>... include medicine that is good enough:</TD.SettingMedicineGoodEnough>
 	<TD.SettingStockUp>Stock Up on medicine &amp; drugs</TD.SettingStockUp>
 	<TD.SettingStockUpDesc>Stock Up settings are in the colonist's Gear Tab</TD.SettingStockUpDesc>

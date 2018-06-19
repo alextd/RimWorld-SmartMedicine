@@ -22,8 +22,6 @@ namespace SmartMedicine
 
 		public bool minimalMedicineForNonUrgent = false;
 		public bool noMedicineForNonUrgent = false;
-		public bool downgradeExcessiveMedicine = true;
-		public float goodEnoughDowngradeFactor = 1.0f;
 
 		public bool stockUp = true;
 		public float stockUpEnough = 1.5f;
@@ -79,14 +77,6 @@ namespace SmartMedicine
 			options.CheckboxLabeled("TD.SettingNoMed".Translate(), ref noMedicineForNonUrgent,
 				"TD.SettingNoMedDesc".Translate());
 			if (noMedicineForNonUrgent) minimalMedicineForNonUrgent = false;
-
-			options.CheckboxLabeled("TD.SettingDowngrade".Translate(), ref downgradeExcessiveMedicine, "TD.SettingDowngradeDesc".Translate());
-			if (downgradeExcessiveMedicine)
-			{
-				goodEnoughDowngradeFactor *= 100;
-				options.SliderLabeled("TD.SettingMedicineGoodEnough".Translate(), ref goodEnoughDowngradeFactor, "{0:0}%", 0, 100, "TD.SettingsMedicineGoodEnoughDesc".Translate());
-				goodEnoughDowngradeFactor /= 100;
-			}
 			options.Gap();
 
 			options.CheckboxLabeled("TD.SettingStockUp".Translate(), ref stockUp);
@@ -121,8 +111,6 @@ namespace SmartMedicine
 
 			Scribe_Values.Look(ref minimalMedicineForNonUrgent, "minimalMedicineForNonUrgent", false);
 			Scribe_Values.Look(ref noMedicineForNonUrgent, "noMedicineForNonUrgent", false);
-			Scribe_Values.Look(ref downgradeExcessiveMedicine, "downgradeExcessiveMedicine", true);
-			Scribe_Values.Look(ref goodEnoughDowngradeFactor, "goodEnoughDowngradeFactor", 1.0f);
 			
 			Scribe_Values.Look(ref stockUp, "stockUp", true);
 			Scribe_Values.Look(ref stockUpEnough, "stockUpEnough", 1.5f);

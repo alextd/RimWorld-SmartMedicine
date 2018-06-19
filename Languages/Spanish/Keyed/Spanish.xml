@@ -17,8 +17,6 @@
 	<TD.SettingMinimalDesc>Atención de urgencia es cualquier enfermedad o lesiones con hemorragia con posibilidad de infección o efectos permanentes; guarde un medicamento valioso o de calidad solo para estos casos</TD.SettingMinimalDesc>
 	<TD.SettingNoMed>Sin medicamentos para cuidados no urgentes</TD.SettingNoMed>
 	<TD.SettingNoMedDesc>Igual que arriba, pero sin medicamentos, cada lesión se trata de a una sola por vez</TD.SettingNoMedDesc>
-	<TD.SettingDowngrade>Baja la medicina si es suficiente</TD.SettingDowngrade>
-	<TD.SettingDowngradeDesc>Calcula si la medicina menor funcionará igual de bien, debido a la habilidad del médico, la biónica, camas médicas, etc.</TD.SettingDowngradeDesc>
 	<TD.SettingMedicineGoodEnough>... incluir medicina que sea lo suficientemente buena:</TD.SettingMedicineGoodEnough>
 	<TD.SettingStockUp>Abastecerse de medicina &amp; drogas</TD.SettingStockUp>
 	<TD.SettingStockUpDesc>La configuración de stock está en la pestaña Gear del colono</TD.SettingStockUpDesc>

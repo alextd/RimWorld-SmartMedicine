@@ -286,11 +286,6 @@ namespace SmartMedicine
 			Log.Message(healer + " is tending to " + patient);
 
 			float sufficientQuality = maxMedicineQuality + 1; // nothing is sufficient!
-			if (Settings.Get().downgradeExcessiveMedicine)
-			{
-				sufficientQuality = CalculateSufficientQuality(healer, patient);
-				Log.Message("Sufficient medicine for best treatment is " + sufficientQuality + "(" + Settings.Get().goodEnoughDowngradeFactor + ")");
-			}
 			if (Settings.Get().minimalMedicineForNonUrgent)
 			{
 				if (patient.health.hediffSet.hediffs.All(h => !h.TendableNow() || !h.IsUrgent()))
@@ -471,24 +466,6 @@ namespace SmartMedicine
 				//__result = medicine;
 			}
 			return __result == null;
-		}
-
-		private static float CalculateSufficientQuality(Pawn doctor, Pawn patient)
-		{
-			// (doctorQuality * medQuality + bedOffset) * seldTend is clamped to 1,
-			// solve for medQuality,
-			// medQuality = (1 / selfTend - bedOffset) / doctorQuality
-			// this quality is sufficient.
-			StatDef statDef = StatDefOf.MedicalTendQuality;
-			float doctorQuality = statDef.defaultBaseValue;
-
-			StatWorker statWorker = statDef.Worker;
-			if (!statWorker.IsDisabledFor(doctor))
-				doctorQuality = statWorker.GetValue(doctor);
-
-			float bedOffset = patient.CurrentBed()?.GetStatValue(StatDefOf.MedicalTendQualityOffset) ?? 0f;
-			float selfTend = doctor != patient ? 1.0f : 0.7f;
-			return (1 / selfTend - bedOffset) / doctorQuality * Settings.Get().goodEnoughDowngradeFactor;
 		}
 
 		private static Thing FindBestMedicineInInventory(Pawn pawn, Pawn patient, Predicate<Thing> validatorMed, float sufficientQuality, bool isHealer)

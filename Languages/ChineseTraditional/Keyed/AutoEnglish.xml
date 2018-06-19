@@ -17,8 +17,6 @@
 	<TD.SettingMinimalDesc>緊急護理是指任何有出血、有感染機會或永久性影響的疾病，僅為這些疾病節省寶貴的藥物。</TD.SettingMinimalDesc>
 	<TD.SettingNoMed>非緊急治療中禁止使用藥物</TD.SettingNoMed>
 	<TD.SettingNoMedDesc>同上，但不使用藥物，每處理一個傷口都需要一次治療動作。</TD.SettingNoMedDesc>
-	<TD.SettingDowngrade>自動使用低級藥物（如果治療質量夠好）</TD.SettingDowngrade>
-	<TD.SettingDowngradeDesc>計算醫生的技能，仿生器官，醫療床等的影響，如果不影響醫療質量則使用低級藥物。</TD.SettingDowngradeDesc>
 	<TD.SettingMedicineGoodEnough>設定治療質量：</TD.SettingMedicineGoodEnough>
 	<TD.SettingStockUp>儲備藥物 &amp; 成癮品</TD.SettingStockUp>
 	<TD.SettingStockUpDesc>（儲備設置在殖民者的裝備欄中）</TD.SettingStockUpDesc>

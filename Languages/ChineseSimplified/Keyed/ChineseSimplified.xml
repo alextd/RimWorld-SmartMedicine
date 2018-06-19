@@ -17,8 +17,6 @@
 	<TD.SettingMinimalDesc>紧急治疗是指任何有出血、有感染机会或永久性影响的疾病，仅为这些疾病节省宝贵的药物。</TD.SettingMinimalDesc>
 	<TD.SettingNoMed>非紧急治疗中禁止使用药物</TD.SettingNoMed>
 	<TD.SettingNoMedDesc>同上，但不使用药物，每处理一个伤口都需要一次治疗动作。</TD.SettingNoMedDesc>
-	<TD.SettingDowngrade>自动使用低级药物（如果治疗质量够好）</TD.SettingDowngrade>
-	<TD.SettingDowngradeDesc>计算医生的技能，仿生器官，医疗床等的影响，如果不影响医疗质量则使用低级药物。</TD.SettingDowngradeDesc>
 	<TD.SettingMedicineGoodEnough>设定治疗质量：</TD.SettingMedicineGoodEnough>
 	<TD.SettingStockUp>储备药物 &amp; 成瘾品</TD.SettingStockUp>
 	<TD.SettingStockUpDesc>（储备设置在殖民者的装备栏中）</TD.SettingStockUpDesc>
