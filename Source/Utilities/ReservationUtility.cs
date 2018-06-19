@@ -15,16 +15,15 @@ namespace TD.Utilities
 
 			if (!target.HasThing) return p.Reserve(target, job, maxPawns, stackCount, layer) ? 1 : 0;
 
+			int canDo = p.Map.reservationManager.CanReserveStack(p, target.Thing, maxPawns, layer);
+
 			Thing thing = target.Thing;
 			int desired = stackCount == ReservationManager.StackCount_All ? thing.stackCount : stackCount;
-			for (int tryCount = desired; tryCount > 0; tryCount --)
-			{
-				if (p.CanReserve(target, maxPawns, tryCount, layer) 
-					&& p.Reserve(target, job, maxPawns, tryCount, layer))
-					return tryCount;
-			}
+			canDo = Math.Min(canDo, desired);
 
-			return 0;
+			p.Reserve(target, job, maxPawns, stackCount, layer);
+
+			return canDo;
 		}
 	}
 }
