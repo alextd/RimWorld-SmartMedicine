@@ -138,7 +138,7 @@ namespace SmartMedicine
 
 			Log.Message("Okay, doing reservations");
 			if (healer.ReserveAsMuchAsPossible(job.targetB.Thing, job, FindBestMedicine.maxPawns, needCount) == 0)
-				Verse.Log.Warning("Needed medicine " + droppedMedicine + " for " + healer + " was dropped onto a reserved stack. Job will fail and try again, so ignore the error please.");
+				Verse.Log.Warning("Needed medicine " + job.targetB.Thing + " for " + healer + " seemed to be in a reserved stack. Job will fail but should try again, so ignore the error please.");
 		}
 	}
 
