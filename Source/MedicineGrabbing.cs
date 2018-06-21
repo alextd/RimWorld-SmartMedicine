@@ -284,8 +284,7 @@ namespace SmartMedicine
 		}
 		private static bool Prefix(Pawn healer, Pawn patient, ref Thing __result)
 		{
-			if (patient.playerSettings == null || patient.playerSettings.medCare <= MedicalCareCategory.NoMeds ||
-				!healer.Faction.IsPlayer)
+			if (patient.playerSettings == null || patient.playerSettings.medCare <= MedicalCareCategory.NoMeds)
 				return true;
 
 			Log.Message(healer + " is tending to " + patient);
