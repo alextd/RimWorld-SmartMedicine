@@ -11,7 +11,7 @@ namespace SmartMedicine
 	//Custom job just to reserve job.count
 	public class JobDriver_StockUp : JobDriver_TakeInventory
 	{
-		public override bool TryMakePreToilReservations()
+		public override bool TryMakePreToilReservations(bool errorOnFailed)
 		{
 			return this.pawn.ReserveAsMuchAsPossible(job.targetA, job, FindBestMedicine.maxPawns, job.count) > 0;
 		}
@@ -19,9 +19,9 @@ namespace SmartMedicine
 
 	public class JobDriver_StockDown : JobDriver_HaulToCell
 	{
-		public override bool TryMakePreToilReservations()
+		public override bool TryMakePreToilReservations(bool errorOnFailed)
 		{
-			return this.pawn.Reserve(job.targetB, job);
+			return this.pawn.Reserve(job.targetB, job, 1, -1, null, errorOnFailed);
 		}
 
 		protected override IEnumerable<Toil> MakeNewToils()
