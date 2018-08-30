@@ -31,7 +31,7 @@ namespace SmartMedicine.StockUp
 					&& instList[i - 1].opcode == OpCodes.Callvirt && instList[i - 1].operand == IsDrugInfo)
 				{
 					yield return new CodeInstruction(OpCodes.Ldarg_1);//pawn
-					yield return new CodeInstruction(OpCodes.Ldloc_S, instList[i-3].operand);//thing
+					yield return new CodeInstruction(OpCodes.Ldloc_3);//thing
 					yield return new CodeInstruction(OpCodes.Call, StockingUpInfo);//pawn.StockingUpOn(thing)
 					yield return new CodeInstruction(OpCodes.Brtrue, inst.operand);
 				}
