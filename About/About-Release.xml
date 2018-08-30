@@ -2,7 +2,7 @@
 <ModMetaData>
 	<name>Smart Medicine</name>
 	<author>Uuugggg</author>
-	<targetVersion>1.0.0</targetVersion>
+	<targetVersion>0.19.0</targetVersion>
 	<description>Doctors will use medicine from their inventory. What a concept!
 		
 Doctors can also use medicine from the patient's inventory, or anyone else on the map, even pack animals brought on a caravan.
