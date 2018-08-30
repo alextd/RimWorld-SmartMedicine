@@ -138,7 +138,7 @@ namespace SmartMedicine
 
 			Log.Message("Okay, doing reservations");
 			if (healer.ReserveAsMuchAsPossible(job.targetB.Thing, job, FindBestMedicine.maxPawns, needCount) == 0)
-				Verse.Log.Warning("Needed medicine " + droppedMedicine + " for " + healer + " was dropped onto a reserved stack. Job will fail and try again, so ignore the error please.");
+				Verse.Log.Warning("Needed medicine " + job.targetB.Thing + " for " + healer + " seemed to be in a reserved stack. Job will fail but should try again, so ignore the error please.");
 		}
 	}
 
@@ -196,7 +196,7 @@ namespace SmartMedicine
 		{
 			LocalBuilder localJobInfo = generator.DeclareLocal(typeof(Job));
 			FieldInfo medCountInfo = AccessTools.Field(typeof(JobOnThing_Patch), "medCount");
-			
+
 			FieldInfo jobFieldInfo = AccessTools.Field(
 				typeof(JobDriver), nameof(JobDriver.job));
 			FieldInfo jobCountInfo = AccessTools.Field(
@@ -279,8 +279,7 @@ namespace SmartMedicine
 		//FindBestMedicine Replacement
 		private static bool Prefix(Pawn healer, Pawn patient, ref Thing __result)
 		{
-			if (patient.playerSettings == null || patient.playerSettings.medCare <= MedicalCareCategory.NoMeds || Medicine.GetMedicineCountToFullyHeal(patient) <= 0 || 
-				!healer.Faction.IsPlayer)
+			if (patient.playerSettings == null || patient.playerSettings.medCare <= MedicalCareCategory.NoMeds || Medicine.GetMedicineCountToFullyHeal(patient) <= 0)
 				return true;
 
 			Log.Message(healer + " is tending to " + patient);
@@ -311,8 +310,8 @@ namespace SmartMedicine
 			Map map = patient.Map;
 			TraverseParms traverseParams = TraverseParms.For(healer, Danger.Deadly, TraverseMode.ByPawn, false);
 			Predicate<Thing> validator = (Thing t) => validatorMed(t)
-			  && map.reachability.CanReach(patient.Position, t, PathEndMode.ClosestTouch, traverseParams)
-			  && !t.IsForbidden(healer) && healer.CanReserve(t, FindBestMedicine.maxPawns, 1);//can reserve at least 1
+				&& map.reachability.CanReach(patient.Position, t, PathEndMode.ClosestTouch, traverseParams)
+				&& !t.IsForbidden(healer) && healer.CanReserve(t, FindBestMedicine.maxPawns, 1);//can reserve at least 1
 			Func<Thing, float> priorityGetter = (Thing t) => MedicineRating(t, sufficientQuality);
 			List<Thing> groundMedicines = patient.Map.listerThings.ThingsInGroup(ThingRequestGroup.Medicine).FindAll(t => validator(t));
 
