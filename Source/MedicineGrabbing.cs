@@ -16,20 +16,22 @@ namespace SmartMedicine
 	[HarmonyPatch("JobOnThing")]
 	public static class JobOnThing_Patch
 	{
-		public static int medCount = 0;
 		//Stupid re-write because I want count.
 		//public override Job JobOnThing(Pawn pawn, Thing t, bool forced = false)
 		public static bool Prefix(Pawn pawn, Thing t, ref Job __result)
 		{
-			medCount = 0;
 			Pawn patient = t as Pawn;
 			Thing thing = null;
 			if (Medicine.GetMedicineCountToFullyHeal(patient) > 0)
-				thing = HealthAIUtility.FindBestMedicine(pawn, patient);
-
-			Log.Message("JobOnThing count = " + medCount);
-			__result = new Job(JobDefOf.TendPatient, patient, thing)
-			{ count = medCount };
+			{
+				thing = FindBestMedicine.Find(pawn, patient, out int medCount);
+				__result = new Job(JobDefOf.TendPatient, patient, thing)
+				{
+					count = medCount
+				};
+			}
+			else
+				__result = new Job(JobDefOf.TendPatient, patient, thing);
 
 			return false;
 		}
@@ -97,6 +99,11 @@ namespace SmartMedicine
 	}
 
 
+	// because The Toil to get this medicine is FailOnDespawnedNullOrForbidden
+	// And Medicine in inventory is despawned
+	// You can't set the job to use already carried medicine.
+	// Editing the toil would be more difficult.
+	// But we can drop it in Notify_Starting so the normal job picks it back it  ¯\_(ツ)_/¯ 
 	[HarmonyPatch(typeof(JobDriver_TendPatient))]
 	[HarmonyPatch("Notify_Starting")]
 	static class TendPatient_Notify_Starting_Patch
@@ -147,7 +154,6 @@ namespace SmartMedicine
 	//[HarmonyPatch("<PickupMedicine>c__AnonStorey0", "<>m__0")]
 	static class PickupMedicine_Patch
 	{
-		//Insert FilterForUrgentHediffs when counting needed medicine
 		public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
 		{
 			MethodInfo GetMedicineCountToFullyHealInfo = AccessTools.Method(
@@ -191,34 +197,36 @@ namespace SmartMedicine
 	//[HarmonyPatch(typeof(JobDriver_TendPatient), "MakeNewToils")]
 	static class MakeNewToils_Patch
 	{
-		//Insert FilterForUrgentHediffs when counting needed medicine
-		public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator generator)
+		public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
 		{
-			LocalBuilder localJobInfo = generator.DeclareLocal(typeof(Job));
-			FieldInfo medCountInfo = AccessTools.Field(typeof(JobOnThing_Patch), "medCount");
+			MethodInfo FindBestMedicineInfo = AccessTools.Method(typeof(HealthAIUtility), nameof(HealthAIUtility.FindBestMedicine));
+			MethodInfo FindInfo = AccessTools.Method(typeof(FindBestMedicine), nameof(FindBestMedicine.Find));
 
 			FieldInfo jobFieldInfo = AccessTools.Field(
 				typeof(JobDriver), nameof(JobDriver.job));
 			FieldInfo jobCountInfo = AccessTools.Field(
 				typeof(Job), nameof(Job.count));
-
-			MethodInfo JumpToToilInfo = AccessTools.Method(
-				typeof(JobDriver), nameof(JobDriver.JumpToToil));
+			List<CodeInstruction> iList = instructions.ToList();
+			List<CodeInstruction> jobInstructions = new List<CodeInstruction>();
+			for (int i = 0; i < iList.Count(); i++)
+			{
+				if(iList[i].opcode == OpCodes.Ldfld && iList[i].operand == jobFieldInfo)
+				{
+					jobInstructions.AddRange(iList.GetRange(i - 3, 4));
+					break;
+				}
+			}
 
 			foreach (CodeInstruction i in instructions)
 			{
+				if (i.opcode == OpCodes.Call && i.operand == FindBestMedicineInfo)
+				{
+					foreach (CodeInstruction jobI in jobInstructions)
+						yield return jobI;
+					yield return new CodeInstruction(OpCodes.Ldflda, jobCountInfo);
+					i.operand = FindInfo;
+				}
 				yield return i;
-				if (i.opcode == OpCodes.Ldfld && i.operand == jobFieldInfo)
-				{
-					yield return new CodeInstruction(OpCodes.Stloc, localJobInfo);
-					yield return new CodeInstruction(OpCodes.Ldloc, localJobInfo);
-				}
-				if (i.opcode == OpCodes.Call && i.operand == JumpToToilInfo)
-				{
-					yield return new CodeInstruction(OpCodes.Ldloc, localJobInfo);
-					yield return new CodeInstruction(OpCodes.Ldsfld, medCountInfo);
-					yield return new CodeInstruction(OpCodes.Stfld, jobCountInfo);
-				}
 			}
 		}
 	}
@@ -282,6 +290,14 @@ namespace SmartMedicine
 			if (patient.playerSettings == null || patient.playerSettings.medCare <= MedicalCareCategory.NoMeds || Medicine.GetMedicineCountToFullyHeal(patient) <= 0)
 				return true;
 
+			__result = Find(healer, patient, out int dummy);
+			return __result == null;
+		}
+
+		//public static Thing FindBestMedicine(Pawn healer, Pawn patient)
+		public static Thing Find(Pawn healer, Pawn patient, out int totalCount)
+		{
+			totalCount = 0;
 			Log.Message(healer + " is tending to " + patient);
 
 			float sufficientQuality = maxMedicineQuality + 1; // nothing is sufficient!
@@ -401,32 +417,20 @@ namespace SmartMedicine
 				}
 				int count = Medicine.GetMedicineCountToFullyHeal(patient);
 
-				JobOnThing_Patch.medCount = count;
-				Log.Message("FindBestMedicine count = " + count);
+				totalCount = count;
+				Log.Message("Medicine count = " + count);
 
 				if (bestMed.pawn == null)
 				{
 					bestMed.DebugLog("Best Med on ground:");
-					__result = bestMed.thing;
 				}
 				else
 				{
-					// because The Toil to get this medicine is FailOnDespawnedNullOrForbidden
-					// And Medicine in inventory is despawned
-					// You can't set the job to use already carried medicine.
-					// Editing the toil would be more difficult.
-					// But we can drop it so the normal job picks it back it  ¯\_(ツ)_/¯ 
 					bestMed.DebugLog("Best Med on hand: ");
 
 					//Drop it!
 					int dropCount = Mathf.Min(bestMed.thing.stackCount, count);
 					count -= dropCount;
-					__result = bestMed.thing;
-					//	return true;
-
-					//Todo: mid-job getting new medicine fails since this isn't dropped mid-toil. Sokay since it just fails and restarts.
-					//if healer job is tend maybe?
-
 					//Find some more needed nearby
 					//bestMed is dropped in Notify_Start, but these aren't tracked there so they are dropped now.
 
@@ -446,7 +450,7 @@ namespace SmartMedicine
 							closeMed.DebugLog("More: ");
 
 							if (DistanceTo(droppedMedicine ?? bestMed.pawn, closeMed.pawn ?? closeMed.thing) > 8f) //8f as defined in CheckForGetOpportunityDuplicate
-								return false;
+								break;
 
 							dropCount = Mathf.Min(closeMed.thing.stackCount, count);
 							closeMed.DebugLog("Using: (" + dropCount + ")");
@@ -454,17 +458,11 @@ namespace SmartMedicine
 							closeMed.pawn?.inventory.innerContainer.TryDrop(closeMed.thing, ThingPlaceMode.Near, dropCount, out droppedMedicine);
 							if (droppedMedicine != null && !droppedMedicine.IsForbidden(healer) && healer.CanReserve(droppedMedicine, maxPawns, count))
 								count -= dropCount;
-							//else return false;
 						}
 					}
 				}
-
-				//Use it!
-				//Log.Message("using inventory " + medicine);
-				//healer.carryTracker.innerContainer.TryAddOrTransfer(medicine, count);
-				//__result = medicine;
 			}
-			return __result == null;
+			return bestMed.thing;
 		}
 
 		private static Thing FindBestMedicineInInventory(Pawn pawn, Pawn patient, Predicate<Thing> validatorMed, float sufficientQuality, bool isHealer)
