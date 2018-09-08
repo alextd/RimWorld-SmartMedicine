@@ -21,17 +21,20 @@ namespace SmartMedicine
 		public static bool Prefix(Pawn pawn, Thing t, ref Job __result)
 		{
 			Pawn patient = t as Pawn;
-			Thing thing = null;
 			if (Medicine.GetMedicineCountToFullyHeal(patient) > 0)
 			{
-				thing = FindBestMedicine.Find(pawn, patient, out int medCount);
-				__result = new Job(JobDefOf.TendPatient, patient, thing)
+				List<ThingCount> meds = FindBestMedicine.Find(pawn, patient, out int medCount);
+				Job job = new Job(JobDefOf.TendPatient, patient, meds.FirstOrDefault().Thing);
+				job.count = medCount;
+				if (meds.Count() > 1)
 				{
-					count = medCount
-				};
+					job.targetQueueA = meds.Skip(1).Select(med => new LocalTargetInfo(med.Thing)).ToList();
+					job.countQueue = meds.Skip(1).Select(med => med.Count).ToList();
+				}
+				__result = job;
 			}
 			else
-				__result = new Job(JobDefOf.TendPatient, patient, thing);
+				__result = new Job(JobDefOf.TendPatient, patient);
 
 			return false;
 		}
@@ -114,38 +117,55 @@ namespace SmartMedicine
 			Pawn healer = __instance.pawn;
 			Pawn patient = job.targetA.Thing as Pawn;
 			Thing medicineToDrop = job.targetB.Thing;
+			int needCount = Mathf.Min(medicineToDrop.stackCount, job.count);
 
-			Log.Message(healer + " Starting Tend with  (" + medicineToDrop + ")");
+			Log.Message($"{healer} Starting Tend with {medicineToDrop}");
 
-			if (medicineToDrop == null || medicineToDrop.holdingOwner == null) return;
+			job.targetB = DropIt(medicineToDrop, needCount, healer, job);
+
+			List<LocalTargetInfo> sharedMedicines = job.targetQueueA;
+			List<int> sharedMedicineCounts = job.countQueue;
+			if (sharedMedicines != null)
+			{
+				for (int i = 0; i < sharedMedicines.Count(); i++)
+				{
+					Log.Message($"{healer} queuing medicine {sharedMedicines[i].Thing}");
+					DropIt(sharedMedicines[i].Thing, sharedMedicineCounts[i], healer, job);
+				}
+			}
+		}
+
+		public static Thing DropIt(Thing medicineToUse, int needCount, Pawn healer, Job job)
+		{
+			if (medicineToUse == null || medicineToUse.holdingOwner == null) return null;
 
 			//Well apparently inventory items can be forbidden
-			medicineToDrop.SetForbidden(false, false);
+			medicineToUse.SetForbidden(false, false);
 
-			int needCount = Mathf.Min(medicineToDrop.stackCount, job.count);
 			Thing droppedMedicine = null;
-			if (medicineToDrop.holdingOwner.Owner is Pawn_InventoryTracker holder)
+			if (medicineToUse.holdingOwner.Owner is Pawn_InventoryTracker holder)
 			{
-				Log.Message(holder.pawn + " dropping " + medicineToDrop + "x" + needCount);
-				holder.innerContainer.TryDrop(medicineToDrop, ThingPlaceMode.Direct, needCount, out droppedMedicine);
+				Log.Message(holder.pawn + " dropping " + medicineToUse + "x" + needCount);
+				holder.innerContainer.TryDrop(medicineToUse, ThingPlaceMode.Direct, needCount, out droppedMedicine);
 			}
-			else if (medicineToDrop.holdingOwner.Owner is Pawn_CarryTracker carrier)
+			else if (medicineToUse.holdingOwner.Owner is Pawn_CarryTracker carrier)
 			{
-				Log.Message(carrier.pawn + " dropping carried " + medicineToDrop + "x" + needCount);
-				carrier.innerContainer.TryDrop(medicineToDrop, ThingPlaceMode.Direct, needCount, out droppedMedicine);
+				Log.Message(carrier.pawn + " dropping carried " + medicineToUse + "x" + needCount);
+				carrier.innerContainer.TryDrop(medicineToUse, ThingPlaceMode.Direct, needCount, out droppedMedicine);
 			}
 
 			if (droppedMedicine != null)
 			{
+				medicineToUse = droppedMedicine;
 				Log.Message(healer + " now tending with " + droppedMedicine);
-				job.targetB = droppedMedicine;
 				if (droppedMedicine.IsForbidden(healer))
 					Log.Message(droppedMedicine + " is Forbidden, job will restart");
 			}
 
-			Log.Message("Okay, doing reservations");
-			if (healer.ReserveAsMuchAsPossible(job.targetB.Thing, job, FindBestMedicine.maxPawns, needCount) == 0)
-				Verse.Log.Warning("Needed medicine " + job.targetB.Thing + " for " + healer + " seemed to be in a reserved stack. Job will fail but should try again, so ignore the error please.");
+			if (healer.ReserveAsMuchAsPossible(medicineToUse, job, FindBestMedicine.maxPawns, needCount) == 0)
+				Verse.Log.Warning("Needed medicine " + medicineToUse + " for " + healer + " seemed to be in a reserved stack. Job will fail but should try again, so ignore the error please.");
+
+			return medicineToUse;
 		}
 	}
 
@@ -202,6 +222,15 @@ namespace SmartMedicine
 			MethodInfo FindBestMedicineInfo = AccessTools.Method(typeof(HealthAIUtility), nameof(HealthAIUtility.FindBestMedicine));
 			MethodInfo FindInfo = AccessTools.Method(typeof(FindBestMedicine), nameof(FindBestMedicine.Find));
 
+
+			//MethodInfo FirstOrDefaultInfo = AccessTools.Method(typeof(Enumerable), "FirstOrDefault", new Type[] { typeof(IEnumerable<ThingCount>) }, new Type[] { typeof(IEnumerable<ThingCount>) });
+			//MethodInfo FirstOrDefaultInfo = AccessTools.FirstMethod(typeof(Enumerable), mi => mi.Name == "FirstOrDefault" && mi.GetParameters().Count() == 1);
+			//FirstOrDefaultInfo = FirstOrDefaultInfo.MakeGenericMethod(new Type[] { typeof(IEnumerable<ThingCount>) });
+			//MethodInfo ThingCountThingInfo = AccessTools.Property(typeof(ThingCount), "Thing").GetGetMethod();
+
+			//
+			MethodInfo GetTheBloodyThingInfo = AccessTools.Method(typeof(MakeNewToils_Patch), "GetTheBloodyThing");
+
 			FieldInfo jobFieldInfo = AccessTools.Field(
 				typeof(JobDriver), nameof(JobDriver.job));
 			FieldInfo jobCountInfo = AccessTools.Field(
@@ -224,10 +253,17 @@ namespace SmartMedicine
 					foreach (CodeInstruction jobI in jobInstructions)
 						yield return jobI;
 					yield return new CodeInstruction(OpCodes.Ldflda, jobCountInfo);
-					i.operand = FindInfo;
+					yield return new CodeInstruction(OpCodes.Call, FindInfo);
+					yield return new CodeInstruction(OpCodes.Call, GetTheBloodyThingInfo);
+					//yield return new CodeInstruction(OpCodes.Call, FirstOrDefaultInfo);
+					//yield return new CodeInstruction(OpCodes.Call, ThingCountThingInfo);
 				}
-				yield return i;
+				else yield return i;
 			}
+		}
+		public static Thing GetTheBloodyThing(List<ThingCount> x)
+		{
+			return x.FirstOrDefault().Thing;
 		}
 	}
 
@@ -290,12 +326,12 @@ namespace SmartMedicine
 			if (patient.playerSettings == null || patient.playerSettings.medCare <= MedicalCareCategory.NoMeds || Medicine.GetMedicineCountToFullyHeal(patient) <= 0)
 				return true;
 
-			__result = Find(healer, patient, out int dummy);
+			__result = Find(healer, patient, out int dummy).FirstOrDefault().Thing;
 			return __result == null;
 		}
 
 		//public static Thing FindBestMedicine(Pawn healer, Pawn patient)
-		public static Thing Find(Pawn healer, Pawn patient, out int totalCount)
+		public static List<ThingCount> Find(Pawn healer, Pawn patient, out int totalCount)
 		{
 			totalCount = 0;
 			Log.Message(healer + " is tending to " + patient);
@@ -392,6 +428,7 @@ namespace SmartMedicine
 
 			MedicineEvaluator bestMed = allMeds.LastOrDefault();
 
+			List<ThingCount> result = new List<ThingCount>();
 			if (bestMed.thing != null)
 			{
 				allMeds.RemoveLast();
@@ -420,49 +457,37 @@ namespace SmartMedicine
 				totalCount = count;
 				Log.Message("Medicine count = " + count);
 
-				if (bestMed.pawn == null)
+				bestMed.DebugLog("Best Med on " + (bestMed.pawn == null ? "ground" : "hand") + ":");
+				
+				int usedCount = Mathf.Min(bestMed.thing.stackCount, count);
+				result.Add(new ThingCount(bestMed.thing, usedCount));
+				count -= usedCount;
+				//Find some more needed nearby
+				if (count > 0)
 				{
-					bestMed.DebugLog("Best Med on ground:");
-				}
-				else
-				{
-					bestMed.DebugLog("Best Med on hand: ");
-
-					//Drop it!
-					int dropCount = Mathf.Min(bestMed.thing.stackCount, count);
-					count -= dropCount;
-					//Find some more needed nearby
-					//bestMed is dropped in Notify_Start, but these aren't tracked there so they are dropped now.
-
-					//In a very odd case that you right-click assign a tend and a second pawn's medicine is needed, he might drop his entire inventory
-					// That's a vanilla thing though that calls JobOnThing over and over instead of HasJobOnThing
-					if (count > 0)
+					List<MedicineEvaluator> equalMedicines = allMeds.FindAll(eval => eval.rating == bestMed.rating);
+					equalMedicines.SortBy(eval => DistanceTo(bestMed.pawn ?? bestMed.thing, eval.pawn ?? eval.thing));
+					Thing droppedMedicine = null;
+					Log.Message("But needs " + count + " more");
+					while (count > 0 && equalMedicines.Count > 0)
 					{
-						List<MedicineEvaluator> equalMedicines = allMeds.FindAll(eval => eval.rating == bestMed.rating);
-						equalMedicines.SortBy(eval => DistanceTo(bestMed.pawn, eval.pawn ?? eval.thing));
-						Thing droppedMedicine = null;
-						Log.Message("But needs " + count + " more");
-						while (count > 0 && equalMedicines.Count > 0)
-						{
-							MedicineEvaluator closeMed = equalMedicines.First();
-							equalMedicines.RemoveAt(0);
+						MedicineEvaluator closeMed = equalMedicines.First();
+						equalMedicines.RemoveAt(0);
 
-							closeMed.DebugLog("More: ");
+						closeMed.DebugLog("More: ");
 
-							if (DistanceTo(droppedMedicine ?? bestMed.pawn, closeMed.pawn ?? closeMed.thing) > 8f) //8f as defined in CheckForGetOpportunityDuplicate
-								break;
+						if (DistanceTo(droppedMedicine ?? bestMed.pawn ?? bestMed.thing, closeMed.pawn ?? closeMed.thing) > 8f) //8f as defined in CheckForGetOpportunityDuplicate
+							break;
 
-							dropCount = Mathf.Min(closeMed.thing.stackCount, count);
-							closeMed.DebugLog("Using: (" + dropCount + ")");
+						usedCount = Mathf.Min(closeMed.thing.stackCount, count);
+						closeMed.DebugLog("Using: (" + usedCount + ")");
 
-							closeMed.pawn?.inventory.innerContainer.TryDrop(closeMed.thing, ThingPlaceMode.Near, dropCount, out droppedMedicine);
-							if (droppedMedicine != null && !droppedMedicine.IsForbidden(healer) && healer.CanReserve(droppedMedicine, maxPawns, count))
-								count -= dropCount;
-						}
+						result.Add(new ThingCount(closeMed.thing, usedCount));
+						count -= usedCount;
 					}
 				}
 			}
-			return bestMed.thing;
+			return result;
 		}
 
 		private static Thing FindBestMedicineInInventory(Pawn pawn, Pawn patient, Predicate<Thing> validatorMed, float sufficientQuality, bool isHealer)
