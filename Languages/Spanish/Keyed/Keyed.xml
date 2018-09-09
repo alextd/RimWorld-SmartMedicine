@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+	
+	<TD.SettingDoctorInv>Usar medicina del inventario del médico</TD.SettingDoctorInv>
+	<TD.SettingPatientInv>Usar medicina del inventario del paciente</TD.SettingPatientInv>
+	<TD.SettingNearby>... Pero priorizar el uso de medicina cercana (si es de la misma calidad)</TD.SettingNearby>
+	<TD.SettingNearbyDesc>Esto también verifica si hay medicinas en el camino hacia el paciente. (basado en la distancia aproximada, no en la trayectoria real)</TD.SettingNearbyDesc>
+	<TD.SettingNearbyDist>A qué distancia se puede caminar para encontrar medicina cercana</TD.SettingNearbyDist>
+	<TD.SpacesFormat>{0:0} casillas</TD.SpacesFormat>
+	<TD.SettingNearbyDistDesc>Esto es sólo una excepción para la medicina de inventario. - Si no hay medicina en el inventario, podrán caminar hasta el final del mapa para recoger la medicina.</TD.SettingNearbyDistDesc>
+	<TD.SettingOtherInv>Dejar caer la medicina del inventario de los colonos cercanos.</TD.SettingOtherInv>
+	<TD.SettingAnimalInv>Dejar caer la medicina del inventario de los animales cercanos</TD.SettingAnimalInv>
+	<TD.SettingOtherAnyDist>... Sin importar la distancia</TD.SettingOtherAnyDist>
+	<TD.SettingOtherAnyDistDesc>Verificar el uso de mejores medicinas de alguien lejano, pero a costa de caminar hasta allí.</TD.SettingOtherAnyDistDesc>
+	<TD.SettingOtherDist>Cuánto hay que caminar para conseguirlo</TD.SettingOtherDist>
+	<TD.SettingMinimal>Usar la medicina mínima para los tratamientos no urgentes</TD.SettingMinimal>
+	<TD.SettingMinimalDesc>Se considera tratamiento de urgencia cualquier enfermedad o lesión con sangrado, riesgo de infección o efectos permanentes. - Guardar medicinas valiosas sólo para estos</TD.SettingMinimalDesc>
+	<TD.SettingNoMed>Sin medicinas para tratamientos no urgentes</TD.SettingNoMed>
+	<TD.SettingNoMedDesc>Igual que el anterior, pero sin medicamentos, cada lesión se trata una por una.</TD.SettingNoMedDesc>
+	<TD.SettingMedicineGoodEnough>... incluir medicinas que sean lo suficientemente buenas:</TD.SettingMedicineGoodEnough>
+	<TD.SettingStockUp>Abastecerse de medicinas &amp; drogas</TD.SettingStockUp>
+	<TD.SettingStockUpDesc>La configuración de abastecimiento se encuentra en la pestaña Equipo del colono</TD.SettingStockUpDesc>
+	<TD.SettingFieldTendingNoBeds>Los médicos tratarán a los pacientes aún si no hay camas disponibles</TD.SettingFieldTendingNoBeds>
+	<TD.SettingFieldTendingNoBedsDesc>El paciente debe estar descansando, derribado o reclutado para poder ser tratado</TD.SettingFieldTendingNoBedsDesc>
+	<TD.SettingFieldTendingAlways>Los médicos siempre pueden atender, con o sin cama.</TD.SettingFieldTendingAlways>
+	<TD.SettingFieldTendingAlwaysDesc>Los colonos priorizarán ir a la cama, pero es posible reclutar a los pacientes para mantenerlos en su posición.</TD.SettingFieldTendingAlwaysDesc>
+	<TD.SmartMedicine>Smart Medicine</TD.SmartMedicine>
+	<TD.StockUpSettings>Configurar el abastecimiento</TD.StockUpSettings>
+	<TD.StockUpSettingsForPawn>Configurar el abastecimiento para {0}</TD.StockUpSettingsForPawn>
+	<TD.ClearStockUp>Borrar la configuración de abastecimiento</TD.ClearStockUp>
+	<TD.CancelCopyStockUp>Cancelar la copia de la configuración de {0}</TD.CancelCopyStockUp>
+	<TD.CopyStockUpFrom>Copiar la configuración de abastecimiento de {0}</TD.CopyStockUpFrom>
+	<TD.SettingsMedicineGoodEnoughDesc>Por ejemplo, si las hierbas medicinales hacen el trabajo un 90% tan bien como las normales, usar hierbas en su lugar</TD.SettingsMedicineGoodEnoughDesc>
+	<TD.SettingStockUpEnough>Abastecerse sólo si hay suficiente disponible:</TD.SettingStockUpEnough>
+	<TD.SettingStockUpEnoughDesc>Por ejemplo, al 150%, las reservas necesitan tener suficiente para que todos puedan almacenar hasta el 100%, más el 50% extra.</TD.SettingStockUpEnoughDesc>
+	<TD.SettingStockUpReturn>Devolver los objetos si no hay suficientes disponibles</TD.SettingStockUpReturn>
+	<TD.Paused>Pausado</TD.Paused>
+	<TD.NotEnoughStockUp>No hay suficiente disponible para abastecerse</TD.NotEnoughStockUp>
+	
+</LanguageData>
