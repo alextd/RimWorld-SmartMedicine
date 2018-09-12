@@ -24,8 +24,9 @@ namespace TD.Utilities
 	ExDictionary<K, V> d1 = new ExDictionary<K, V>("name1")
 	ExDictionary<K, V> d2 = new ExDictionary<K, V>("name2") 
 
-		ExDictionary assumes loading by reference when the Type is capable.
-		e.g., if V is IExposable and ILoadReferencable but this is where it is stored:
+		ExDictionary assumes loading by LookMode.Reference when the Type is ILoadReferencable.
+		But if your ExDictionary is the primary storage for its contents, loading needs to be Deep:
+		e.g. if V is IExposable and ILoadReferencable:
 	
 	ExDictionary<K, V> d = new ExDictionary<K, V>() {valMode = LookMode.Deep} 
 	
