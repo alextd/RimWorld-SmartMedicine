@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+	<Operation Class="PatchOperationInsert">
+		<xpath>Defs/PawnTableDef[defName="Assign"]/columns/li[text() = 'GapTiny']</xpath>
+		<value>
+			<li>UnlimitedSurgery</li>
+		</value>
+	</Operation>
+</Patch>
