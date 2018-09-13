@@ -19,11 +19,12 @@ namespace SmartMedicine.SurgeryUnlimited
 		public SurgeryUnlimitedGameComponent(Game game)
 		{
 			surgeryUnlimitedDefault = Settings.Get().defaultUnlimitedSurgery;
+			surgeryUnlimited = new HashSet<Pawn>();
 		}
 
 		public static SurgeryUnlimitedGameComponent Get()
 		{
-			return Current.Game.GetComponent<SurgeryUnlimitedGameComponent>();
+			return Current.Game?.GetComponent<SurgeryUnlimitedGameComponent>();
 		}
 
 		public void Set(Pawn pawn, bool val)
@@ -74,7 +75,7 @@ namespace SmartMedicine.SurgeryUnlimited
 			Pawn pawn = (Pawn)AccessTools.Field(typeof(Pawn_PlayerSettings), "pawn").GetValue(__instance);
 
 			SurgeryUnlimitedGameComponent comp = SurgeryUnlimitedGameComponent.Get();
-			comp.Set(pawn, comp.surgeryUnlimitedDefault);
+			comp?.Set(pawn, comp.surgeryUnlimitedDefault);
 		}
 	}
 
