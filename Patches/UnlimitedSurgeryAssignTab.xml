@@ -6,4 +6,11 @@
 			<li>UnlimitedSurgery</li>
 		</value>
 	</Operation>
+	
+	<Operation Class="PatchOperationInsert">
+		<xpath>Defs/DynamicPawnTable.DynamicPawnTableDef[defName="Medical"]/columns/li[text() = 'GapSmall']</xpath>
+		<value>
+			<li>UnlimitedSurgery</li>
+		</value>
+	</Operation>
 </Patch>
