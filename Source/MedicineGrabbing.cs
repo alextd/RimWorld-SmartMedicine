@@ -117,6 +117,7 @@ namespace SmartMedicine
 			Pawn healer = __instance.pawn;
 			Pawn patient = job.targetA.Thing as Pawn;
 			Thing medicineToDrop = job.targetB.Thing;
+			if (medicineToDrop == null || medicineToDrop.holdingOwner == null) return;
 			int needCount = Mathf.Min(medicineToDrop.stackCount, job.count);
 
 			Log.Message($"{healer} Starting Tend with {medicineToDrop}");
