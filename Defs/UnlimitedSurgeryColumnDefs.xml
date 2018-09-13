@@ -3,7 +3,7 @@
 
 	<PawnColumnDef>
 		<defName>UnlimitedSurgery</defName>
-		<headerTip>Surgery uses best medicine</headerTip>
+		<headerTip>Surgery uses best medicine (ignore medical care setting)</headerTip>
 		<headerIcon>MedicalRest</headerIcon>
 		<workerClass>SmartMedicine.SurgeryUnlimited.PawnColumnWorker_UnlimitedSurgery</workerClass>
 		<sortable>true</sortable>
