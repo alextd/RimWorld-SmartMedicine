@@ -52,7 +52,6 @@ namespace SmartMedicine
 		//public static Toil ExtractNextTargetFromQueue(TargetIndex ind, bool failIfCountFromQueueTooBig = true)
 		public static void Postfix (Toil __result, TargetIndex ind)
 		{
-			Log.Message($"Adding action to {__result}");
 			__result.AddFinishAction(() =>
 			{
 				Pawn actor = __result.actor;

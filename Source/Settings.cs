@@ -30,6 +30,8 @@ namespace SmartMedicine
 		public bool fieldTendingForLackOfBed = false;
 		public bool fieldTendingAlways = false;
 
+		public bool defaultUnlimitedSurgery = false;
+
 		public bool FieldTendingActive(Pawn patient)
 		{
 			return patient.IsFreeColonist && 
@@ -93,6 +95,9 @@ namespace SmartMedicine
 			options.CheckboxLabeled("TD.SettingFieldTendingAlways".Translate(), ref fieldTendingAlways, "TD.SettingFieldTendingAlwaysDesc".Translate());
 			if (fieldTendingAlways)
 				fieldTendingForLackOfBed = false;
+			options.Gap();
+
+			options.CheckboxLabeled("Medical settings for surgery default to using best available medicine", ref defaultUnlimitedSurgery);
 
 			options.End();
 		}
@@ -118,6 +123,7 @@ namespace SmartMedicine
 
 			Scribe_Values.Look(ref fieldTendingForLackOfBed, "fieldTendingForLackOfBed", false);
 			Scribe_Values.Look(ref fieldTendingAlways, "fieldTendingAlways", false);
+			Scribe_Values.Look(ref defaultUnlimitedSurgery, "defaultUnlimitedSurgery", false);
 		}
 	}
 }
