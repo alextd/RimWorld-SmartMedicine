@@ -10,11 +10,11 @@ using Harmony;
 namespace SmartMedicine
 {
 	[HarmonyPatch(typeof(WorkGiver_DoBill), "TryFindBestBillIngredients")]
-	[HarmonyPriority(Priority.First)]
+	[HarmonyPriority(Priority.Last)]	//Patch applied last, means the prefix goes first.
 	public static class HackityGetBill
 	{
 		public static Bill bill;
-		//private static bool TryFindBestBillIngredients(, Pawn pawn, Thing billGiver, List<ThingCount> chosen)
+		//private static bool TryFindBestBillIngredients(Bill bill, Pawn pawn, Thing billGiver, List<ThingCount> chosen)
 		public static void Prefix(Bill bill)
 		{
 			HackityGetBill.bill = bill;
