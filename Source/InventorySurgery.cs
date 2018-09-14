@@ -10,6 +10,7 @@ using Harmony;
 namespace SmartMedicine
 {
 	[HarmonyPatch(typeof(WorkGiver_DoBill), "TryFindBestBillIngredients")]
+	[HarmonyPriority(Priority.First)]
 	public static class HackityGetBill
 	{
 		public static Bill bill;
@@ -26,6 +27,11 @@ namespace SmartMedicine
 		//private static void AddEveryMedicineToRelevantThings(Pawn pawn, Thing billGiver, List<Thing> relevantThings, Predicate<Thing> baseValidator, Map map)
 		public static void Postfix(Pawn pawn, Thing billGiver, List<Thing> relevantThings, Map map)
 		{
+			if(HackityGetBill.bill == null)
+			{
+				Verse.Log.Warning($"Smart Medicine Inventory Surgery not going to work for {pawn}; mod conflict in AddEveryMedicineToRelevantThings or TryFindBestBillIngredients?");
+				return;
+			}
 			Predicate<Thing> baseValidator = (Thing t) => HackityGetBill.bill.IsFixedOrAllowedIngredient(t) && HackityGetBill.bill.recipe.ingredients.Any((IngredientCount ingNeed) => ingNeed.filter.Allows(t));
 			Log.Message($"AddEveryMedicineToRelevantThings ({pawn}, {billGiver}, {HackityGetBill.bill})");
 			MedicalCareCategory medicalCareCategory = (MedicalCareCategory)AccessTools.Method(typeof(WorkGiver_DoBill), "GetMedicalCareCategory").Invoke(null, new object[] { billGiver });
@@ -43,6 +49,8 @@ namespace SmartMedicine
 			}
 			if (added)
 				relevantThings.SortBy((Thing x) => -x.GetStatValue(StatDefOf.MedicalPotency, true), (Thing x) => x.Spawned ? x.Position.DistanceToSquared(billGiver.Position) : 0);
+
+			HackityGetBill.bill = null;
 		}
 	}
 
