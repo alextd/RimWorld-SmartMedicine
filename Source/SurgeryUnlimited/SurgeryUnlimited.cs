@@ -50,7 +50,7 @@ namespace SmartMedicine.SurgeryUnlimited
 		{
 			Rect botRect = inRect.BottomPartPixels(Text.LineHeight);
 			botRect.y -= 40f;//CloseButSize
-			Widgets.CheckboxLabeled(botRect, "Surgery uses best medicine available", ref SurgeryUnlimitedGameComponent.Get().surgeryUnlimitedDefault);
+			Widgets.CheckboxLabeled(botRect, "TD.DefaultSurgeryUnlimited".Translate(), ref SurgeryUnlimitedGameComponent.Get().surgeryUnlimitedDefault);
 		}
 	}
 
@@ -119,7 +119,7 @@ namespace SmartMedicine.SurgeryUnlimited
 				Rect rect2 = new Rect(0f, curY, leftRect.width, 24f);
 				SurgeryUnlimitedGameComponent comp = SurgeryUnlimitedGameComponent.Get();
 				bool surgeryUnlimited = comp.surgeryUnlimited.Contains(pawn);
-				Widgets.CheckboxLabeled(rect2, "Surgery uses best", ref surgeryUnlimited);
+				Widgets.CheckboxLabeled(rect2, "TD.PawnSettingSurgeryUnlimited".Translate(), ref surgeryUnlimited);
 				comp.Set(pawn, surgeryUnlimited);
 
 				curY += 28f;

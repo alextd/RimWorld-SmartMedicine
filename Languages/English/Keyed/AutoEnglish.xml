@@ -36,5 +36,8 @@
 	<TD.SettingStockUpReturn>Return items if not enough available</TD.SettingStockUpReturn>
 	<TD.Paused>Paused</TD.Paused>
 	<TD.NotEnoughStockUp>Not enough available to stock up</TD.NotEnoughStockUp>
+	<TD.SettingGlobalSurgeryUnlimited>Medical settings for surgery default to using best available medicine</TD.SettingGlobalSurgeryUnlimited>
+	<TD.DefaultSurgeryUnlimited>Surgery uses best medicine available</TD.DefaultSurgeryUnlimited>
+	<TD.PawnSettingSurgeryUnlimited>Surgery uses best</TD.PawnSettingSurgeryUnlimited>
 	
 </LanguageData>

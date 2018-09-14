@@ -97,7 +97,7 @@ namespace SmartMedicine
 				fieldTendingForLackOfBed = false;
 			options.Gap();
 
-			options.CheckboxLabeled("Medical settings for surgery default to using best available medicine", ref defaultUnlimitedSurgery);
+			options.CheckboxLabeled("TD.SettingGlobalSurgeryUnlimited".Translate(), ref defaultUnlimitedSurgery);
 
 			options.End();
 		}
