@@ -19,9 +19,10 @@ namespace TD.Utilities
 
 			Thing thing = target.Thing;
 			int desired = stackCount == ReservationManager.StackCount_All ? thing.stackCount : stackCount;
+			desired = Math.Min(desired, thing.stackCount);
 			canDo = Math.Min(canDo, desired);
 
-			p.Reserve(target, job, maxPawns, stackCount, layer);
+			p.Reserve(target, job, maxPawns, canDo, layer);
 
 			return canDo;
 		}
