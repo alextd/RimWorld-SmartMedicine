@@ -147,25 +147,25 @@ namespace SmartMedicine
 			Thing droppedMedicine = null;
 			if (medicineToUse.holdingOwner.Owner is Pawn_InventoryTracker holder)
 			{
-				Log.Message(holder.pawn + " dropping " + medicineToUse + "x" + needCount);
+				Log.Message("{holder.pawn} dropping {medicineToUse}x{needCount}");
 				holder.innerContainer.TryDrop(medicineToUse, ThingPlaceMode.Direct, needCount, out droppedMedicine);
 			}
 			else if (medicineToUse.holdingOwner.Owner is Pawn_CarryTracker carrier)
 			{
-				Log.Message(carrier.pawn + " dropping carried " + medicineToUse + "x" + needCount);
+				Log.Message("{carrier.pawn} dropping carried {medicineToUse}x{needCount}");
 				carrier.innerContainer.TryDrop(medicineToUse, ThingPlaceMode.Direct, needCount, out droppedMedicine);
 			}
 
 			if (droppedMedicine != null)
 			{
 				medicineToUse = droppedMedicine;
-				Log.Message(healer + " now tending with " + droppedMedicine);
+				Log.Message("{healer} now tending with {droppedMedicine}");
 				if (droppedMedicine.IsForbidden(healer))
-					Log.Message(droppedMedicine + " is Forbidden, job will restart");
+					Log.Message("{droppedMedicine} is Forbidden, job will restart");
 			}
 
 			if (healer.ReserveAsMuchAsPossible(medicineToUse, job, FindBestMedicine.maxPawns, needCount) == 0)
-				Verse.Log.Warning("Needed medicine " + medicineToUse + " for " + healer + " seemed to be in a reserved stack. Job will fail but should try again, so ignore the error please.");
+				Verse.Log.Warning($"Needed medicine {medicineToUse} for {healer} seemed to be in a reserved stack. Job will fail but should try again, so ignore the error please.");
 
 			return medicineToUse;
 		}
@@ -287,7 +287,7 @@ namespace SmartMedicine
 			[System.Diagnostics.Conditional("DEBUG")]
 			public void DebugLog(string label = null)
 			{
-				Log.Message((label ?? "") + thing + "@" + rating + " (dist: " + distance + ")" + (pawn == null ? "" : " by " + pawn));
+				Log.Message($"{label} {thing} @{rating} (dist: {distance}) (pawn: {pawn})");
 			}
 
 			public int CompareTo(object o)
@@ -336,7 +336,7 @@ namespace SmartMedicine
 		public static List<ThingCount> Find(Pawn healer, Pawn patient, out int totalCount)
 		{
 			totalCount = 0;
-			Log.Message(healer + " is tending to " + patient);
+			Log.Message("{healer} is tending to {patient}");
 
 			float sufficientQuality = maxMedicineQuality + 1; // nothing is sufficient!
 			if (Settings.Get().minimalMedicineForNonUrgent)
@@ -344,7 +344,7 @@ namespace SmartMedicine
 				if (patient.health.hediffSet.hediffs.All(h => !h.TendableNow() || !h.IsUrgent()))
 				{
 					sufficientQuality = minMedicineQuality;
-					Log.Message("Sufficient medicine for non-urgent care is " + sufficientQuality);
+					Log.Message($"Sufficient medicine for non-urgent care is {sufficientQuality}");
 				}
 			}
 
@@ -437,7 +437,7 @@ namespace SmartMedicine
 				if (Settings.Get().useCloseMedicine && bestMed.pawn != null)
 				{
 					bestMed.DebugLog("Best: ");
-					Log.Message("checking nearby:");
+					Log.Message($"checking nearby:");
 					List<MedicineEvaluator> equalMedicines = groundEvaluators.FindAll(eval => eval.rating == bestMed.rating);
 					if (equalMedicines.Count > 0)
 					{
@@ -452,12 +452,12 @@ namespace SmartMedicine
 				if (allMeds.Count == 0 || bestMed.rating == allMeds.MinBy(m => m.rating).rating)
 				{
 					GetMedicineCountToFullyHeal_Patch.__beep_beep_MinimalMedicineAvailable = false;
-					Log.Message("No minimal medicine available");
+					Log.Message($"No minimal medicine available");
 				}
 				int count = Medicine.GetMedicineCountToFullyHeal(patient);
 
 				totalCount = count;
-				Log.Message("Medicine count = " + count);
+				Log.Message($"Medicine count = {count}");
 
 				bestMed.DebugLog("Best Med on " + (bestMed.pawn == null ? "ground" : "hand") + ":");
 				
@@ -470,7 +470,7 @@ namespace SmartMedicine
 					List<MedicineEvaluator> equalMedicines = allMeds.FindAll(eval => eval.rating == bestMed.rating);
 					equalMedicines.SortBy(eval => DistanceTo(bestMed.pawn ?? bestMed.thing, eval.pawn ?? eval.thing));
 					Thing droppedMedicine = null;
-					Log.Message("But needs " + count + " more");
+					Log.Message($"But needs {count} more");
 					while (count > 0 && equalMedicines.Count > 0)
 					{
 						MedicineEvaluator closeMed = equalMedicines.First();
@@ -482,7 +482,7 @@ namespace SmartMedicine
 							break;
 
 						usedCount = Mathf.Min(closeMed.thing.stackCount, count);
-						closeMed.DebugLog("Using: (" + usedCount + ")");
+						closeMed.DebugLog("Using: ({usedCount})");
 
 						result.Add(new ThingCount(closeMed.thing, usedCount));
 						count -= usedCount;
