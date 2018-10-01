@@ -36,7 +36,7 @@ namespace SmartMedicine
 					null, null, new HarmonyMethod(typeof(MakeNewToils_Patch), "Transpiler"));
 			}
 
-			harmony.PatchAll(Assembly.GetExecutingAssembly());
+			harmony.PatchAll();
 		}
 
 		public static bool EnsureInitializedInCtorPrefix()
