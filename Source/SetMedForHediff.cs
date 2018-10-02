@@ -19,11 +19,13 @@ namespace SmartMedicine
 			hediffCare = new Dictionary<Hediff, MedicalCareCategory>();
 		}
 
+		/*
 		public override void ExposeData()
 		{
 			base.ExposeData();
 			Scribe_Collections.Look(ref hediffCare, "hediffCare");
 		}
+		*/
 
 		public static Dictionary<Hediff, MedicalCareCategory> Get()
 		{
