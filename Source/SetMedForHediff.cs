@@ -71,13 +71,82 @@ namespace SmartMedicine
 					list.Add(new FloatMenuOption(mc.GetLabel(), delegate
 					{
 						foreach (Hediff h in diffs)
+						{
+							Log.Message($"Setting heCare for {pawn} {h} = {mc}");
 							MedForHediffComp.Get()[h] = mc;
+						}
 					}));
 				}
 				Find.WindowStack.Add(new FloatMenu(list));
 				return false;
 			}
 			return true;
+		}
+	}
+
+	[StaticConstructorOnStartup]
+	[HarmonyPatch(typeof(HealthCardUtility), "DrawHediffRow")]
+	public static class DrawHediffCareIcon
+	{
+		//private static void DrawHediffRow(Rect rect, Pawn pawn, IEnumerable<Hediff> diffs, ref float curY)
+		public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase mb)
+		{
+			//Find local Hediff
+			LocalVariableInfo localHediffInfo = mb.GetMethodBody().LocalVariables.First(lv => lv.LocalType == typeof(Hediff));
+			Log.Message($"Transpling with {localHediffInfo}");
+
+			MethodInfo DrawHediffCareInfo = AccessTools.Method(typeof(DrawHediffCareIcon), nameof(DrawHediffCare));
+
+			List<CodeInstruction> instList = instructions.ToList();
+			for (int i = 0; i < instList.Count; i++)
+			{
+				//Find double curY for curY +=
+				//IL_03bd: ldarg.3      // curY
+				//IL_03be: ldarg.3      // curY
+				if (instList[i].opcode == OpCodes.Ldarg_3 &&
+					instList[i + 1].opcode == OpCodes.Ldarg_3)//curY
+				{
+					CodeInstruction iconRectInst = null;
+					for (int j = i - 1; j >= 0; j--)
+					{
+						Log.Message($"looking for iconRectInst {instList[j]}");
+						//First previous local var should be the icon rect
+						if (instList[j].opcode == OpCodes.Ldloca_S)
+						{
+							Log.Message($"it's {instList[j]}!");
+							iconRectInst = instList[j];
+							break;
+						}
+					}
+					//Insert my hediff care icon
+					yield return new CodeInstruction(OpCodes.Ldloc_S, localHediffInfo.LocalIndex) { labels = instList[i].labels };//hediff
+					yield return iconRectInst;//rect
+					yield return new CodeInstruction(OpCodes.Call, DrawHediffCareInfo);
+					instList[i].labels = null;
+					yield return instList[i];
+				}
+				else 
+					yield return instList[i];
+			}
+		}
+		
+		private static FieldInfo careTexturesField;
+		static DrawHediffCareIcon()
+		{
+			//MedicalCareUtility		private static Texture2D[] careTextures;
+			careTexturesField = AccessTools.Field(typeof(MedicalCareUtility), "careTextures");
+		}
+
+		public static void DrawHediffCare(Hediff hediff, ref Rect iconRect)
+		{
+			Log.Message($"DrawHediffCare({hediff}, {iconRect})");
+			if(MedForHediffComp.Get().TryGetValue(hediff, out MedicalCareCategory heCare))
+			{
+				Log.Message($"hediff care is {heCare}");
+				Texture2D tex = ((Texture2D[])careTexturesField.GetValue(null))[(int)heCare];
+				GUI.DrawTexture(iconRect, tex);
+				iconRect.x -= iconRect.width;
+			}
 		}
 	}
 
@@ -136,8 +205,6 @@ namespace SmartMedicine
 			MethodInfo AllowsMedicineInfo = AccessTools.Method(typeof(MedicalCareUtility), "AllowsMedicine");
 
 			MethodInfo AllowsMedicineForHediffInfo = AccessTools.Method(typeof(JobFailUseMedForHediff), "AllowsMedicineForHediff");
-
-			Log.Message($"transpiling with {medCareInfo}, {AllowsMedicineInfo}, {AllowsMedicineForHediffInfo}");
 
 			//
 			//IL_007d: ldfld        class RimWorld.JobDriver_TendPatient/'<MakeNewToils>c__Iterator0' RimWorld.JobDriver_TendPatient/'<MakeNewToils>c__Iterator0'/'<MakeNewToils>c__AnonStorey1'::'<>f__ref$0'
