@@ -18,6 +18,7 @@ namespace SmartMedicine
 		//public static bool GoodLayingStatusForTend(Pawn patient, Pawn doctor)
 		public static void Postfix(Pawn patient, ref bool __result)
 		{
+			if (!__result) Log.Message($"StatusFor {patient} is {__result}");
 			if (!__result && Settings.Get().FieldTendingActive(patient))
 				__result = (patient.GetPosture() != PawnPosture.Standing)
 					|| (patient.Drafted && patient.jobs.curDriver is JobDriver_Wait	//Tend while idle + drafted
@@ -81,12 +82,19 @@ namespace SmartMedicine
 		{
 			if (Settings.Get().FieldTendingActive(pawn))
 			{
-				//Thing tempTendSpot = ThingMaker.MakeThing(TempSleepSpot);
-				//GenSpawn.Spawn(tempTendSpot, pawn.Position, pawn.Map, WipeMode.FullRefund);
+				Building_Bed tempTendSpot = pawn.CurrentBed() as Building_Bed;
+				if (tempTendSpot?.def != TempSleepSpot &&
+					!GenSpawn.WouldWipeAnythingWith(pawn.Position, Rot4.North, TempSleepSpot, pawn.Map, t => true))
+				{
+					tempTendSpot = ThingMaker.MakeThing(TempSleepSpot) as Building_Bed;
 
-				//Log.Message($"Creating bed {tempTendSpot} for {pawn} at {pawn.Position}");
+					GenSpawn.Spawn(tempTendSpot, pawn.Position, pawn.Map, WipeMode.FullRefund);
+					tempTendSpot.Medical = true;
 
-				return new ThinkResult(new Job(JobDefOf.LayDown, pawn.Position), giver);
+					Log.Message($"Creating bed {tempTendSpot} for {pawn} at {pawn.Position}");
+				}
+
+				return new ThinkResult(new Job(JobDefOf.LayDown, tempTendSpot), giver);
 			}
 			else return ThinkResult.NoJob;
 		}
