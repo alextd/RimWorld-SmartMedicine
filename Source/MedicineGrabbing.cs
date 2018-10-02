@@ -348,18 +348,21 @@ namespace SmartMedicine
 				}
 			}
 
-			MedicalCareCategory priorityCare = MedicalCareCategory.NoCare;
-			if (MedForHediffComp.PriorityCare(patient, out priorityCare))
-				Log.Message($"priority care {priorityCare}");
+			MedicalCareCategory? priorityCare = null;
+			if (MedForHediffComp.PriorityCare(patient, out MedicalCareCategory heCare))
+			{
+				Log.Message($"priority care {heCare}");
+				priorityCare = heCare;
+			}
 
 			//Med
-			Predicate<Thing> validatorMed = t => patient.playerSettings.medCare.AllowsMedicine(t.def) || priorityCare.AllowsMedicine(t.def);
+			Predicate<Thing> validatorMed = t => priorityCare?.AllowsMedicine(t.def) ?? patient.playerSettings.medCare.AllowsMedicine(t.def);
 			try
 			{
 				((Action)(() =>
 				{
 					MedicalCareCategory pharmacistAdvice = Pharmacist.PharmacistUtility.TendAdvice(patient);
-					validatorMed = t => pharmacistAdvice.AllowsMedicine(t.def) || priorityCare.AllowsMedicine(t.def);
+					validatorMed = t => priorityCare?.AllowsMedicine(t.def) ?? pharmacistAdvice.AllowsMedicine(t.def);
 				}))();
 			}
 			catch (Exception) { }
