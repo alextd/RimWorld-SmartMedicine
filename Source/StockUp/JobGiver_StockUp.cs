@@ -19,7 +19,7 @@ namespace SmartMedicine
 	{
 		protected override Job TryGiveJob(Pawn pawn)
 		{
-			Log.Message("{pawn} JobGiver_StockUp");
+			Log.Message($"{pawn} JobGiver_StockUp");
 			if (pawn.StockUpIsFull()) return null;
 
 			Log.Message($"Skip need tend?");
@@ -32,12 +32,12 @@ namespace SmartMedicine
 			if (thing != null)
 			{
 				int pickupCount = Math.Min(pawn.StockUpNeeds(thing), MassUtility.CountToPickUpUntilOverEncumbered(pawn, thing));
-				Log.Message("{pawn} stock thing is {thing}, count {pickupCount}");
+				Log.Message($"{pawn} stock thing is {thing}, count {pickupCount}");
 				if (pickupCount > 0)
 					return new Job(SmartMedicineJobDefOf.StockUp, thing) { count = pickupCount};
 			}
 
-			Log.Message("{pawn} looking to return");
+			Log.Message($"{pawn} looking to return");
 			Thing toReturn = pawn.StockUpThingToReturn();
 			if (toReturn == null) return null;
 			Log.Message($"returning {toReturn}");

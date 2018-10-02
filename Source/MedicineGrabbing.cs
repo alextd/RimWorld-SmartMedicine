@@ -147,21 +147,21 @@ namespace SmartMedicine
 			Thing droppedMedicine = null;
 			if (medicineToUse.holdingOwner.Owner is Pawn_InventoryTracker holder)
 			{
-				Log.Message("{holder.pawn} dropping {medicineToUse}x{needCount}");
+				Log.Message($"{holder.pawn} dropping {medicineToUse}x{needCount}");
 				holder.innerContainer.TryDrop(medicineToUse, ThingPlaceMode.Direct, needCount, out droppedMedicine);
 			}
 			else if (medicineToUse.holdingOwner.Owner is Pawn_CarryTracker carrier)
 			{
-				Log.Message("{carrier.pawn} dropping carried {medicineToUse}x{needCount}");
+				Log.Message($"{carrier.pawn} dropping carried {medicineToUse}x{needCount}");
 				carrier.innerContainer.TryDrop(medicineToUse, ThingPlaceMode.Direct, needCount, out droppedMedicine);
 			}
 
 			if (droppedMedicine != null)
 			{
 				medicineToUse = droppedMedicine;
-				Log.Message("{healer} now tending with {droppedMedicine}");
+				Log.Message($"{healer} now tending with {droppedMedicine}");
 				if (droppedMedicine.IsForbidden(healer))
-					Log.Message("{droppedMedicine} is Forbidden, job will restart");
+					Log.Message($"{droppedMedicine} is Forbidden, job will restart");
 			}
 
 			if (healer.ReserveAsMuchAsPossible(medicineToUse, job, FindBestMedicine.maxPawns, needCount) == 0)
@@ -336,7 +336,7 @@ namespace SmartMedicine
 		public static List<ThingCount> Find(Pawn healer, Pawn patient, out int totalCount)
 		{
 			totalCount = 0;
-			Log.Message("{healer} is tending to {patient}");
+			Log.Message($"{healer} is tending to {patient}");
 
 			float sufficientQuality = maxMedicineQuality + 1; // nothing is sufficient!
 			if (Settings.Get().minimalMedicineForNonUrgent)
