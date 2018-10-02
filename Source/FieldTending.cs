@@ -71,10 +71,31 @@ namespace SmartMedicine
 		}
 	}
 
+	public class KillTempBedsComp : MapComponent
+	{
+		public KillTempBedsComp(Map map) : base(map)
+		{
+		}
+
+		public override void MapComponentTick()
+		{
+			base.MapComponentTick();
+			List<Thing> toKill = new List<Thing>();
+			foreach(Thing thing in map.listerThings.ThingsOfDef(UseTempSleepSpot.TempSleepSpot))
+			{
+				Building_Bed tempTendSpot = thing as Building_Bed;
+				if (tempTendSpot.GetCurOccupant(0) == null)
+					toKill.Add(tempTendSpot);
+			}
+
+			toKill.ForEach(t => t.Destroy());
+		}
+	}
+
 	[DefOf]
 	[HarmonyPatch(typeof(JobGiver_PatientGoToBed))]
 	[HarmonyPatch("TryIssueJobPackage")]
-	public static class PatientGoToBed_Patch
+	public static class UseTempSleepSpot
 	{
 		public static ThingDef TempSleepSpot;
 
@@ -114,7 +135,7 @@ namespace SmartMedicine
 				typeof(ThinkResult), nameof(ThinkResult.NoJob)).GetGetMethod(false);
 
 			MethodInfo LayDownInPlaceInfo = AccessTools.Method(
-				typeof(PatientGoToBed_Patch), nameof(LayDownInPlace));
+				typeof(UseTempSleepSpot), nameof(LayDownInPlace));
 
 			bool lookedForBed = false;
 			foreach (CodeInstruction instruction in instructions)
