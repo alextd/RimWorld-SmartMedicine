@@ -57,6 +57,14 @@ namespace SmartMedicine
 				diffs.Any(h => h.TendableNow(true)))
 			{
 				List<FloatMenuOption> list = new List<FloatMenuOption>();
+
+				//Default care
+				list.Add(new FloatMenuOption("Default care", delegate
+				{
+					foreach (Hediff h in diffs)
+						MedForHediffComp.Get().Remove(h);
+				}));
+
 				for (int i = 0; i < 5; i++)
 				{
 					MedicalCareCategory mc = (MedicalCareCategory)i;
