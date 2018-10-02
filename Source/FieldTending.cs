@@ -82,8 +82,8 @@ namespace SmartMedicine
 		{
 			if (Settings.Get().FieldTendingActive(pawn))
 			{
-				Building_Bed tempTendSpot = pawn.CurrentBed() as Building_Bed;
-				if (tempTendSpot?.def != TempSleepSpot &&
+				Building_Bed tempTendSpot = pawn.Position.GetThingList(pawn.Map).FirstOrDefault(t => t.def == TempSleepSpot) as Building_Bed;
+				if (tempTendSpot == null &&
 					!GenSpawn.WouldWipeAnythingWith(pawn.Position, Rot4.North, TempSleepSpot, pawn.Map, t => true))
 				{
 					tempTendSpot = ThingMaker.MakeThing(TempSleepSpot) as Building_Bed;
