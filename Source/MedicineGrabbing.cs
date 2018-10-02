@@ -50,7 +50,7 @@ namespace SmartMedicine
 			MethodInfo SortByTendPriorityInfo = AccessTools.Method(
 				typeof(TendUtility), nameof(TendUtility.SortByTendPriority));
 			MethodInfo filterMethodInfo = AccessTools.Method(
-				typeof(GetMedicineCountToFullyHeal_Patch), nameof(FilterForUrgentInjuries));
+				typeof(GetMedicineCountToFullyHeal_Patch), nameof(FilterInjuriesForMedCount));
 			FieldInfo filterMethodParameter = AccessTools.Field(typeof(Medicine), "tendableHediffsInTendPriorityOrder");
 
 			List<CodeInstruction> instructionList = instructions.ToList();
@@ -78,8 +78,33 @@ namespace SmartMedicine
 		// beep beep warning static bool hacks
 		public static bool __beep_beep_MinimalMedicineAvailable = true;
 		//Filter time-sensitive injuries
-		public static void FilterForUrgentInjuries(List<Hediff> hediffs)
+		public static void FilterInjuriesForMedCount(List<Hediff> hediffs)
 		{
+			Log.Message($"Filtering ({hediffs.ToStringSafeEnumerable()})");
+			MedicalCareCategory? priorityCare = null;
+			foreach (Hediff h in hediffs)
+			{
+				if (MedForHediffComp.Get().TryGetValue(h, out MedicalCareCategory heCare))
+				{
+					if (priorityCare == null || heCare > priorityCare)
+						priorityCare = heCare;
+				}
+			}
+			if (priorityCare != null)
+			{
+				//We're gonna use priorityCare, so remove anything less than that
+				//Should check if medicine is available, but you just set to use it so this will assume you have it
+				MedicalCareCategory defaultCare = hediffs.First().pawn.playerSettings.medCare;
+				hediffs.RemoveAll(delegate (Hediff h)
+				{
+					if (MedForHediffComp.Get().TryGetValue(h, out MedicalCareCategory heCare))
+					{
+						return heCare < priorityCare;
+					}
+					return defaultCare < priorityCare;
+				});
+			}
+
 			if (Settings.Get().noMedicineForNonUrgent)
 			{
 				hediffs.RemoveAll(h => !h.IsUrgent());
@@ -89,6 +114,7 @@ namespace SmartMedicine
 				if (hediffs.Any(h => h.IsUrgent()))
 					hediffs.RemoveAll(h => !h.IsUrgent());
 			}
+			Log.Message($"Filtered to ({hediffs.ToStringSafeEnumerable()})");
 			__beep_beep_MinimalMedicineAvailable = true;
 		}
 

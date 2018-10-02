@@ -39,7 +39,7 @@ namespace SmartMedicine
 			var hediffCare = Get();
 			foreach(Hediff h in patient.health.hediffSet.hediffs)
 			{
-				if (hediffCare.TryGetValue(h, out MedicalCareCategory heCare))
+				if (h.TendableNow() && hediffCare.TryGetValue(h, out MedicalCareCategory heCare))
 				{
 					care = heCare > care ? heCare : care;
 					found = true;
