@@ -166,9 +166,9 @@ namespace SmartMedicine
 	{
 		public static bool Prefix(Hediff __instance, ref float __result)
 		{
-			if(MedForHediffComp.Get().ContainsKey(__instance))
+			if(MedForHediffComp.Get().TryGetValue(__instance, out MedicalCareCategory hediffCare))
 			{
-				__result = 10f;// alot
+				__result += 10f;// a lot
 				return false;
 			}
 			return true;
