@@ -48,6 +48,16 @@ namespace SmartMedicine
 			return found;
 		}
 	}
+
+	[HarmonyPatch(typeof(Hediff), "PostRemoved")]
+	public static class RemoveHediffHook
+	{
+		//public virtual void PostRemoved()
+		public static void Prefix(Hediff __instance)
+		{
+			MedForHediffComp.Get().Remove(__instance);
+		}
+	}
 	
 	[HarmonyPatch(typeof(HealthCardUtility), "EntryClicked")]
 	public static class SuppressRightClickHediff
