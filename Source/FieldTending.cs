@@ -15,6 +15,7 @@ namespace SmartMedicine
 	[HarmonyPatch("GoodLayingStatusForTend")]
 	static class GoodLayingStatusForTend_Patch
 	{
+		//public static bool GoodLayingStatusForTend(Pawn patient, Pawn doctor)
 		public static void Postfix(Pawn patient, ref bool __result)
 		{
 			if (!__result && Settings.Get().FieldTendingActive(patient))
@@ -24,14 +25,69 @@ namespace SmartMedicine
 		}
 	}
 
+	[HarmonyPatch(typeof(WorkGiver_Tend), "HasJobOnThing")]
+	public static class NeedTendBeforeStatusForTend
+	{
+		//public override bool HasJobOnThing(Pawn pawn, Thing t, bool forced = false)
+		public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+		{
+			MethodInfo GoodLayingStatusForTendInfo = AccessTools.Method(typeof(WorkGiver_Tend), "GoodLayingStatusForTend");
+
+			List<CodeInstruction> instList = instructions.ToList();
+			for (int i = 0; i < instList.Count(); i++)
+			{
+				//Swap:
+				//IL_004d: ldloc.0      // pawn1
+				//IL_004e: ldarg.1      // pawn
+				//IL_004f: call         bool RimWorld.WorkGiver_Tend::GoodLayingStatusForTend(class Verse.Pawn, class Verse.Pawn)
+				//IL_0054: brfalse IL_007f
+
+				//With:
+				//IL_0059: ldloc.0      // pawn1
+				//IL_005a: call bool RimWorld.HealthAIUtility::ShouldBeTendedNowByPlayer(class Verse.Pawn)
+				//IL_005f: brfalse IL_007f
+				if (instList[i].opcode == OpCodes.Ldloc_0 &&
+					instList[i + 1].opcode == OpCodes.Ldarg_1 &&
+					instList[i + 2].opcode == OpCodes.Call && instList[i+2].operand == GoodLayingStatusForTendInfo)
+				{
+					List<Label> secondLabels = instList[i + 4].labels;
+					instList[i + 4].labels = instList[i].labels;
+					instList[i].labels = secondLabels;
+
+					yield return instList[i + 4];
+					yield return instList[i + 5];
+					yield return instList[i + 6];
+
+					yield return instList[i + 0];
+					yield return instList[i + 1];
+					yield return instList[i + 2];
+					yield return instList[i + 3];
+					i += 6;
+				}
+				else
+					yield return instList[i];
+			}
+		}
+	}
+
+	[DefOf]
 	[HarmonyPatch(typeof(JobGiver_PatientGoToBed))]
 	[HarmonyPatch("TryIssueJobPackage")]
-	static class PatientGoToBed_Patch
+	public static class PatientGoToBed_Patch
 	{
+		public static ThingDef TempSleepSpot;
+
 		public static ThinkResult LayDownInPlace(Pawn pawn, JobGiver_PatientGoToBed giver)
 		{
 			if (Settings.Get().FieldTendingActive(pawn))
+			{
+				//Thing tempTendSpot = ThingMaker.MakeThing(TempSleepSpot);
+				//GenSpawn.Spawn(tempTendSpot, pawn.Position, pawn.Map, WipeMode.FullRefund);
+
+				//Log.Message($"Creating bed {tempTendSpot} for {pawn} at {pawn.Position}");
+
 				return new ThinkResult(new Job(JobDefOf.LayDown, pawn.Position), giver);
+			}
 			else return ThinkResult.NoJob;
 		}
 		public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
