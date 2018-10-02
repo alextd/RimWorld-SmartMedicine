@@ -349,7 +349,7 @@ namespace SmartMedicine
 			}
 
 			MedicalCareCategory priorityCare = MedicalCareCategory.NoCare;
-			if (MedForHediffComp.MaxCare(patient.health.hediffSet.hediffs, out priorityCare))
+			if (MedForHediffComp.PriorityCare(patient, out priorityCare))
 				Log.Message($"priority care {priorityCare}");
 
 			//Med
