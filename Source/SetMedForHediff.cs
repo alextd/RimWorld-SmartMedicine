@@ -180,7 +180,9 @@ namespace SmartMedicine
 		{
 			if(MedForHediffComp.Get().TryGetValue(__instance, out MedicalCareCategory hediffCare))
 			{
-				__result += 10f;// a lot
+				MedicalCareCategory defaultCare = __instance.pawn.playerSettings.medCare;
+				int diff = ((int)hediffCare) - ((int)defaultCare);
+				__result += diff*5;//Raise priority for higher meds, lower for lower meds.
 				return false;
 			}
 			return true;
