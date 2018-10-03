@@ -277,4 +277,21 @@ namespace SmartMedicine
 			return deliveree.playerSettings.medCare.AllowsMedicine(med);
 		}
 	}
+
+	[HarmonyPatch(typeof(Hediff), "TendableNow")]
+	public static class TendableNowPriorityCare
+	{
+		//public virtual bool TendableNow(bool ignoreTimer = false);
+		public static bool Prefix(ref bool __result, Hediff __instance, bool ignoreTimer)
+		{
+			if (ignoreTimer) return true;
+
+			if (MedForHediffComp.Get().TryGetValue(__instance, out MedicalCareCategory heCare) && heCare == MedicalCareCategory.NoCare)
+			{
+				__result = false;
+				return false;
+			}
+			return true;
+		}
+	}
 }
