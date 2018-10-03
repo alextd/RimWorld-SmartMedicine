@@ -81,19 +81,8 @@ namespace SmartMedicine
 		public static void FilterInjuriesForMedCount(List<Hediff> hediffs)
 		{
 			Log.Message($"Filtering ({hediffs.ToStringSafeEnumerable()})");
-			MedicalCareCategory? priorityCare = null;
-			foreach (Hediff h in hediffs)
+			if (PriorityCareComp.MaxPriorityCare(hediffs, out MedicalCareCategory maxPriorityCare))
 			{
-				if (PriorityCareComp.Get().TryGetValue(h, out MedicalCareCategory heCare))
-				{
-					if (priorityCare == null || heCare > priorityCare)
-						priorityCare = heCare;
-				}
-			}
-			if (priorityCare != null)
-			{
-				//We're gonna use priorityCare, so remove anything less than that
-				//Should check if medicine is available, but you just set to use it so this will assume you have it
 				MedicalCareCategory defaultCare = hediffs.First().pawn.playerSettings.medCare;
 				try
 				{
@@ -102,13 +91,24 @@ namespace SmartMedicine
 					}))();
 				}
 				catch (Exception) { }
+
+				//ignore defaultCare if none uses default
+				if (PriorityCareComp.AllPriorityCare(hediffs))
+					defaultCare = maxPriorityCare;
+				
+				//Find highest care
+				MedicalCareCategory highestCare = defaultCare > maxPriorityCare ? defaultCare : maxPriorityCare;
+				Log.Message($"maxPriorityCare is {maxPriorityCare}, defaultCare is {defaultCare}, highestCare is {highestCare}");
+
+				//remove anything less than that
+				//Should check if medicine is available, but you just set to use it so this will assume you have it
 				hediffs.RemoveAll(delegate (Hediff h)
 				{
 					if (PriorityCareComp.Get().TryGetValue(h, out MedicalCareCategory heCare))
 					{
-						return heCare < priorityCare;
+						return heCare < highestCare;
 					}
-					return defaultCare < priorityCare;
+					return defaultCare < highestCare;
 				});
 			}
 
@@ -381,24 +381,33 @@ namespace SmartMedicine
 				}
 			}
 
-			MedicalCareCategory? priorityCare = null;
-			if (PriorityCareComp.PriorityCare(patient, out MedicalCareCategory heCare))
-			{
-				Log.Message($"priority care {heCare}");
-				priorityCare = heCare;
-			}
-
-			//Med
-			Predicate<Thing> validatorMed = t => priorityCare?.AllowsMedicine(t.def) ?? patient.playerSettings.medCare.AllowsMedicine(t.def);
+			MedicalCareCategory defaultCare = patient.playerSettings.medCare;
 			try
 			{
 				((Action)(() =>
 				{
-					MedicalCareCategory pharmacistAdvice = Pharmacist.PharmacistUtility.TendAdvice(patient);
-					validatorMed = t => priorityCare?.AllowsMedicine(t.def) ?? pharmacistAdvice.AllowsMedicine(t.def);
+					defaultCare = Pharmacist.PharmacistUtility.TendAdvice(patient);
 				}))();
 			}
 			catch (Exception) { }
+
+			//Care setting
+			MedicalCareCategory finalCare = MedicalCareCategory.NoCare;
+			var hediffCare = PriorityCareComp.Get();
+			List<Hediff> hediffsToTend = HediffsToTend(patient);
+			Log.Message($"Tending ({hediffsToTend.ToStringSafeEnumerable()})");
+			foreach(Hediff h in hediffsToTend)
+			{
+				MedicalCareCategory toUse = defaultCare;
+				if (hediffCare.TryGetValue(h, out MedicalCareCategory heCare))
+					toUse = heCare;
+
+				finalCare = toUse > finalCare ? toUse : finalCare;
+			}
+			Log.Message($"defaultCare = {defaultCare}, care = {finalCare}");
+
+			//Med
+			Predicate<Thing> validatorMed = t => finalCare.AllowsMedicine(t.def);
 
 			//Ground
 			Map map = patient.Map;
@@ -530,6 +539,13 @@ namespace SmartMedicine
 				}
 			}
 			return result;
+		}
+
+		public static List<Hediff> HediffsToTend(Pawn patient)
+		{
+			List<Hediff> toTend = new List<Hediff>();
+			TendUtility.GetOptimalHediffsToTendWithSingleTreatment(patient, true, toTend);
+			return toTend;
 		}
 
 		private static Thing FindBestMedicineInInventory(Pawn pawn, Pawn patient, Predicate<Thing> validatorMed, float sufficientQuality, bool isHealer)
