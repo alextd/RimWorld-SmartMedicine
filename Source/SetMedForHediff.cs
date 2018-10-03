@@ -182,6 +182,16 @@ namespace SmartMedicine
 			if(PriorityCareComp.Get().TryGetValue(__instance, out MedicalCareCategory hediffCare))
 			{
 				MedicalCareCategory defaultCare = __instance.pawn.playerSettings.medCare;
+
+				try
+				{
+					((Action)(() =>
+					{
+						defaultCare = Pharmacist.PharmacistUtility.TendAdvice(__instance.pawn);
+					}))();
+				}
+				catch (Exception) { }
+
 				int diff = ((int)hediffCare) - ((int)defaultCare);
 				__result += diff*5;//Raise priority for higher meds, lower for lower meds.
 				return false;
@@ -274,7 +284,18 @@ namespace SmartMedicine
 				return heCare.AllowsMedicine(med);
 			}
 
-			return deliveree.playerSettings.medCare.AllowsMedicine(med);
+			//Not required but hey why dont I patch this in for Pharmacist
+			MedicalCareCategory care = deliveree.playerSettings.medCare;
+			try
+			{
+				((Action)(() =>
+				{
+					care = Pharmacist.PharmacistUtility.TendAdvice(deliveree);
+				}))();
+			}
+			catch (Exception) { }
+
+			return care.AllowsMedicine(med);
 		}
 	}
 

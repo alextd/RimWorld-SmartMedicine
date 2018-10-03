@@ -95,6 +95,13 @@ namespace SmartMedicine
 				//We're gonna use priorityCare, so remove anything less than that
 				//Should check if medicine is available, but you just set to use it so this will assume you have it
 				MedicalCareCategory defaultCare = hediffs.First().pawn.playerSettings.medCare;
+				try
+				{
+					((Action)(() =>
+					{defaultCare = Pharmacist.PharmacistUtility.TendAdvice(hediffs.First().pawn);
+					}))();
+				}
+				catch (Exception) { }
 				hediffs.RemoveAll(delegate (Hediff h)
 				{
 					if (PriorityCareComp.Get().TryGetValue(h, out MedicalCareCategory heCare))
