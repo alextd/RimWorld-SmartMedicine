@@ -11,10 +11,10 @@ using UnityEngine;
 
 namespace SmartMedicine
 {
-	public class MedForHediffComp : GameComponent
+	public class PriorityCareComp : GameComponent
 	{
 		public Dictionary<Hediff, MedicalCareCategory> hediffCare;
-		public MedForHediffComp(Game game)
+		public PriorityCareComp(Game game)
 		{
 			hediffCare = new Dictionary<Hediff, MedicalCareCategory>();
 		}
@@ -29,7 +29,7 @@ namespace SmartMedicine
 
 		public static Dictionary<Hediff, MedicalCareCategory> Get()
 		{
-			return Current.Game.GetComponent<MedForHediffComp>().hediffCare;
+			return Current.Game.GetComponent<PriorityCareComp>().hediffCare;
 		}
 
 		public static bool PriorityCare(Pawn patient, out MedicalCareCategory care)
@@ -55,8 +55,8 @@ namespace SmartMedicine
 		//public virtual void PostRemoved()
 		public static void Prefix(Hediff __instance)
 		{
-			Log.Message($"removing {__instance} from prioritycare");
-			MedForHediffComp.Get().Remove(__instance);
+			Log.Message($"removing {__instance} from priorityCare");
+			PriorityCareComp.Get().Remove(__instance);
 		}
 	}
 	
@@ -73,7 +73,7 @@ namespace SmartMedicine
 
 	[StaticConstructorOnStartup]
 	[HarmonyPatch(typeof(HealthCardUtility), "DrawHediffRow")]
-	public static class HediffRowCarePatch
+	public static class HediffRowPriorityCare
 	{
 		//private static void DrawHediffRow(Rect rect, Pawn pawn, IEnumerable<Hediff> diffs, ref float curY)
 		public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, MethodBase mb)
@@ -83,9 +83,9 @@ namespace SmartMedicine
 			MethodInfo LabelInfo = AccessTools.Method(typeof(Widgets), "Label", new Type[] {typeof(Rect), typeof(string)});
 			int labelCount = 0;
 
-			MethodInfo DrawHediffCareInfo = AccessTools.Method(typeof(HediffRowCarePatch), nameof(DrawHediffCare));
+			MethodInfo DrawHediffCareInfo = AccessTools.Method(typeof(HediffRowPriorityCare), nameof(DrawHediffCare));
 
-			MethodInfo LabelButtonInfo = AccessTools.Method(typeof(HediffRowCarePatch), nameof(LabelButton));
+			MethodInfo LabelButtonInfo = AccessTools.Method(typeof(HediffRowPriorityCare), nameof(LabelButton));
 
 			List<CodeInstruction> instList = instructions.ToList();
 			for (int i = 0; i < instList.Count; i++)
@@ -132,7 +132,7 @@ namespace SmartMedicine
 		}
 		
 		private static FieldInfo careTexturesField;
-		static HediffRowCarePatch()
+		static HediffRowPriorityCare()
 		{
 			//MedicalCareUtility		private static Texture2D[] careTextures;
 			careTexturesField = AccessTools.Field(typeof(MedicalCareUtility), "careTextures");
@@ -140,7 +140,7 @@ namespace SmartMedicine
 
 		public static void DrawHediffCare(Hediff hediff, ref Rect iconRect)
 		{
-			if(MedForHediffComp.Get().TryGetValue(hediff, out MedicalCareCategory heCare))
+			if(PriorityCareComp.Get().TryGetValue(hediff, out MedicalCareCategory heCare))
 			{
 				Texture2D tex = ((Texture2D[])careTexturesField.GetValue(null))[(int)heCare];
 				GUI.DrawTexture(iconRect, tex);
@@ -158,7 +158,7 @@ namespace SmartMedicine
 				//Default care
 				list.Add(new FloatMenuOption("Default care", delegate
 				{
-					MedForHediffComp.Get().Remove(hediff);
+					PriorityCareComp.Get().Remove(hediff);
 				}));
 
 				for (int i = 0; i < 5; i++)
@@ -166,7 +166,7 @@ namespace SmartMedicine
 					MedicalCareCategory mc = (MedicalCareCategory)i;
 					list.Add(new FloatMenuOption(mc.GetLabel(), delegate
 					{
-						MedForHediffComp.Get()[hediff] = mc;
+						PriorityCareComp.Get()[hediff] = mc;
 					}));
 				}
 				Find.WindowStack.Add(new FloatMenu(list));
@@ -179,7 +179,7 @@ namespace SmartMedicine
 	{
 		public static bool Prefix(Hediff __instance, ref float __result)
 		{
-			if(MedForHediffComp.Get().TryGetValue(__instance, out MedicalCareCategory hediffCare))
+			if(PriorityCareComp.Get().TryGetValue(__instance, out MedicalCareCategory hediffCare))
 			{
 				MedicalCareCategory defaultCare = __instance.pawn.playerSettings.medCare;
 				int diff = ((int)hediffCare) - ((int)defaultCare);
@@ -192,12 +192,12 @@ namespace SmartMedicine
 
 	//Haul job needs to deliver to frames even if construction blocked
 	[StaticConstructorOnStartup]
-	public static class JobFailUseMedForHediff
+	public static class PriorityCareJobFail
 	{
-		static JobFailUseMedForHediff()
+		static PriorityCareJobFail()
 		{
 			//AccessTools.Inner
-			HarmonyMethod transpiler = new HarmonyMethod(typeof(JobFailUseMedForHediff), nameof(Transpiler));
+			HarmonyMethod transpiler = new HarmonyMethod(typeof(PriorityCareJobFail), nameof(Transpiler));
 			HarmonyInstance harmony = HarmonyInstance.Create("uuugggg.rimworld.SmartMedicine.main");
 			MethodInfo AllowsMedicineInfo = AccessTools.Method(typeof(MedicalCareUtility), "AllowsMedicine");
 
@@ -230,7 +230,7 @@ namespace SmartMedicine
 			FieldInfo medCareInfo = AccessTools.Field(typeof(Pawn_PlayerSettings), "medCare");
 			MethodInfo AllowsMedicineInfo = AccessTools.Method(typeof(MedicalCareUtility), "AllowsMedicine");
 
-			MethodInfo AllowsMedicineForHediffInfo = AccessTools.Method(typeof(JobFailUseMedForHediff), "AllowsMedicineForHediff");
+			MethodInfo AllowsMedicineForHediffInfo = AccessTools.Method(typeof(PriorityCareJobFail), "AllowsMedicineForHediff");
 
 			//
 			//IL_007d: ldfld        class RimWorld.JobDriver_TendPatient/'<MakeNewToils>c__Iterator0' RimWorld.JobDriver_TendPatient/'<MakeNewToils>c__Iterator0'/'<MakeNewToils>c__AnonStorey1'::'<>f__ref$0'
@@ -269,7 +269,7 @@ namespace SmartMedicine
 
 		public static bool AllowsMedicineForHediff(Pawn deliveree, ThingDef med)
 		{
-			if (MedForHediffComp.PriorityCare(deliveree, out MedicalCareCategory heCare))
+			if (PriorityCareComp.PriorityCare(deliveree, out MedicalCareCategory heCare))
 			{
 				return heCare.AllowsMedicine(med);
 			}
@@ -279,14 +279,14 @@ namespace SmartMedicine
 	}
 
 	[HarmonyPatch(typeof(Hediff), "TendableNow")]
-	public static class TendableNowPriorityCare
+	public static class PriorityCareTendableNow
 	{
 		//public virtual bool TendableNow(bool ignoreTimer = false);
 		public static bool Prefix(ref bool __result, Hediff __instance, bool ignoreTimer)
 		{
 			if (ignoreTimer) return true;
 
-			if (MedForHediffComp.Get().TryGetValue(__instance, out MedicalCareCategory heCare) && heCare == MedicalCareCategory.NoCare)
+			if (PriorityCareComp.Get().TryGetValue(__instance, out MedicalCareCategory heCare) && heCare == MedicalCareCategory.NoCare)
 			{
 				__result = false;
 				return false;

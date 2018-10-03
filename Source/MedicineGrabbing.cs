@@ -84,7 +84,7 @@ namespace SmartMedicine
 			MedicalCareCategory? priorityCare = null;
 			foreach (Hediff h in hediffs)
 			{
-				if (MedForHediffComp.Get().TryGetValue(h, out MedicalCareCategory heCare))
+				if (PriorityCareComp.Get().TryGetValue(h, out MedicalCareCategory heCare))
 				{
 					if (priorityCare == null || heCare > priorityCare)
 						priorityCare = heCare;
@@ -97,7 +97,7 @@ namespace SmartMedicine
 				MedicalCareCategory defaultCare = hediffs.First().pawn.playerSettings.medCare;
 				hediffs.RemoveAll(delegate (Hediff h)
 				{
-					if (MedForHediffComp.Get().TryGetValue(h, out MedicalCareCategory heCare))
+					if (PriorityCareComp.Get().TryGetValue(h, out MedicalCareCategory heCare))
 					{
 						return heCare < priorityCare;
 					}
@@ -375,7 +375,7 @@ namespace SmartMedicine
 			}
 
 			MedicalCareCategory? priorityCare = null;
-			if (MedForHediffComp.PriorityCare(patient, out MedicalCareCategory heCare))
+			if (PriorityCareComp.PriorityCare(patient, out MedicalCareCategory heCare))
 			{
 				Log.Message($"priority care {heCare}");
 				priorityCare = heCare;
