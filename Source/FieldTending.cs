@@ -71,27 +71,6 @@ namespace SmartMedicine
 		}
 	}
 
-	public class KillTempBedsComp : MapComponent
-	{
-		public KillTempBedsComp(Map map) : base(map)
-		{
-		}
-
-		public override void MapComponentTick()
-		{
-			base.MapComponentTick();
-			List<Thing> toKill = new List<Thing>();
-			foreach(Thing thing in map.listerThings.ThingsOfDef(UseTempSleepSpot.TempSleepSpot))
-			{
-				Building_Bed tempTendSpot = thing as Building_Bed;
-				if (tempTendSpot.GetCurOccupant(0) == null)
-					toKill.Add(tempTendSpot);
-			}
-
-			toKill.ForEach(t => t.Destroy());
-		}
-	}
-
 	[DefOf]
 	[HarmonyPatch(typeof(JobGiver_PatientGoToBed))]
 	[HarmonyPatch("TryIssueJobPackage")]
@@ -152,6 +131,19 @@ namespace SmartMedicine
 				}
 				yield return instruction;
 			}
+		}
+	}
+
+	[HarmonyPatch(typeof(JobDriver_LayDown), "MakeNewToils")]
+	public static class CleanUpTempBeds
+	{
+		public static void Prefix(JobDriver_LayDown __instance)
+		{
+			__instance.AddFinishAction(delegate ()
+			{
+				if (__instance.Bed?.def == UseTempSleepSpot.TempSleepSpot)
+					__instance.Bed.Destroy();
+			});
 		}
 	}
 
