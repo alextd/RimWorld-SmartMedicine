@@ -55,6 +55,7 @@ namespace SmartMedicine
 		//public virtual void PostRemoved()
 		public static void Prefix(Hediff __instance)
 		{
+			Log.Message($"removing {__instance} from prioritycare");
 			MedForHediffComp.Get().Remove(__instance);
 		}
 	}
