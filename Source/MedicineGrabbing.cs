@@ -355,7 +355,7 @@ namespace SmartMedicine
 				return true;
 
 			__result = Find(healer, patient, out int dummy).FirstOrDefault().Thing;
-			return __result == null;
+			return false;
 		}
 
 		//public static Thing FindBestMedicine(Pawn healer, Pawn patient)
