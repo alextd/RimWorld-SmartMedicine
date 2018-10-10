@@ -69,10 +69,10 @@ namespace SmartMedicine.SurgeryUnlimited
 	//public void ResetMedicalCare()
 	public static class SurgeryUnlimitedDefault
 	{
-		public static void Postfix(Pawn_PlayerSettings __instance)
+		public static void Postfix(Pawn_PlayerSettings __instance, Pawn ___pawn)
 		{
 			if (Scribe.mode == LoadSaveMode.LoadingVars) return;
-			Pawn pawn = (Pawn)AccessTools.Field(typeof(Pawn_PlayerSettings), "pawn").GetValue(__instance);
+			Pawn pawn = ___pawn;
 
 			SurgeryUnlimitedGameComponent comp = SurgeryUnlimitedGameComponent.Get();
 			comp?.Set(pawn, comp.surgeryUnlimitedDefault);
