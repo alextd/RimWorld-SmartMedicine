@@ -169,7 +169,7 @@ namespace SmartMedicine
 				List<FloatMenuOption> list = new List<FloatMenuOption>();
 
 				//Default care
-				list.Add(new FloatMenuOption("Default care", delegate
+				list.Add(new FloatMenuOption("TD.DefaultCare".Translate(), delegate
 				{
 					PriorityCareComp.Get().Remove(hediff);
 				}));
