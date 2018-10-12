@@ -16,12 +16,11 @@ namespace SmartMedicine
 	[HarmonyPatch(typeof(Pawn_JobTracker), "CleanupCurrentJob")]
 	public static class CleanupCurrentJob_Patch
 	{
-		public static void Prefix(Pawn_JobTracker __instance)
+		public static void Prefix(Pawn_JobTracker __instance, Pawn ___pawn)
 		{
 			if (__instance.curJob?.def == JobDefOf.TendPatient)
 			{
-				FieldInfo pawnField = AccessTools.Field(typeof(Pawn_JobTracker), "pawn");
-				Pawn pawn = (Pawn)pawnField.GetValue(__instance);
+				Pawn pawn = ___pawn;
 				if (!pawn.Destroyed && pawn.carryTracker != null && pawn.carryTracker.CarriedThing != null)
 				{
 					if (StockUpUtility.StockingUpOn(pawn, pawn.carryTracker.CarriedThing))

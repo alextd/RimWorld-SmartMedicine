@@ -32,12 +32,13 @@ namespace SmartMedicine
 			return Current.Game.GetComponent<PriorityCareComp>().hediffCare;
 		}
 
-		public static bool PriorityCare(Pawn patient, out MedicalCareCategory care)
+		public static bool MaxPriorityCare(Pawn patient, out MedicalCareCategory care) => MaxPriorityCare(patient.health.hediffSet.hediffs, out care);
+		public static bool MaxPriorityCare(List<Hediff> hediffs, out MedicalCareCategory care)
 		{
 			care = MedicalCareCategory.NoCare;
 			bool found = false;
 			var hediffCare = Get();
-			foreach(Hediff h in patient.health.hediffSet.hediffs)
+			foreach (Hediff h in hediffs)
 			{
 				if (h.TendableNow() && hediffCare.TryGetValue(h, out MedicalCareCategory heCare))
 				{
@@ -46,6 +47,18 @@ namespace SmartMedicine
 				}
 			}
 			return found;
+		}
+		
+		public static bool AllPriorityCare(Pawn patient) => AllPriorityCare(patient.health.hediffSet.hediffs);
+		public static bool AllPriorityCare(List<Hediff> hediffs)
+		{
+			var hediffCare = Get();
+			foreach(Hediff h in hediffs)
+			{
+				if (!hediffCare.ContainsKey(h))
+					return false;
+			}
+			return true;
 		}
 	}
 
@@ -156,7 +169,7 @@ namespace SmartMedicine
 				List<FloatMenuOption> list = new List<FloatMenuOption>();
 
 				//Default care
-				list.Add(new FloatMenuOption("Default care", delegate
+				list.Add(new FloatMenuOption("TD.DefaultCare".Translate(), delegate
 				{
 					PriorityCareComp.Get().Remove(hediff);
 				}));
@@ -279,9 +292,9 @@ namespace SmartMedicine
 
 		public static bool AllowsMedicineForHediff(Pawn deliveree, ThingDef med)
 		{
-			if (PriorityCareComp.PriorityCare(deliveree, out MedicalCareCategory heCare))
+			if (PriorityCareComp.MaxPriorityCare(deliveree, out MedicalCareCategory heCare))
 			{
-				return heCare.AllowsMedicine(med);
+				if (heCare.AllowsMedicine(med)) return true;
 			}
 
 			//Not required but hey why dont I patch this in for Pharmacist
