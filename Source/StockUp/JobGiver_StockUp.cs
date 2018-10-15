@@ -30,8 +30,8 @@ namespace SmartMedicine
 		}
 		protected override Job TryGiveJob(Pawn pawn)
 		{
-			Log.Message($"{pawn} JobGiver_StockUp");
 			if (pawn.StockUpIsFull()) return null;
+			Log.Message($"{pawn} needs stocking up");
 
 			if (Skip(pawn))
 				return null;
