@@ -17,13 +17,23 @@ namespace SmartMedicine
 
 	public class JobGiver_StockUp : ThinkNode_JobGiver
 	{
+		public static bool Skip(Pawn pawn)
+		{
+			Log.Message($"Skip need tend?");
+			if (pawn.Map.mapPawns.AllPawnsSpawned.Any(p => HealthAIUtility.ShouldBeTendedNowByPlayer(p) && pawn.CanReserveAndReach(p, PathEndMode.ClosestTouch, Danger.Deadly)))
+				return true;
+
+			if (pawn.Map.mapPawns.AllPawnsSpawned.Any(p => p is IBillGiver billGiver && billGiver.BillStack.AnyShouldDoNow && pawn.CanReserveAndReach(p, PathEndMode.ClosestTouch, Danger.Deadly)))
+				return true;
+
+			return false;
+		}
 		protected override Job TryGiveJob(Pawn pawn)
 		{
 			Log.Message($"{pawn} JobGiver_StockUp");
 			if (pawn.StockUpIsFull()) return null;
 
-			Log.Message($"Skip need tend?");
-			if (pawn.Map.mapPawns.AllPawnsSpawned.Any(p => HealthAIUtility.ShouldBeTendedNowByPlayer(p) && pawn.CanReserveAndReach(p, PathEndMode.ClosestTouch, Danger.Deadly)))
+			if (Skip(pawn))
 				return null;
 
 			Log.Message($"any things?");
