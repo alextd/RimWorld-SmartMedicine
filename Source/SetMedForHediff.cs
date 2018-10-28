@@ -220,7 +220,6 @@ namespace SmartMedicine
 	{
 		static PriorityCareJobFail()
 		{
-			//AccessTools.Inner
 			HarmonyMethod transpiler = new HarmonyMethod(typeof(PriorityCareJobFail), nameof(Transpiler));
 			HarmonyInstance harmony = HarmonyInstance.Create("uuugggg.rimworld.SmartMedicine.main");
 
@@ -283,6 +282,8 @@ namespace SmartMedicine
 		{
 			if (PriorityCareComp.MaxPriorityCare(deliveree, out MedicalCareCategory heCare))
 			{
+				//This is uses to allow higher medicine above normal limit below.
+				//this is NOT used to stop the job is PriorityCare is lowered
 				if (heCare.AllowsMedicine(med)) return true;
 			}
 
