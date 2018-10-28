@@ -8,6 +8,7 @@ using RimWorld;
 using Verse;
 using Harmony;
 using UnityEngine;
+using TD.Utilities;
 
 namespace SmartMedicine
 {
@@ -222,30 +223,18 @@ namespace SmartMedicine
 			//AccessTools.Inner
 			HarmonyMethod transpiler = new HarmonyMethod(typeof(PriorityCareJobFail), nameof(Transpiler));
 			HarmonyInstance harmony = HarmonyInstance.Create("uuugggg.rimworld.SmartMedicine.main");
+
 			MethodInfo AllowsMedicineInfo = AccessTools.Method(typeof(MedicalCareUtility), "AllowsMedicine");
 
-
-			//Find the compiler-created method in JobDriver_TendPatient that calls AllowsMedicine
-			List<Type> nestedTypes = new List<Type>(typeof(JobDriver_TendPatient).GetNestedTypes(BindingFlags.NonPublic));
-			while (!nestedTypes.NullOrEmpty())
+			Predicate<MethodInfo> check = delegate (MethodInfo method)
 			{
-				Type type = nestedTypes.Pop();
-				nestedTypes.AddRange(type.GetNestedTypes(BindingFlags.NonPublic));
+				DynamicMethod dm = DynamicTools.CreateDynamicMethod(method, "-unused");
 
-				foreach (MethodInfo method in type.GetMethods(BindingFlags.Instance | BindingFlags.NonPublic))
-				{
-					if (method.DeclaringType != type) continue;
+				return Harmony.ILCopying.MethodBodyReader.GetInstructions(dm.GetILGenerator(), method)
+					.Any(ilcode => ilcode.operand == AllowsMedicineInfo);
+			};
 
-					DynamicMethod dm = DynamicTools.CreateDynamicMethod(method, "-unused");
-
-					if (Harmony.ILCopying.MethodBodyReader.GetInstructions(dm.GetILGenerator(), method).
-						Any(ilcode => ilcode.operand == AllowsMedicineInfo))
-					{
-						Log.Message($"transpiling {method} for AllowsMedicine");
-						harmony.Patch(method, null, null, transpiler);
-					}
-				}
-			}
+			harmony.PatchGeneratedMethod(typeof(JobDriver_TendPatient), check, transpiler: transpiler);
 		}
 
 		public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
