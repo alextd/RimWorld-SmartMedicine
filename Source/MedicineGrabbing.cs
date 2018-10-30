@@ -406,8 +406,19 @@ namespace SmartMedicine
 			}
 			Log.Message($"defaultCare = {defaultCare}, care = {finalCare}");
 
+			//Android Droid support;
+			Predicate<Thing> validatorDroid = t => true;
+			Type extMechanicalPawn = AccessTools.TypeByName("Androids.MechanicalPawnProperties");
+			bool isDroid = extMechanicalPawn != null && (patient.def.modExtensions?.Any(e => extMechanicalPawn.IsAssignableFrom(e.GetType())) ?? false);
+			if (isDroid)
+			{
+				Log.Message($"{patient} is a droid");
+				Type extRepair = AccessTools.TypeByName("Androids.DroidRepairProperties");
+				validatorDroid = t => t.def.modExtensions?.Any(e => extRepair.IsAssignableFrom(e.GetType())) ?? false;
+			}
+
 			//Med
-			Predicate<Thing> validatorMed = t => finalCare.AllowsMedicine(t.def);
+			Predicate<Thing> validatorMed = t => finalCare.AllowsMedicine(t.def) && validatorDroid(t);
 
 			//Ground
 			Map map = patient.Map;
@@ -416,7 +427,7 @@ namespace SmartMedicine
 				&& map.reachability.CanReach(patient.Position, t, PathEndMode.ClosestTouch, traverseParams)
 				&& !t.IsForbidden(healer) && healer.CanReserve(t, FindBestMedicine.maxPawns, 1);//can reserve at least 1
 			Func<Thing, float> priorityGetter = (Thing t) => MedicineRating(t, sufficientQuality);
-			List<Thing> groundMedicines = patient.Map.listerThings.ThingsInGroup(ThingRequestGroup.Medicine).FindAll(t => validator(t));
+			List<Thing> groundMedicines = patient.Map.listerThings.ThingsInGroup(isDroid?ThingRequestGroup.HaulableEver:ThingRequestGroup.Medicine).FindAll(t => validator(t));
 
 			//Pawns
 			Predicate<Pawn> validatorHolder = (Pawn p) =>
