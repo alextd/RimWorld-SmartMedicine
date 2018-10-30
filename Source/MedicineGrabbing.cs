@@ -83,14 +83,7 @@ namespace SmartMedicine
 			Log.Message($"Filtering ({hediffs.ToStringSafeEnumerable()})");
 			if (PriorityCareComp.MaxPriorityCare(hediffs, out MedicalCareCategory maxPriorityCare))
 			{
-				MedicalCareCategory defaultCare = hediffs.First().pawn.playerSettings.medCare;
-				try
-				{
-					((Action)(() =>
-					{defaultCare = Pharmacist.PharmacistUtility.TendAdvice(hediffs.First().pawn);
-					}))();
-				}
-				catch (Exception) { }
+				MedicalCareCategory defaultCare = hediffs.First().pawn.GetCare();
 
 				//ignore defaultCare if none uses default
 				if (PriorityCareComp.AllPriorityCare(hediffs))
@@ -358,7 +351,7 @@ namespace SmartMedicine
 		//FindBestMedicine Replacement
 		private static bool Prefix(Pawn healer, Pawn patient, ref Thing __result)
 		{
-			if (patient.playerSettings == null || patient.playerSettings.medCare <= MedicalCareCategory.NoMeds || Medicine.GetMedicineCountToFullyHeal(patient) <= 0)
+			if (patient.GetCare() <= MedicalCareCategory.NoMeds || Medicine.GetMedicineCountToFullyHeal(patient) <= 0)
 				return true;
 
 			__result = Find(healer, patient, out int dummy).FirstOrDefault().Thing;
@@ -381,15 +374,7 @@ namespace SmartMedicine
 				}
 			}
 
-			MedicalCareCategory defaultCare = patient.playerSettings.medCare;
-			try
-			{
-				((Action)(() =>
-				{
-					defaultCare = Pharmacist.PharmacistUtility.TendAdvice(patient);
-				}))();
-			}
-			catch (Exception) { }
+			MedicalCareCategory defaultCare = patient.GetCare();
 
 			//Care setting
 			MedicalCareCategory finalCare = MedicalCareCategory.NoCare;

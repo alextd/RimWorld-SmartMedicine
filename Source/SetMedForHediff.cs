@@ -195,16 +195,7 @@ namespace SmartMedicine
 		{
 			if(PriorityCareComp.Get().TryGetValue(__instance, out MedicalCareCategory hediffCare))
 			{
-				MedicalCareCategory defaultCare = __instance.pawn.playerSettings.medCare;
-
-				try
-				{
-					((Action)(() =>
-					{
-						defaultCare = Pharmacist.PharmacistUtility.TendAdvice(__instance.pawn);
-					}))();
-				}
-				catch (Exception) { }
+				MedicalCareCategory defaultCare = __instance.pawn.GetCare();
 
 				int diff = ((int)hediffCare) - ((int)defaultCare);
 				__result += diff*5;//Raise priority for higher meds, lower for lower meds.
@@ -267,11 +258,13 @@ namespace SmartMedicine
 			List <CodeInstruction> instList = instructions.ToList();
 			for (int i = 0; i < instList.Count; i++)
 			{
+				//pawn.AllowsMedicineForHediff, not pawn.playerSettings.medCare.AllowsMedicine
 				if (instList[i].opcode == OpCodes.Call && instList[i].operand == AllowsMedicineInfo)
 					instList[i].operand = AllowsMedicineForHediffInfo;
 
 				yield return instList[i];
 
+				//Remove .playerSettings.medCare, just using pawn
 				if (i+2 < instList.Count && 
 					instList[i + 2].opcode == OpCodes.Ldfld && instList[i + 2].operand == medCareInfo)
 					i += 2;
@@ -288,15 +281,7 @@ namespace SmartMedicine
 			}
 
 			//Not required but hey why dont I patch this in for Pharmacist
-			MedicalCareCategory care = deliveree.playerSettings.medCare;
-			try
-			{
-				((Action)(() =>
-				{
-					care = Pharmacist.PharmacistUtility.TendAdvice(deliveree);
-				}))();
-			}
-			catch (Exception) { }
+			MedicalCareCategory care = deliveree.GetCare();
 
 			return care.AllowsMedicine(med);
 		}
