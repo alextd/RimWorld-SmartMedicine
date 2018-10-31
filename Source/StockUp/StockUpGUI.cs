@@ -301,11 +301,11 @@ namespace SmartMedicine
 	//private void InterfaceDrop(Thing t)
 	public static class InterfaceDrop_Patch
 	{
+		public static PropertyInfo SelPawnForGearInfo = AccessTools.Property(typeof(ITab_Pawn_Gear), "SelPawnForGear");
 		public static void Postfix(Thing t, ITab_Pawn_Gear __instance)
 		{
 			if (!Settings.Get().stockUp) return;
 
-			PropertyInfo SelPawnForGearInfo = AccessTools.Property(typeof(ITab_Pawn_Gear), "SelPawnForGear");
 			Pawn pawn = (Pawn)SelPawnForGearInfo.GetValue(__instance, new object[] { });
 
 			pawn.StockUpStop(t);
