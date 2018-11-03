@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <StockUp.reportString>nimmt TargetA mit</StockUp.reportString>
+  <StockDown.reportString>legt TargetA ab</StockDown.reportString>
+
+
+  <!-- Backward compat -->
+
+  <StockUpOnMedicine.reportString>nimmt TargetA mit</StockUpOnMedicine.reportString>
+  <StockDownOnMedicine.reportString>legt TargetA ab</StockDownOnMedicine.reportString>
+
+  
+  
+  <TempSleepSpot.description>Automatisch von Smart Medicine erstellt, um im Feld zu versorgen (ohne Verlangsamungseffekte).</TempSleepSpot.description>
+  <UnlimitedSurgery.headerTip>Für Operationen die beste Medizin verwenden (übergeht die Einstellung der medizinischen Versorgung).</UnlimitedSurgery.headerTip>
+
+</LanguageData>

@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+	
+	<TD.SettingDoctorInv>Verwende Medizin aus dem Inventar des Arztes.</TD.SettingDoctorInv>
+	<TD.SettingPatientInv>Verwende Medizin aus dem Inventar des Patienten.</TD.SettingPatientInv>
+	<TD.SettingNearby>... Aber verwende nahegelegene Medizin (bei gleicher Qualität).</TD.SettingNearby>
+	<TD.SettingNearbyDesc>Dies gilt auch für Medizin auf dem Weg zum Patienten (basiert ungefähr auf der Entfernung, nicht auf dem tatsächlichen Weg).</TD.SettingNearbyDesc>
+	<TD.SettingNearbyDist>Wie weit darf der Umweg sein, um die nahegelegene Medizin zu finden?</TD.SettingNearbyDist>
+	<TD.SpacesFormat>{0:0} Felder</TD.SpacesFormat>
+	<TD.SettingNearbyDistDesc>Dies ist nur eine Regel für die Inventar-Medizin - wenn es keine Inventar-Medizin gibt, werden sie bis an die Enden der Karte gehen, um Medizin zu holen.</TD.SettingNearbyDistDesc>
+	<TD.SettingOtherInv>Laß die Medizin aus dem Inventar eines nahegelegenen Kolonisten fallen.</TD.SettingOtherInv>
+	<TD.SettingAnimalInv>Laß die Medizin aus dem Inventar eines nahegelegenen Tieres fallen.</TD.SettingAnimalInv>
+	<TD.SettingOtherAnyDist>... Egal wie weit weg man ist.</TD.SettingOtherAnyDist>
+	<TD.SettingOtherAnyDistDesc>Überprüfe, ob es eine bessere Medizin von jemand anderem gibt, der weit weg ist.</TD.SettingOtherAnyDistDesc>
+	<TD.SettingOtherDist>Wie weit darf der Umweg sein?</TD.SettingOtherDist>
+	<TD.SettingMinimal>Benutze Minimalmedizin bei nicht dringenden Fällen.</TD.SettingMinimal>
+	<TD.SettingMinimalDesc>Dringende Fälle sind jede Krankheit, oder Verletzungen mit Blutungen, Infektionschancen oder permanenten Effekten - bewahre wertvolle Medikamente nur hierfür.</TD.SettingMinimalDesc>
+	<TD.SettingNoMed>Benutze keine Medizin bei nicht dringenden Fällen.</TD.SettingNoMed>
+	<TD.SettingNoMedDesc>Wie oben, aber ohne Medizin, jede Verletzung wird einzeln behandelt.</TD.SettingNoMedDesc>
+	<TD.SettingMedicineGoodEnough>.... beinhaltet eine Medizin, die gut genug ist:</TD.SettingMedicineGoodEnough>
+	<TD.SettingStockUp>Inventarisierung von Medizin &amp; Drogen</TD.SettingStockUp>
+	<TD.SettingStockUpDesc>Die Einstellungen für die Inventarisierung befinden sich in der Registerkarte Inventar des Kolonisten.</TD.SettingStockUpDesc>
+	<TD.SettingFieldTendingNoBeds>Ärzte werden Patienten im Feld behandeln, wenn keine Betten verfügbar sind.</TD.SettingFieldTendingNoBeds>
+	<TD.SettingFieldTendingNoBedsDesc>Der Patient muss sich ausruhen, bewusstlos oder im Kampfmodus sein.</TD.SettingFieldTendingNoBedsDesc>
+	<TD.SettingFieldTendingAlways>Ärzte werden Patienten im Feld behandeln, auch wenn Betten verfügbar sind.</TD.SettingFieldTendingAlways>
+	<TD.SettingFieldTendingAlwaysDesc>Kolonisten werden ein Bett aufsuchen, aber Du kannst Patienten in den Kampfmodus versetzen, um sie im Feld zu verpflegen.</TD.SettingFieldTendingAlwaysDesc>
+	<TD.SmartMedicine>Smart Medicine</TD.SmartMedicine>
+	<TD.StockUpSettings>Mitgeführte Gegenstände</TD.StockUpSettings>
+	<TD.StockUpSettingsForPawn>Mitgeführte Gegenstände von {0}</TD.StockUpSettingsForPawn>
+	<TD.ClearStockUp>Löschen der Einstellungen für Mitgeführte Gegenstände</TD.ClearStockUp>
+	<TD.CancelCopyStockUp>Kopiere Einstellung von {0} nicht.</TD.CancelCopyStockUp>
+	<TD.CopyStockUpFrom>Kopiere Einstellungen für Mitgeführte Gegenstände von {0}</TD.CopyStockUpFrom>
+	<TD.SettingsMedicineGoodEnoughDesc>Wenn zum Beispiel die Kräutermedizin 90% so gute Arbeit leistet wie normal, dann verwende stattdessen Kräutermedizin.</TD.SettingsMedicineGoodEnoughDesc>
+	<TD.SettingStockUpEnough>Führe Gegenstände nur bei ausreichender Verfügbarkeit mit</TD.SettingStockUpEnough>
+	<TD.SettingStockUpEnoughDesc>Zum Beispiel müssen die Lagerbestände bei 150% so groß sein, dass jeder bis zu 100% mitführen kann, plus 50% zusätzlich.</TD.SettingStockUpEnoughDesc>
+	<TD.SettingStockUpReturn>Lege mitgeführte Gegenstände zurück, wenn nicht genügend verfügbar sind.</TD.SettingStockUpReturn>
+	<TD.Paused>Pausiert</TD.Paused>
+	<TD.NotEnoughStockUp>Nicht genügend verfügbar, um die Gegenstände mitzunehmen.</TD.NotEnoughStockUp>
+	<TD.SettingGlobalSurgeryUnlimited>Standardeinstellung für Operationen: Verwendung der besten verfügbaren Medikamente.</TD.SettingGlobalSurgeryUnlimited>
+	<TD.DefaultSurgeryUnlimited>Verwendung der besten verfügbaren Medikamente bei Operationen</TD.DefaultSurgeryUnlimited>
+	<TD.PawnSettingSurgeryUnlimited>beste Med. für OP</TD.PawnSettingSurgeryUnlimited>
+	<TD.DefaultCare>Standardpflege</TD.DefaultCare>
+	
+</LanguageData>
