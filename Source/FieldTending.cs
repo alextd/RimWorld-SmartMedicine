@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Reflection;
 using System.Reflection.Emit;
 using RimWorld;
@@ -11,6 +12,29 @@ using Harmony;
 
 namespace SmartMedicine
 {
+	public class Building_TempTendSpot : Building_Bed
+	{
+		public override string GetInspectString()
+		{
+			return DescriptionDetailed.TrimEndNewlines();
+		}
+
+		public override IEnumerable<Gizmo> GetGizmos()
+		{
+			foreach (Gizmo g in base.GetGizmos())
+				yield return g;
+
+			yield return new Command_Action()
+			{
+				defaultLabel = "DesignatorCancel".Translate(),
+				defaultDesc = "TD.RemoveTempTendDesc".Translate(),
+				icon = ContentFinder<Texture2D>.Get("UI/Designators/Cancel", true),
+				hotKey = KeyBindingDefOf.Designator_Cancel,
+				action = () => this.Destroy()
+			};
+		}
+	}
+
 	[HarmonyPatch(typeof(WorkGiver_Tend))]
 	[HarmonyPatch("GoodLayingStatusForTend")]
 	static class GoodLayingStatusForTend_Patch
@@ -142,7 +166,8 @@ namespace SmartMedicine
 			__instance.AddFinishAction(delegate ()
 			{
 				if (__instance.Bed?.def == UseTempSleepSpot.TempSleepSpot)
-					__instance.Bed.Destroy();
+					if(!__instance.Bed?.Destroyed ?? false)
+						__instance.Bed.Destroy();
 			});
 		}
 	}

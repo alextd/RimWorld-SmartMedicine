@@ -1,18 +1,17 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Defs>
 
-
 	<ThingDef>
 		<defName>TempSleepSpot</defName>
 		<label>temporary tending spot</label>
-		<description>Automatically created by Smart Medicine to tend in the field (without slow-down effects).</description>
-		<thingClass>Building_Bed</thingClass>
+		<description>Automatically created by Smart Medicine to tend in the field. Removes itself when not used.</description>
+		<thingClass>SmartMedicine.Building_TempTendSpot</thingClass>
 		<graphicData>
 			<texPath>TempSleepSpot</texPath>
 			<graphicClass>Graphic_Single</graphicClass>
 		</graphicData>
 		<altitudeLayer>FloorEmplacement</altitudeLayer>
-		<selectable>false</selectable>
+		<selectable>true</selectable>
 		<statBases>
 			<WorkToBuild>0</WorkToBuild>
 			<Comfort>0.4</Comfort>
@@ -26,6 +25,7 @@
 			<bed_showSleeperBody>True</bed_showSleeperBody>
 			<canPlaceOverImpassablePlant>false</canPlaceOverImpassablePlant>
 			<ai_chillDestination>false</ai_chillDestination>
+			<claimable>false</claimable>
 		</building>
 	</ThingDef>
 	

@@ -40,5 +40,6 @@
 	<TD.DefaultSurgeryUnlimited>Surgery uses best medicine available</TD.DefaultSurgeryUnlimited>
 	<TD.PawnSettingSurgeryUnlimited>Surgery uses best</TD.PawnSettingSurgeryUnlimited>
 	<TD.DefaultCare>Default care</TD.DefaultCare>
+	<TD.RemoveTempTendDesc>Remove this (in case it lingers around after it's unused)</TD.RemoveTempTendDesc>
 	
 </LanguageData>
