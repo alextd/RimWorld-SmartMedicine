@@ -5,6 +5,7 @@ using System.Text;
 using RimWorld;
 using Verse;
 using Verse.AI;
+using Harmony;
 
 namespace SmartMedicine
 {
@@ -58,6 +59,24 @@ namespace SmartMedicine
 				return new Job(SmartMedicineJobDefOf.StockDown, toReturn, dropLoc) { count = dropCount };
 			Log.Message($"nowhere to store");
 			return null;
+		}
+	}
+
+	//private void CleanupCurrentJob(JobCondition condition, bool releaseReservations, bool cancelBusyStancesSoft = true)
+	[HarmonyPatch(typeof(Pawn_JobTracker), "CleanupCurrentJob")]
+	public static class CleanupCurrentJob_Patch
+	{
+		public static void Prefix(Pawn_JobTracker __instance, Pawn ___pawn)
+		{
+			if (__instance.curJob?.def == JobDefOf.TendPatient)
+			{
+				Pawn pawn = ___pawn;
+				if (!pawn.Destroyed && pawn.carryTracker != null && pawn.carryTracker.CarriedThing != null)
+				{
+					if (StockUpUtility.StockingUpOn(pawn, pawn.carryTracker.CarriedThing))
+						pawn.inventory.innerContainer.TryAddOrTransfer(pawn.carryTracker.CarriedThing);
+				}
+			}
 		}
 	}
 }
