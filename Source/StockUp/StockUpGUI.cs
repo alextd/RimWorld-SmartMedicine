@@ -12,6 +12,27 @@ using RimWorld;
 
 namespace SmartMedicine
 {
+	[StaticConstructorOnStartup]
+	public static class PatchRPG
+	{ 
+		static PatchRPG()
+		{
+			HarmonyInstance harmony = HarmonyInstance.Create("uuugggg.rimworld.SmartMedicine.RPGInventory");
+
+			//One could list all subtypes but what are the chances that'll be needed
+			if (AccessTools.TypeByName("Sandy_Detailed_RPG_GearTab") is Type subtype)
+			{
+				harmony.Patch(AccessTools.Method(subtype, "DrawThingRow"),
+					transpiler: new HarmonyMethod(typeof(DrawThingRow_Patch), "Transpiler"));
+				harmony.Patch(AccessTools.Method(subtype, "InterfaceDrop"),
+					postfix: new HarmonyMethod(typeof(InterfaceDrop_Patch), "Postfix"));
+				harmony.Patch(AccessTools.Method(subtype, "FillTab"),
+					transpiler: new HarmonyMethod(typeof(FillTab_Patch), "Transpiler"));
+			}
+		}
+	}
+		
+
 	//ITab_Pawn_Gear
 	//private void DrawThingRow(ref float y, float width, Thing thing, bool inventory = false)
 	[HarmonyPatch(typeof(ITab_Pawn_Gear), "DrawThingRow")]
