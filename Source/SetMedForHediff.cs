@@ -21,6 +21,7 @@ namespace SmartMedicine
 		}
 
 		/*
+		 * Hediffs are not iloadreferenceable so this won't work:
 		public override void ExposeData()
 		{
 			base.ExposeData();
