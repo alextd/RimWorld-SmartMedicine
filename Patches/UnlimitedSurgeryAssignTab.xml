@@ -1,7 +1,8 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
 <Patch>
 	<Operation Class="PatchOperationInsert">
-		<xpath>Defs/PawnTableDef[defName="Assign"]/columns/li[text() = 'GapTiny']</xpath>
+		<xpath>Defs/PawnTableDef[defName="Assign"]/columns/li[text() = 'MedicalCare']</xpath>
+		<order>Append</order>
 		<value>
 			<li>UnlimitedSurgery</li>
 		</value>
