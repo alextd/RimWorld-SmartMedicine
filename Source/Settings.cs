@@ -97,7 +97,7 @@ namespace SmartMedicine
 				fieldTendingForLackOfBed = false;
 			options.Gap();
 
-			options.CheckboxLabeled("TD.SettingGlobalSurgeryUnlimited".Translate(), ref defaultUnlimitedSurgery);
+			options.CheckboxLabeled("TD.SettingGlobalSurgeryUnlimited".Translate(), ref defaultUnlimitedSurgery, "TD.SettingGlobalSurgeryUnlimitedDesc".Translate());
 
 			options.End();
 		}

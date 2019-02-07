@@ -36,7 +36,8 @@
 	<TD.SettingStockUpReturn>Return items if not enough available</TD.SettingStockUpReturn>
 	<TD.Paused>Paused</TD.Paused>
 	<TD.NotEnoughStockUp>Not enough available to stock up</TD.NotEnoughStockUp>
-	<TD.SettingGlobalSurgeryUnlimited>Medical settings for surgery default to using best available medicine</TD.SettingGlobalSurgeryUnlimited>
+	<TD.SettingGlobalSurgeryUnlimited>Default medical settings for a new game have 'surgery use best' checked</TD.SettingGlobalSurgeryUnlimited>
+	<TD.SettingGlobalSurgeryUnlimitedDesc>During a game, this setting is not used - the default for new colonists is alongside the other medical defaults accessible in the Health tab</TD.SettingGlobalSurgeryUnlimitedDesc>
 	<TD.DefaultSurgeryUnlimited>Surgery uses best medicine available</TD.DefaultSurgeryUnlimited>
 	<TD.PawnSettingSurgeryUnlimited>Surgery uses best</TD.PawnSettingSurgeryUnlimited>
 	<TD.DefaultCare>Default care</TD.DefaultCare>
