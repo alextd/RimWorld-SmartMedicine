@@ -127,4 +127,14 @@ namespace SmartMedicine.SurgeryUnlimited
 		}
 
 	}
+
+	[HarmonyPatch(typeof(ITab_Pawn_Health), MethodType.Constructor)]
+	public static class MakeRoomForSetting
+	{
+		//need ref since Vector2 is struct
+		public static void Postfix(ref Vector2 ___size)
+		{
+			___size.y += 10f;
+		}
+	}
 }
