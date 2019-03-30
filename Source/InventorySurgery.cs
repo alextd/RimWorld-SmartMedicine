@@ -69,7 +69,7 @@ namespace SmartMedicine
 				Thing thing = job.GetTarget(ind).Thing;
 				Log.Message($"ExtractNextTargetFromQueue Finish: {actor}, {job}, {thing}, {job.count}");
 
-				if (thing.ParentHolder is Pawn_InventoryTracker)
+				if (thing?.ParentHolder is Pawn_InventoryTracker)
 				{
 					thing.holdingOwner.TryDrop(thing, ThingPlaceMode.Direct, job.count, out Thing droppedThing);
 					job.SetTarget(ind, droppedThing);
