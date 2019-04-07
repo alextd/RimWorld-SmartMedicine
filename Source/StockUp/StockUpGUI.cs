@@ -19,15 +19,25 @@ namespace SmartMedicine
 		{
 			HarmonyInstance harmony = HarmonyInstance.Create("uuugggg.rimworld.SmartMedicine.RPGInventory");
 
+			Log.Message("Looking for RPG Inventory");
 			//One could list all subtypes but what are the chances that'll be needed
 			if (AccessTools.TypeByName("Sandy_Detailed_RPG_GearTab") is Type subtype)
 			{
-				harmony.Patch(AccessTools.Method(subtype, "DrawThingRow"),
-					transpiler: new HarmonyMethod(typeof(DrawThingRow_Patch), "Transpiler"));
-				harmony.Patch(AccessTools.Method(subtype, "InterfaceDrop"),
-					postfix: new HarmonyMethod(typeof(InterfaceDrop_Patch), "Postfix"));
-				harmony.Patch(AccessTools.Method(subtype, "FillTab"),
-					transpiler: new HarmonyMethod(typeof(FillTab_Patch), "Transpiler"));
+				Log.Message("Patching RPG Inventory");
+				try
+				{
+					harmony.Patch(AccessTools.Method(subtype, "DrawThingRow"),
+						transpiler: new HarmonyMethod(typeof(DrawThingRow_Patch), "Transpiler"));
+					harmony.Patch(AccessTools.Method(subtype, "InterfaceDrop"),
+						postfix: new HarmonyMethod(typeof(InterfaceDrop_Patch), "Postfix"));
+					harmony.Patch(AccessTools.Method(subtype, "FillTab"),
+						transpiler: new HarmonyMethod(typeof(FillTab_Patch), "Transpiler"));
+				}
+				catch(Exception )
+				{
+					Verse.Log.Warning("Smart medicine tried to patch RPG Inventory but I guess it failed? Geez. I guess that means no Stock up Button");
+					harmony.UnpatchAll(harmony.Id);
+				}
 			}
 		}
 	}
