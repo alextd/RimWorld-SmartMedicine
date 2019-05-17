@@ -1,0 +1,46 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <TD.SettingDoctorInv>医者の所持品にある薬を使う</TD.SettingDoctorInv>
+  <TD.SettingPatientInv>患者の所持品にある薬を使う</TD.SettingPatientInv>
+  <TD.SettingNearby>...ただし、近くにある薬を優先して使用する（同じ品質の場合）</TD.SettingNearby>
+  <TD.SettingNearbyDesc>また同時に、患者へ向かう途中で薬の有無も確認します(実際の経路ではなく直線距離基準)。</TD.SettingNearbyDesc>
+  <TD.SettingNearbyDist>歩いて近くの薬を発見する距離</TD.SettingNearbyDist>
+  <TD.SpacesFormat>{0:0}セル</TD.SpacesFormat>
+  <TD.SettingNearbyDistDesc>これは「所持品にある薬を使う」の設定を上書きします－「所持品にある薬を使う」が無効な場合、彼らは薬を拾うためにマップの反対側だろうと移動します</TD.SettingNearbyDistDesc>
+  <TD.SettingOtherInv>近くに居る入植者の所持品から薬を地面に落とす</TD.SettingOtherInv>
+  <TD.SettingAnimalInv>近くに居る動物の所持品から薬を地面に落とす</TD.SettingAnimalInv>
+  <TD.SettingOtherAnyDist>... 距離に関係なし</TD.SettingOtherAnyDist>
+  <TD.SettingOtherAnyDistDesc>遠く離れた場所に居る誰かの所持品にあるより高度な薬を使えないか確認しますが、そこまで移動する時間が必要(マップによっては往復2時間以上)</TD.SettingOtherAnyDistDesc>
+  <TD.SettingOtherDist>薬を入手するのに歩く距離</TD.SettingOtherDist>
+  <TD.SettingMinimal>緊急性のない治療には最低限の薬を使用する</TD.SettingMinimal>
+  <TD.SettingMinimalDesc>緊急治療とは出血や感染の可能性、または永久的な影響を伴うあらゆる疾患やダメージが対象の治療であり、高度な薬はこれらの治療にだけ使用する</TD.SettingMinimalDesc>
+  <TD.SettingNoMed>緊急性のない治療用に薬使用しない</TD.SettingNoMed>
+  <TD.SettingNoMedDesc>上の設定と同じですが、薬を使わずに疾患を1つずつ治療します。</TD.SettingNoMedDesc>
+  <TD.SettingMedicineGoodEnough>...必要以上に高度な薬を使用する：</TD.SettingMedicineGoodEnough>
+  <TD.SettingStockUp>薬とドラッグの常備設定：</TD.SettingStockUp>
+  <TD.SettingStockUpDesc>薬とドラッグを所持品に入れて持ち運ぶ設定は入植者の装備タブにあります。</TD.SettingStockUpDesc>
+  <TD.SettingFieldTendingNoBeds>ベッドがない場合、医師はその場で患者を治療する</TD.SettingFieldTendingNoBeds>
+  <TD.SettingFieldTendingNoBedsDesc>患者がベッドで休息中か倒れている、または向かっている目標が徴兵されていなければならない</TD.SettingFieldTendingNoBedsDesc>
+  <TD.SettingFieldTendingAlways>医師はベッドの有無に関係なく、いつでも治療することが可能</TD.SettingFieldTendingAlways>
+  <TD.SettingFieldTendingAlwaysDesc>入植者はベッドに向かうことを優先しますが、あなたは治療のために彼らをその場に留まらせる手段として患者を徴兵することが可能です。</TD.SettingFieldTendingAlwaysDesc>
+  <TD.SmartMedicine>Smart Medicine</TD.SmartMedicine>
+  <TD.StockUpSettings>常備設定</TD.StockUpSettings>
+  <TD.StockUpSettingsForPawn>{0}の常備設定</TD.StockUpSettingsForPawn>
+  <TD.ClearStockUp>常備設定の設定を全て消去</TD.ClearStockUp>
+  <TD.CancelCopyStockUp>{0}から設定のコピーを中止します</TD.CancelCopyStockUp>
+  <TD.CopyStockUpFrom>{0}から常備設定をコピー</TD.CopyStockUpFrom>
+  <TD.SettingsMedicineGoodEnoughDesc>例えば、薬草で医薬品の90%で効果があるのなら、代わりに薬草を使います。</TD.SettingsMedicineGoodEnoughDesc>
+  <TD.SettingStockUpEnough>薬の在庫が十分にある場合だけ所持品に常備します。</TD.SettingStockUpEnough>
+  <TD.SettingStockUpEnoughDesc>例えば150%なら、全員の医者が100%常備できる備蓄の在庫数と、50%分に相当する追加分の備蓄量(数)以上の在庫が必要です。</TD.SettingStockUpEnoughDesc>
+  <TD.SettingStockUpReturn>利用可能なアイテムが不足している場合は常備しない</TD.SettingStockUpReturn>
+  <TD.Paused>一時停止</TD.Paused>
+  <TD.NotEnoughStockUp>常備可能なほど在庫が十分足りていない</TD.NotEnoughStockUp>
+  <TD.SettingGlobalSurgeryUnlimited>新規ゲームの初期設定「手術で最高の薬を使う 」を有効</TD.SettingGlobalSurgeryUnlimited>
+  <TD.SettingGlobalSurgeryUnlimitedDesc>ゲーム中この設定は使用しません。「健康」タブで利用可能な他の医療用の初期設定と並んで、新規入植者の初期設定が表示されます。</TD.SettingGlobalSurgeryUnlimitedDesc>
+  <TD.DefaultSurgeryUnlimited>手術では利用可能な最高の薬を使用します</TD.DefaultSurgeryUnlimited>
+  <TD.PawnSettingSurgeryUnlimited>手術に最高の薬を使用</TD.PawnSettingSurgeryUnlimited>
+  <TD.DefaultCare>治療の初期設定</TD.DefaultCare>
+  <TD.RemoveTempTendDesc>これを削除します(万一未使用だった後も残っていた場合)</TD.RemoveTempTendDesc>
+
+</LanguageData>
