@@ -15,7 +15,7 @@
   <TD.SettingOtherDist>薬を入手するのに歩く距離</TD.SettingOtherDist>
   <TD.SettingMinimal>緊急性のない治療には最低限の薬を使用する</TD.SettingMinimal>
   <TD.SettingMinimalDesc>緊急治療とは出血や感染の可能性、または永久的な影響を伴うあらゆる疾患やダメージが対象の治療であり、高度な薬はこれらの治療にだけ使用する</TD.SettingMinimalDesc>
-  <TD.SettingNoMed>緊急性のない治療用に薬使用しない</TD.SettingNoMed>
+  <TD.SettingNoMed>緊急性のない治療には薬を使用しない</TD.SettingNoMed>
   <TD.SettingNoMedDesc>上の設定と同じですが、薬を使わずに疾患を1つずつ治療します。</TD.SettingNoMedDesc>
   <TD.SettingMedicineGoodEnough>...必要以上に高度な薬を使用する：</TD.SettingMedicineGoodEnough>
   <TD.SettingStockUp>薬とドラッグの常備設定：</TD.SettingStockUp>
