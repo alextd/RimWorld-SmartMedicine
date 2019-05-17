@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <StockUp.reportString>TargetAを所持品に加えている</StockUp.reportString>
+  <StockDown.reportString>TargetAを所持品から取り出している</StockDown.reportString>
+
+  <!-- Backward compat -->
+
+  <StockUpOnMedicine.reportString>TargetAを所持品に加えている</StockUpOnMedicine.reportString>
+  <StockDownOnMedicine.reportString>TargetAを所持品から取り出している</StockDownOnMedicine.reportString>
+
+</LanguageData>
