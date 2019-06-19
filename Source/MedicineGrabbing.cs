@@ -416,7 +416,8 @@ namespace SmartMedicine
 
 			//Pawns
 			Predicate<Pawn> validatorHolder = (Pawn p) =>
-			map.reachability.CanReach(patient.Position, p, PathEndMode.ClosestTouch, traverseParams);
+				map.reachability.CanReach(patient.Position, p, PathEndMode.ClosestTouch, traverseParams)
+				&& !p.Position.IsForbidden(healer);
 
 			List<Pawn> pawns = healer.Map.mapPawns.SpawnedPawnsInFaction(Faction.OfPlayer).ListFullCopy();
 
