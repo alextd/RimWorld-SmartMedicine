@@ -185,6 +185,9 @@ namespace SmartMedicine
 		public static void Postfix(Pawn __instance)
 		{
 			__instance.StockUpClearSettings();
+
+			var comp = SurgeryUnlimited.SurgeryUnlimitedGameComponent.Get();
+			comp?.Set(__instance, false);
 		}
 	}
 }
