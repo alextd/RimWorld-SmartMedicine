@@ -35,6 +35,8 @@ namespace TD.Utilities
 	{
 		private Dictionary<K, V> intDict = new Dictionary<K, V>();
 
+		public Dictionary<K, V> Dictionary { get => intDict; }
+
 		public string exposeString = "dict";
 		public LookMode keyMode = LookMode.Undefined;
 		public LookMode valMode = LookMode.Undefined;

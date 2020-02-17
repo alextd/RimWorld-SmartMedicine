@@ -18,6 +18,15 @@ namespace SmartMedicine
 		public override void ExposeData()
 		{
 			base.ExposeData();
+			if(Scribe.mode == LoadSaveMode.Saving)
+			{
+				List<Pawn> danglingPawns = settings.Dictionary.Keys.Where(pawn => pawn.DestroyedOrNull()).ToList();
+				foreach(Pawn gonePawn in danglingPawns)
+				{
+					Verse.Log.Warning($"Smart Medicine wasn't told that {gonePawn} was destroyed?");
+					settings.Dictionary.Remove(gonePawn);
+				}
+			}
 			settings.ExposeData();
 		}
 
