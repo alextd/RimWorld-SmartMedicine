@@ -7,7 +7,7 @@ using RimWorld;
 using UnityEngine;
 using Verse;
 using Verse.AI;
-using Harmony;
+using HarmonyLib;
 using TD.Utilities;
 
 namespace SmartMedicine
@@ -61,7 +61,7 @@ namespace SmartMedicine
 				{
 					i++;
 					CodeInstruction nextInstruction = instructionList[i];
-					if (nextInstruction.opcode == OpCodes.Call && nextInstruction.operand == SortByTendPriorityInfo)
+					if (nextInstruction.opcode == OpCodes.Call && nextInstruction.operand.Equals(SortByTendPriorityInfo))
 					{
 						//insert before the sort call
 						yield return new CodeInstruction(OpCodes.Ldsfld, filterMethodParameter);
@@ -223,7 +223,7 @@ namespace SmartMedicine
 					branched = true;
 				}
 
-				if (i.opcode == OpCodes.Call && i.operand == GetMedicineCountToFullyHealInfo)
+				if (i.opcode == OpCodes.Call && i.operand.Equals(GetMedicineCountToFullyHealInfo))
 				{
 					yield return new CodeInstruction(OpCodes.Pop);//pawn
 
@@ -233,7 +233,7 @@ namespace SmartMedicine
 				else
 					yield return i;
 
-				if (!branched && i.opcode == OpCodes.Callvirt && i.operand == GetCarriedThingInfo)
+				if (!branched && i.opcode == OpCodes.Callvirt && i.operand.Equals(GetCarriedThingInfo))
 				{
 					branchNext = true;
 				}
@@ -267,7 +267,7 @@ namespace SmartMedicine
 			List<CodeInstruction> jobInstructions = new List<CodeInstruction>();
 			for (int i = 0; i < iList.Count(); i++)
 			{
-				if(iList[i].opcode == OpCodes.Ldfld && iList[i].operand == jobFieldInfo)
+				if(iList[i].opcode == OpCodes.Ldfld && iList[i].operand.Equals(jobFieldInfo))
 				{
 					jobInstructions.AddRange(iList.GetRange(i - 3, 4));
 					break;
@@ -276,7 +276,7 @@ namespace SmartMedicine
 
 			foreach (CodeInstruction i in instructions)
 			{
-				if (i.opcode == OpCodes.Call && i.operand == FindBestMedicineInfo)
+				if (i.opcode == OpCodes.Call && i.operand.Equals(FindBestMedicineInfo))
 				{
 					foreach (CodeInstruction jobI in jobInstructions)
 						yield return jobI;

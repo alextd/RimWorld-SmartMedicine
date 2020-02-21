@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using RimWorld;
 using Verse;
-using Harmony;
+using HarmonyLib;
 using UnityEngine;
 using TD.Utilities;
 
@@ -105,7 +105,7 @@ namespace SmartMedicine
 			List<CodeInstruction> instList = instructions.ToList();
 			for (int i = 0; i < instList.Count; i++)
 			{
-				if(instList[i].opcode == OpCodes.Call && instList[i].operand == LabelInfo)
+				if(instList[i].opcode == OpCodes.Call && instList[i].operand.Equals(LabelInfo))
 				{
 					if (labelCount == 2)//Third label is hediff label
 					{
@@ -213,7 +213,7 @@ namespace SmartMedicine
 		static PriorityCareJobFail()
 		{
 			HarmonyMethod transpiler = new HarmonyMethod(typeof(PriorityCareJobFail), nameof(Transpiler));
-			HarmonyInstance harmony = HarmonyInstance.Create("uuugggg.rimworld.SmartMedicine.main");
+			Harmony harmony = new Harmony("uuugggg.rimworld.SmartMedicine.main");
 
 			MethodInfo AllowsMedicineInfo = AccessTools.Method(typeof(MedicalCareUtility), "AllowsMedicine");
 
@@ -222,7 +222,7 @@ namespace SmartMedicine
 				DynamicMethod dm = DynamicTools.CreateDynamicMethod(method, "-unused");
 
 				return Harmony.ILCopying.MethodBodyReader.GetInstructions(dm.GetILGenerator(), method)
-					.Any(ilcode => ilcode.operand == AllowsMedicineInfo);
+					.Any(ilcode => ilcode.operand.Equals(AllowsMedicineInfo));
 			};
 
 			harmony.PatchGeneratedMethod(typeof(JobDriver_TendPatient), check, transpiler: transpiler);
@@ -260,14 +260,14 @@ namespace SmartMedicine
 			for (int i = 0; i < instList.Count; i++)
 			{
 				//pawn.AllowsMedicineForHediff, not pawn.playerSettings.medCare.AllowsMedicine
-				if (instList[i].opcode == OpCodes.Call && instList[i].operand == AllowsMedicineInfo)
+				if (instList[i].opcode == OpCodes.Call && instList[i].operand.Equals(AllowsMedicineInfo))
 					instList[i].operand = AllowsMedicineForHediffInfo;
 
 				yield return instList[i];
 
 				//Remove .playerSettings.medCare, just using pawn
 				if (i+2 < instList.Count && 
-					instList[i + 2].opcode == OpCodes.Ldfld && instList[i + 2].operand == medCareInfo)
+					instList[i + 2].opcode == OpCodes.Ldfld && instList[i + 2].operand.Equals(medCareInfo))
 					i += 2;
 			}
 		}

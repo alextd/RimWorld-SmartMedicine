@@ -5,7 +5,7 @@ using System.Reflection.Emit;
 using System.Linq;
 using System.Text;
 using UnityEngine;
-using Harmony;
+using HarmonyLib;
 using Verse;
 using Verse.AI;
 using RimWorld;
@@ -17,7 +17,7 @@ namespace SmartMedicine
 	{ 
 		static PatchRPG()
 		{
-			HarmonyInstance harmony = HarmonyInstance.Create("uuugggg.rimworld.SmartMedicine.RPGInventory");
+			Harmony harmony = new Harmony("uuugggg.rimworld.SmartMedicine.RPGInventory");
 
 			Log.Message("Looking for RPG Inventory");
 			//One could list all subtypes but what are the chances that'll be needed
@@ -74,7 +74,7 @@ namespace SmartMedicine
 			bool setStr2 = false;
 			foreach (CodeInstruction i in instructions)
 			{
-				if (i.opcode == OpCodes.Callvirt && i.operand == IsNutritionGivingIngestibleInfo)
+				if (i.opcode == OpCodes.Callvirt && i.operand.Equals(IsNutritionGivingIngestibleInfo))
 					yield return new CodeInstruction(OpCodes.Callvirt, IsIngestibleInfo);
 				else yield return i;
 
@@ -105,7 +105,7 @@ namespace SmartMedicine
 						setStr2 = true;
 					}
 				}
-				else if (i.opcode == OpCodes.Call && i.operand == LabelInfo)
+				else if (i.opcode == OpCodes.Call && i.operand.Equals(LabelInfo))
 				{
 					yield return new CodeInstruction(OpCodes.Ldarg_0);//this
 					yield return new CodeInstruction(OpCodes.Call, SelPawnForGearInfo);//this.SelPawnForGearInfo
@@ -199,7 +199,7 @@ namespace SmartMedicine
 
 			foreach (CodeInstruction i in instructions)
 			{
-				if (i.opcode == OpCodes.Call && i.operand == EventCurrentInfo)
+				if (i.opcode == OpCodes.Call && i.operand.Equals(EventCurrentInfo))
 				{
 					yield return new CodeInstruction(OpCodes.Ldarg_0);//this
 					yield return new CodeInstruction(OpCodes.Call, SelPawnForGearInfo);//this.SelPawnForGearInfo

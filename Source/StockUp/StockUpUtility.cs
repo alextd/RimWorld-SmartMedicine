@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using Verse;
 using TD.Utilities;
-using Harmony;
+using HarmonyLib;
 
 namespace SmartMedicine
 {

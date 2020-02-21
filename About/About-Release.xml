@@ -4,7 +4,9 @@
 	<author>Uuugggg</author>
 	<supportedVersions>
 		<li>1.0</li>
+		<li>1.1</li>
 	</supportedVersions>
+	<packageId>Uuugggg.SmartMedicine</packageId>
 	<description>Doctors will use medicine from their inventory. What a concept!
 		
 Doctors can also use medicine from the patient's inventory, or anyone else on the map, even pack animals brought on a caravan.

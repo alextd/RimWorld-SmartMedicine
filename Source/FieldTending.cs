@@ -8,7 +8,7 @@ using RimWorld;
 using UnityEngine;
 using Verse;
 using Verse.AI;
-using Harmony;
+using HarmonyLib;
 
 namespace SmartMedicine
 {
@@ -73,7 +73,7 @@ namespace SmartMedicine
 				//IL_005f: brfalse IL_007f
 				if (instList[i].opcode == OpCodes.Ldloc_0 &&
 					instList[i + 1].opcode == OpCodes.Ldarg_1 &&
-					instList[i + 2].opcode == OpCodes.Call && instList[i+2].operand == GoodLayingStatusForTendInfo)
+					instList[i + 2].opcode == OpCodes.Call && instList[i+2].operand.Equals(GoodLayingStatusForTendInfo))
 				{
 					List<Label> secondLabels = instList[i + 4].labels;
 					instList[i + 4].labels = instList[i].labels;
@@ -143,11 +143,11 @@ namespace SmartMedicine
 			bool lookedForBed = false;
 			foreach (CodeInstruction instruction in instructions)
 			{
-				if (instruction.opcode == OpCodes.Call && instruction.operand == FindPatientBedForInfo)
+				if (instruction.opcode == OpCodes.Call && instruction.operand.Equals(FindPatientBedForInfo))
 					lookedForBed = true;
 
 				if (lookedForBed &&
-					instruction.opcode == OpCodes.Call && instruction.operand == get_NoJobInfo)
+					instruction.opcode == OpCodes.Call && instruction.operand.Equals(get)_NoJobInfo)
 				{
 					yield return new CodeInstruction(OpCodes.Ldarg_1);
 					yield return new CodeInstruction(OpCodes.Ldarg_0);
@@ -191,7 +191,7 @@ namespace SmartMedicine
 			
 			foreach (CodeInstruction instruction in instructions)
 			{
-				if (instruction.opcode == OpCodes.Call && instruction.operand == InBedInfo)
+				if (instruction.opcode == OpCodes.Call && instruction.operand.Equals(InBedInfo))
 					instruction.operand = InBed_PatchInfo;
 				yield return instruction;
 			}

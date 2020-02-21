@@ -6,7 +6,7 @@ using System.Reflection;
 using System.Reflection.Emit;
 using RimWorld;
 using Verse;
-using Harmony;
+using HarmonyLib;
 using UnityEngine;
 
 namespace SmartMedicine.SurgeryUnlimited
@@ -97,7 +97,7 @@ namespace SmartMedicine.SurgeryUnlimited
 				CodeInstruction inst = list[i];
 
 				if (inst.opcode == OpCodes.Ldc_I4_1 && i + 1 < list.Count &&
-					list[i + 1].opcode == OpCodes.Call && list[i + 1].operand == SetFontInfo)//Text.Small
+					list[i + 1].opcode == OpCodes.Call && list[i + 1].operand.Equals(SetFontInfo))//Text.Small
 				{
 					//Draw pawn surgery option
 					//Rect leftRect, Pawn pawn, float curY

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Reflection;
 using System.Reflection.Emit;
-using Harmony;
+using HarmonyLib;
 using RimWorld;
 using Verse;
 
@@ -28,7 +28,7 @@ namespace SmartMedicine.StockUp
 				yield return inst;
 				
 				if (inst.opcode == OpCodes.Brfalse
-					&& instList[i - 1].opcode == OpCodes.Callvirt && instList[i - 1].operand == IsDrugInfo)
+					&& instList[i - 1].opcode == OpCodes.Callvirt && instList[i - 1].operand.Equals(IsDrugInfo))
 				{
 					yield return new CodeInstruction(OpCodes.Ldarg_1);//pawn
 					yield return new CodeInstruction(OpCodes.Ldloc_3);//thing
