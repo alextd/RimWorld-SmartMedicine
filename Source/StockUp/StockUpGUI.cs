@@ -74,7 +74,7 @@ namespace SmartMedicine
 			bool setStr2 = false;
 			foreach (CodeInstruction i in instructions)
 			{
-				if (i.opcode == OpCodes.Callvirt && i.operand.Equals(IsNutritionGivingIngestibleInfo))
+				if (i.Calls(IsNutritionGivingIngestibleInfo))
 					yield return new CodeInstruction(OpCodes.Callvirt, IsIngestibleInfo);
 				else yield return i;
 
@@ -105,7 +105,7 @@ namespace SmartMedicine
 						setStr2 = true;
 					}
 				}
-				else if (i.opcode == OpCodes.Call && i.operand.Equals(LabelInfo))
+				else if (i.Calls(LabelInfo))
 				{
 					yield return new CodeInstruction(OpCodes.Ldarg_0);//this
 					yield return new CodeInstruction(OpCodes.Call, SelPawnForGearInfo);//this.SelPawnForGearInfo
@@ -199,7 +199,7 @@ namespace SmartMedicine
 
 			foreach (CodeInstruction i in instructions)
 			{
-				if (i.opcode == OpCodes.Call && i.operand.Equals(EventCurrentInfo))
+				if (i.Calls(EventCurrentInfo))
 				{
 					yield return new CodeInstruction(OpCodes.Ldarg_0);//this
 					yield return new CodeInstruction(OpCodes.Call, SelPawnForGearInfo);//this.SelPawnForGearInfo

@@ -57,11 +57,11 @@ namespace SmartMedicine
 			for (int i = 0; i < instructionList.Count; i++)
 			{
 				CodeInstruction instruction = instructionList[i];
-				if (instruction.opcode == OpCodes.Ldsfld)
+				if (instruction.LoadsField(filterMethodParameter))
 				{
 					i++;
 					CodeInstruction nextInstruction = instructionList[i];
-					if (nextInstruction.opcode == OpCodes.Call && nextInstruction.operand.Equals(SortByTendPriorityInfo))
+					if (nextInstruction.Calls(SortByTendPriorityInfo))
 					{
 						//insert before the sort call
 						yield return new CodeInstruction(OpCodes.Ldsfld, filterMethodParameter);
@@ -223,7 +223,7 @@ namespace SmartMedicine
 					branched = true;
 				}
 
-				if (i.opcode == OpCodes.Call && i.operand.Equals(GetMedicineCountToFullyHealInfo))
+				if (i.Calls(GetMedicineCountToFullyHealInfo))
 				{
 					yield return new CodeInstruction(OpCodes.Pop);//pawn
 
@@ -233,7 +233,7 @@ namespace SmartMedicine
 				else
 					yield return i;
 
-				if (!branched && i.opcode == OpCodes.Callvirt && i.operand.Equals(GetCarriedThingInfo))
+				if (!branched && i.Calls(GetCarriedThingInfo))
 				{
 					branchNext = true;
 				}
@@ -267,7 +267,7 @@ namespace SmartMedicine
 			List<CodeInstruction> jobInstructions = new List<CodeInstruction>();
 			for (int i = 0; i < iList.Count(); i++)
 			{
-				if(iList[i].opcode == OpCodes.Ldfld && iList[i].operand.Equals(jobFieldInfo))
+				if(iList[i].LoadsField(jobFieldInfo))
 				{
 					jobInstructions.AddRange(iList.GetRange(i - 3, 4));
 					break;
@@ -276,7 +276,7 @@ namespace SmartMedicine
 
 			foreach (CodeInstruction i in instructions)
 			{
-				if (i.opcode == OpCodes.Call && i.operand.Equals(FindBestMedicineInfo))
+				if (i.Calls(FindBestMedicineInfo))
 				{
 					foreach (CodeInstruction jobI in jobInstructions)
 						yield return jobI;

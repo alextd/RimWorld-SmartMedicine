@@ -105,7 +105,7 @@ namespace SmartMedicine
 			List<CodeInstruction> instList = instructions.ToList();
 			for (int i = 0; i < instList.Count; i++)
 			{
-				if(instList[i].opcode == OpCodes.Call && instList[i].operand.Equals(LabelInfo))
+				if(instList[i].Calls(LabelInfo))
 				{
 					if (labelCount == 2)//Third label is hediff label
 					{
@@ -121,8 +121,7 @@ namespace SmartMedicine
 				//Find double curY for curY +=
 				//IL_03bd: ldarg.3      // curY
 				//IL_03be: ldarg.3      // curY
-				else if (instList[i].opcode == OpCodes.Ldarg_3 &&
-					instList[i + 1].opcode == OpCodes.Ldarg_3)//curY
+				else if (instList[i].IsLdarg(3) && instList[i + 1].IsLdarg(3))//curY
 				{
 					CodeInstruction iconRectInst = null;
 					for (int j = i - 1; j >= 0; j--)
@@ -260,14 +259,14 @@ namespace SmartMedicine
 			for (int i = 0; i < instList.Count; i++)
 			{
 				//pawn.AllowsMedicineForHediff, not pawn.playerSettings.medCare.AllowsMedicine
-				if (instList[i].opcode == OpCodes.Call && instList[i].operand.Equals(AllowsMedicineInfo))
+				if (instList[i].Calls(AllowsMedicineInfo))
 					instList[i].operand = AllowsMedicineForHediffInfo;
 
 				yield return instList[i];
 
 				//Remove .playerSettings.medCare, just using pawn
 				if (i+2 < instList.Count && 
-					instList[i + 2].opcode == OpCodes.Ldfld && instList[i + 2].operand.Equals(medCareInfo))
+					instList[i + 2].LoadsField(medCareInfo))
 					i += 2;
 			}
 		}

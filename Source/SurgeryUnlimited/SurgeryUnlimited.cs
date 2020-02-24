@@ -96,8 +96,9 @@ namespace SmartMedicine.SurgeryUnlimited
 			{
 				CodeInstruction inst = list[i];
 
-				if (inst.opcode == OpCodes.Ldc_I4_1 && i + 1 < list.Count &&
-					list[i + 1].opcode == OpCodes.Call && list[i + 1].operand.Equals(SetFontInfo))//Text.Small
+				if (i + 1 < list.Count && 
+					inst.LoadsConstant(GameFont.Small) &&
+					list[i + 1].Calls(SetFontInfo))//Text.Small
 				{
 					//Draw pawn surgery option
 					//Rect leftRect, Pawn pawn, float curY

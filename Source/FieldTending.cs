@@ -72,8 +72,8 @@ namespace SmartMedicine
 				//IL_005a: call bool RimWorld.HealthAIUtility::ShouldBeTendedNowByPlayer(class Verse.Pawn)
 				//IL_005f: brfalse IL_007f
 				if (instList[i].opcode == OpCodes.Ldloc_0 &&
-					instList[i + 1].opcode == OpCodes.Ldarg_1 &&
-					instList[i + 2].opcode == OpCodes.Call && instList[i+2].operand.Equals(GoodLayingStatusForTendInfo))
+					instList[i + 1].IsLdarg(1) &&
+					instList[i + 2].Calls(GoodLayingStatusForTendInfo))
 				{
 					List<Label> secondLabels = instList[i + 4].labels;
 					instList[i + 4].labels = instList[i].labels;
@@ -143,11 +143,11 @@ namespace SmartMedicine
 			bool lookedForBed = false;
 			foreach (CodeInstruction instruction in instructions)
 			{
-				if (instruction.opcode == OpCodes.Call && instruction.operand.Equals(FindPatientBedForInfo))
+				if (instruction.Calls(FindPatientBedForInfo))
 					lookedForBed = true;
 
 				if (lookedForBed &&
-					instruction.opcode == OpCodes.Call && instruction.operand.Equals(get)_NoJobInfo)
+					instruction.Calls(get_NoJobInfo))
 				{
 					yield return new CodeInstruction(OpCodes.Ldarg_1);
 					yield return new CodeInstruction(OpCodes.Ldarg_0);
@@ -191,7 +191,7 @@ namespace SmartMedicine
 			
 			foreach (CodeInstruction instruction in instructions)
 			{
-				if (instruction.opcode == OpCodes.Call && instruction.operand.Equals(InBedInfo))
+				if (instruction.Calls(InBedInfo))
 					instruction.operand = InBed_PatchInfo;
 				yield return instruction;
 			}
