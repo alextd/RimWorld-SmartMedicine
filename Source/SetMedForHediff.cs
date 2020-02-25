@@ -102,12 +102,15 @@ namespace SmartMedicine
 
 			MethodInfo LabelButtonInfo = AccessTools.Method(typeof(HediffRowPriorityCare), nameof(LabelButton));
 
+			//Draw Icon
+			MethodInfo DrawIconsInfo = AccessTools.Method(typeof(GenUI), nameof(GenUI.DrawElementStack)).MakeGenericMethod(new Type[] { typeof(GenUI.AnonymousStackElement) });
+
 			List<CodeInstruction> instList = instructions.ToList();
 			for (int i = 0; i < instList.Count; i++)
 			{
 				if(instList[i].Calls(LabelInfo))
 				{
-					if (labelCount == 2)//Third label is hediff label
+					if (labelCount == 1)//Second label is TaggedString, Third label is hediff label, but second with string
 					{
 						yield return new CodeInstruction(OpCodes.Ldloc_S, localHediffInfo.LocalIndex);//hediff
 						yield return new CodeInstruction(OpCodes.Call, LabelButtonInfo);
@@ -118,33 +121,36 @@ namespace SmartMedicine
 						yield return instList[i];
 					}
 				}
-				//Find double curY for curY +=
-				//IL_03bd: ldarg.3      // curY
-				//IL_03be: ldarg.3      // curY
-				else if (instList[i].IsLdarg(3) && instList[i + 1].IsLdarg(3))//curY
+				else if(instList[i].Calls(DrawIconsInfo))
 				{
-					CodeInstruction iconRectInst = null;
-					for (int j = i - 1; j >= 0; j--)
-					{
-						//First previous local var should be the icon rect
-						if (instList[j].opcode == OpCodes.Ldloca_S)
-						{
-							iconRectInst = instList[j];
-							break;
-						}
-					}
-					//Insert my hediff care icon
-					yield return new CodeInstruction(OpCodes.Ldloc_S, localHediffInfo.LocalIndex) { labels = instList[i].labels };//hediff
-					yield return iconRectInst;//rect
-					yield return new CodeInstruction(OpCodes.Call, DrawHediffCareInfo);
-					instList[i].labels = null;
-					yield return instList[i];
+					yield return new CodeInstruction(OpCodes.Ldloc_S, localHediffInfo.LocalIndex);//hediff
+					yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(HediffRowPriorityCare), nameof(DrawElementStack2)));
 				}
-				else 
+				else
 					yield return instList[i];
+
 			}
 		}
-		
+		//public static Rect DrawElementStack<T>(Rect rect, float rowHeight, List<T> elements, StackElementDrawer<T> drawer, StackElementWidthGetter<T> widthGetter, float rowMargin = 4f, float elementMargin = 5f, bool allowOrderOptimization = true)
+		public static Rect DrawElementStack2(Rect rect, float rowHeight, List<GenUI.AnonymousStackElement> elements, GenUI.StackElementDrawer<GenUI.AnonymousStackElement> drawer, GenUI.StackElementWidthGetter<GenUI.AnonymousStackElement> widthGetter, float rowMargin, float elementMargin, bool allowOrderOptimization, Hediff hediff)
+		{
+			if (PriorityCareComp.Get().TryGetValue(hediff, out MedicalCareCategory heCare))
+			{
+				elements.Add(new GenUI.AnonymousStackElement
+				{
+					drawer = delegate (Rect r)
+					{
+						Texture2D tex = ((Texture2D[])careTexturesField.GetValue(null))[(int)heCare];
+						r = new Rect(2 * rect.x + rect.width - r.x - 20f, r.y, 20f, 20f);
+						GUI.DrawTexture(r, tex);
+					},
+					width = 20f
+				});
+			}
+			return GenUI.DrawElementStack(rect, rowHeight, elements, drawer, widthGetter, rowMargin, elementMargin,  allowOrderOptimization);
+		}
+
+
 		private static FieldInfo careTexturesField;
 		static HediffRowPriorityCare()
 		{
@@ -154,12 +160,6 @@ namespace SmartMedicine
 
 		public static void DrawHediffCare(Hediff hediff, ref Rect iconRect)
 		{
-			if(PriorityCareComp.Get().TryGetValue(hediff, out MedicalCareCategory heCare))
-			{
-				Texture2D tex = ((Texture2D[])careTexturesField.GetValue(null))[(int)heCare];
-				GUI.DrawTexture(iconRect, tex);
-				iconRect.x -= iconRect.width;
-			}
 		}
 
 		public static void LabelButton(Rect rect, string text,  Hediff hediff)
