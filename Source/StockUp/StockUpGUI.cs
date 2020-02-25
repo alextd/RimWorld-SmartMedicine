@@ -45,7 +45,7 @@ namespace SmartMedicine
 
 	//ITab_Pawn_Gear
 	//private void DrawThingRow(ref float y, float width, Thing thing, bool inventory = false)
-	[HarmonyPatch(typeof(ITab_Pawn_Gear), "DrawThingRow")]
+	//[HarmonyPatch(typeof(ITab_Pawn_Gear), "DrawThingRow")]
 	public static class DrawThingRow_Patch
 	{
 		public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il, MethodBase mb)
@@ -187,7 +187,6 @@ namespace SmartMedicine
 		{
 			IList<LocalVariableInfo> locals = mb.GetMethodBody().LocalVariables;
 			int yIndex = locals.First(l => l.LocalType == typeof(float)).LocalIndex;
-			int viewRectIndex = 4;  //Is there a way to find this?.
 
 			MethodInfo EventCurrentInfo = AccessTools.Property(typeof(Event), "current").GetGetMethod();
 
@@ -197,23 +196,40 @@ namespace SmartMedicine
 
 			MethodInfo DrawMissingThingsInfo = AccessTools.Method(typeof(FillTab_Patch), nameof(FillTab_Patch.DrawMissingThings));
 
-			foreach (CodeInstruction i in instructions)
+			//figure out what viewRect is via BeginScrollView
+			CodeInstruction viewRectInst = null;
+			MethodInfo BeginScrollViewInfo = AccessTools.Method(typeof(Widgets), nameof(Widgets.BeginScrollView));
+
+			List<CodeInstruction> instList = instructions.ToList();
+			for(int i=0;i<instList.Count;i++)
 			{
-				if (i.Calls(EventCurrentInfo))
+				CodeInstruction inst = instList[i];
+
+				if (inst.Calls(BeginScrollViewInfo))
 				{
-					yield return new CodeInstruction(OpCodes.Ldarg_0);//this
-					yield return new CodeInstruction(OpCodes.Call, SelPawnForGearInfo);//this.SelPawnForGearInfo
-					yield return new CodeInstruction(OpCodes.Ldloca_S, yIndex);//ref y
-					yield return new CodeInstruction(OpCodes.Ldloca_S, viewRectIndex);// viewrect
-					yield return new CodeInstruction(OpCodes.Call, RectWidthInfo);//viewRect.width
-					yield return new CodeInstruction(OpCodes.Call, DrawMissingThingsInfo);//DrawMissingThings(this.pawn, ref y, viewRect.width)
+					viewRectInst = instList[i-2];
 				}
 
-				yield return i;
+				if (inst.Calls(EventCurrentInfo))
+				{
+					if (viewRectInst == null)
+						Verse.Log.Error("Smart Medicine Couldn't find viewRectInst, that'll mean no stock up GUI");
+					else
+					{
+						yield return new CodeInstruction(OpCodes.Ldarg_0);//this
+						yield return new CodeInstruction(OpCodes.Call, SelPawnForGearInfo);//this.SelPawnForGearInfo
+						yield return new CodeInstruction(OpCodes.Ldloca_S, yIndex);//ref y
+						yield return viewRectInst;// viewrect
+						//yield return new CodeInstruction(OpCodes.Call, RectWidthInfo);//viewRect.width //this is not working somehow
+						yield return new CodeInstruction(OpCodes.Call, DrawMissingThingsInfo);//DrawMissingThings(this.pawn, ref y, viewRect)
+					}
+				}
+
+				yield return inst;
 			}
 		}
 
-		public static void DrawMissingThings(Pawn pawn, ref float y, float width)
+		public static void DrawMissingThings(Pawn pawn, ref float y, Rect viewRect)
 		{
 			if (!pawn.IsFreeColonist || pawn.Dead) return;
 
@@ -222,9 +238,9 @@ namespace SmartMedicine
 			foreach (ThingDef def in DefDatabase<ThingDef>.AllDefsListForReading)
 			{
 				if (pawn.StockUpMissing(def))
-					DrawMissingThingRow(pawn, ref y, width, def);
+					DrawMissingThingRow(pawn, ref y, viewRect.width, def);
 			}
-			DrawStockUpButton(pawn, ref y, width);
+			DrawStockUpButton(pawn, ref y, viewRect.width);
 		}
 
 		public static void DrawStockUpButton(Pawn pawn, ref float y, float width)
