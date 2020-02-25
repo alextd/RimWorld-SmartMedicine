@@ -357,6 +357,9 @@ namespace SmartMedicine
 		}
 		static float maxMedicineQuality = 10.0f;
 		static float minMedicineQuality = 00.0f;
+		//Android support
+		public static Type extMechanicalPawn;
+		public static Type extRepair;
 
 		static FindBestMedicine()
 		{
@@ -365,6 +368,9 @@ namespace SmartMedicine
 					.Select(m => m.GetStatValueAbstract(StatDefOf.MedicalPotency));
 			maxMedicineQuality = medQualities.Max();
 			minMedicineQuality = medQualities.Min();
+
+			extMechanicalPawn = AccessTools.TypeByName("Androids.MechanicalPawnProperties");
+			extRepair = AccessTools.TypeByName("Androids.DroidRepairProperties");
 		}
 
 		//FindBestMedicine Replacement
@@ -412,12 +418,10 @@ namespace SmartMedicine
 
 			//Android Droid support;
 			Predicate<Thing> validatorDroid = t => true;
-			Type extMechanicalPawn = AccessTools.TypeByName("Androids.MechanicalPawnProperties");
 			bool isDroid = extMechanicalPawn != null && (patient.def.modExtensions?.Any(e => extMechanicalPawn.IsAssignableFrom(e.GetType())) ?? false);
 			if (isDroid)
 			{
 				Log.Message($"{patient} is a droid");
-				Type extRepair = AccessTools.TypeByName("Androids.DroidRepairProperties");
 				validatorDroid = t => t.def.modExtensions?.Any(e => extRepair.IsAssignableFrom(e.GetType())) ?? false;
 			}
 
