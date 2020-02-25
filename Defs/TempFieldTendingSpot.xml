@@ -22,11 +22,18 @@
 		<size>(1,1)</size>
 		<passability>Standable</passability>
 		<building>
+			<bed_defaultMedical>true</bed_defaultMedical>
 			<bed_showSleeperBody>True</bed_showSleeperBody>
 			<canPlaceOverImpassablePlant>false</canPlaceOverImpassablePlant>
 			<ai_chillDestination>false</ai_chillDestination>
 			<claimable>false</claimable>
 		</building>
+		<comps>
+			<li Class="CompProperties_AssignableToPawn">
+				<drawAssignmentOverlay>false</drawAssignmentOverlay>
+				<compClass>CompAssignableToPawn_Bed</compClass>
+			</li>
+		</comps>
 	</ThingDef>
 	
 </Defs>
