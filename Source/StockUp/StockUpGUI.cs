@@ -45,15 +45,14 @@ namespace SmartMedicine
 
 	//ITab_Pawn_Gear
 	//private void DrawThingRow(ref float y, float width, Thing thing, bool inventory = false)
-	//[HarmonyPatch(typeof(ITab_Pawn_Gear), "DrawThingRow")]
+	[HarmonyPatch(typeof(ITab_Pawn_Gear), "DrawThingRow")]
 	public static class DrawThingRow_Patch
 	{
 		public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions, ILGenerator il, MethodBase mb)
 		{
 			IList<LocalVariableInfo> locals = mb.GetMethodBody().LocalVariables;
-			int textIndex = locals.First(l => l.LocalType == typeof(string)).LocalIndex;
-			int tipIndex = locals.Where(l => l.LocalType == typeof(string)).Skip(1).First().LocalIndex;
-			int labelRectIndex = 4;
+			MethodInfo LabelCapInfo = AccessTools.Property(typeof(Thing), nameof(Thing.LabelCap)).GetGetMethod().GetBaseDefinition();
+			MethodInfo DescriptionDetailedInfo = AccessTools.Property(typeof(Thing), nameof(Thing.DescriptionDetailed)).GetGetMethod();
 
 			MethodInfo SelPawnForGearInfo = AccessTools.Property(typeof(ITab_Pawn_Gear), "SelPawnForGear").GetGetMethod(true);
 			MethodInfo LabelInfo = AccessTools.Method(typeof(Widgets), nameof(Widgets.Label),
@@ -62,63 +61,45 @@ namespace SmartMedicine
 			MethodInfo IsNutritionGivingIngestibleInfo = AccessTools.Property(typeof(ThingDef), nameof(ThingDef.IsNutritionGivingIngestible)).GetGetMethod();
 			MethodInfo IsIngestibleInfo = AccessTools.Property(typeof(ThingDef), nameof(ThingDef.IsIngestible)).GetGetMethod();
 
-			MethodInfo AddStockTextInfo = AccessTools.Method(typeof(DrawThingRow_Patch), nameof(DrawThingRow_Patch.AddStockText),
-				new Type[] { typeof(Pawn), typeof(Thing), typeof(string) });
-			MethodInfo AddStockTipInfo = AccessTools.Method(typeof(DrawThingRow_Patch), nameof(DrawThingRow_Patch.AddStockTip),
-				new Type[] { typeof(Pawn), typeof(Thing), typeof(string) });
-			MethodInfo AddIncDecButtonInfo = AccessTools.Method(typeof(DrawThingRow_Patch), nameof(DrawThingRow_Patch.AddIncDecButton),
-				new Type[] { typeof(Pawn), typeof(Thing), typeof(Rect) });
+			MethodInfo AddStockTextInfo = AccessTools.Method(typeof(DrawThingRow_Patch), nameof(AddStockText));
+			MethodInfo AddStockTipInfo = AccessTools.Method(typeof(DrawThingRow_Patch), nameof(AddStockTip));
+			MethodInfo LabelIncDecButtonInfo = AccessTools.Method(typeof(DrawThingRow_Patch), nameof(LabelIncDecButton));
+			FieldInfo defInfo = AccessTools.Field(typeof(Thing), nameof(Thing.def));
 
-			bool setStr1 = false;
-			bool foundStr2 = false;
-			bool setStr2 = false;
 			foreach (CodeInstruction i in instructions)
 			{
 				if (i.Calls(IsNutritionGivingIngestibleInfo))
 					yield return new CodeInstruction(OpCodes.Callvirt, IsIngestibleInfo);
-				else yield return i;
-
-				//stloc.s str1
-				if (!setStr1 && i.opcode == OpCodes.Stloc_S && i.operand is LocalBuilder lb1 && lb1.LocalIndex == textIndex)
-				{
-					yield return new CodeInstruction(OpCodes.Ldarg_0);//this
-					yield return new CodeInstruction(OpCodes.Call, SelPawnForGearInfo);//this.SelPawnForGearInfo
-					yield return new CodeInstruction(OpCodes.Ldarg_3);//thing
-					yield return new CodeInstruction(OpCodes.Ldloc_S, textIndex);//text
-					yield return new CodeInstruction(OpCodes.Call, AddStockTextInfo);//AddStockText(pawn, thing, text)
-					yield return new CodeInstruction(OpCodes.Stloc_S, textIndex);//text = AddStockText(pawn, thing, text);
-
-					setStr1 = true;
-				}
-				if (!setStr2 && i.opcode == OpCodes.Stloc_S && i.operand is LocalBuilder lb2 && lb2.LocalIndex == tipIndex)
-				{
-					if (!foundStr2) foundStr2 = true;
-					else
-					{
-						yield return new CodeInstruction(OpCodes.Ldarg_0);//this
-						yield return new CodeInstruction(OpCodes.Call, SelPawnForGearInfo);//this.SelPawnForGearInfo
-						yield return new CodeInstruction(OpCodes.Ldarg_3);//thing
-						yield return new CodeInstruction(OpCodes.Ldloc_S, tipIndex);//text
-						yield return new CodeInstruction(OpCodes.Call, AddStockTipInfo);//AddStockText(pawn, thing, text)
-						yield return new CodeInstruction(OpCodes.Stloc_S, tipIndex);//text = AddStockText(pawn, thing, text);
-
-						setStr2 = true;
-					}
-				}
 				else if (i.Calls(LabelInfo))
 				{
 					yield return new CodeInstruction(OpCodes.Ldarg_0);//this
 					yield return new CodeInstruction(OpCodes.Call, SelPawnForGearInfo);//this.SelPawnForGearInfo
 					yield return new CodeInstruction(OpCodes.Ldarg_3);//thing
-					yield return new CodeInstruction(OpCodes.Ldloc_S, labelRectIndex);// labelRect
-					yield return new CodeInstruction(OpCodes.Call, AddIncDecButtonInfo);//AddIncDecButton(pawn, thing, rect)
+					yield return new CodeInstruction(OpCodes.Ldfld, defInfo);//thing.def
+					yield return new CodeInstruction(OpCodes.Call, LabelIncDecButtonInfo);//LabelIncDecButton(Rect, string, pawn, thing.def)
+				}
+				else yield return i;
+
+				if (i.Calls(LabelCapInfo))
+				{
+					yield return new CodeInstruction(OpCodes.Ldarg_0);//this
+					yield return new CodeInstruction(OpCodes.Call, SelPawnForGearInfo);//this.SelPawnForGearInfo
+					yield return new CodeInstruction(OpCodes.Ldarg_3);//thing
+					yield return new CodeInstruction(OpCodes.Ldfld, defInfo);//thing.def
+					yield return new CodeInstruction(OpCodes.Call, AddStockTextInfo);//AddStockText(text, pawn, thing.def)
+				}
+				else if (i.Calls(DescriptionDetailedInfo))
+				{
+						yield return new CodeInstruction(OpCodes.Ldarg_0);//this
+						yield return new CodeInstruction(OpCodes.Call, SelPawnForGearInfo);//this.SelPawnForGearInfo
+						yield return new CodeInstruction(OpCodes.Ldarg_3);//thing
+						yield return new CodeInstruction(OpCodes.Ldfld, defInfo);//thing.def
+						yield return new CodeInstruction(OpCodes.Call, AddStockTipInfo);//AddStockTip(text, pawn, thing.def)
 				}
 			}
 		}
 
-		public static string AddStockText(Pawn pawn, Thing thing, string text) =>
-			AddStockText(pawn, thing.def, text);
-		public static string AddStockText(Pawn pawn, ThingDef thingDef, string text)
+		public static string AddStockText(string text, Pawn pawn, ThingDef thingDef)
 		{
 			if (!pawn.IsFreeColonist || pawn.Dead) return text;
 
@@ -132,9 +113,7 @@ namespace SmartMedicine
 			return text + addedText;
 		}
 
-		public static string AddStockTip(Pawn pawn, Thing thing, string text) =>
-			AddStockTip(pawn, thing.def, text);
-		public static string AddStockTip(Pawn pawn, ThingDef thingDef, string text)
+		public static string AddStockTip(string text, Pawn pawn, ThingDef thingDef)
 		{
 			if (!pawn.IsFreeColonist || pawn.Dead) return text;
 
@@ -142,16 +121,16 @@ namespace SmartMedicine
 			if (pawn.StockUpWants(thingDef) > 0 && !StockUpUtility.EnoughAvailable(thingDef, pawn.Map))
 				addedText = "TD.NotEnoughStockUp".Translate();
 
-			if (text != "" && addedText != "")
-				return text + "\n" + addedText;
+				if (text != "" && addedText != "")
+				return addedText + "\n\n" + text;
 
-			return text + addedText;
+			return addedText + text;
 		}
 
-		public static void AddIncDecButton(Pawn pawn, Thing thing, Rect rect) =>
-			AddIncDecButton(pawn, thing.def, rect);
-		public static void AddIncDecButton(Pawn pawn, ThingDef thingDef, Rect rect)
+		public static void LabelIncDecButton(Rect rect, string text, Pawn pawn, ThingDef thingDef)
 		{
+			Widgets.Label(rect, text);
+
 			if (!pawn.IsFreeColonist || pawn.Dead) return;
 
 			if (!pawn.StockingUpOn(thingDef)) return;
@@ -311,16 +290,14 @@ namespace SmartMedicine
 			Text.Anchor = TextAnchor.MiddleLeft;
 			GUI.color = Color.red;
 			Rect textRect = new Rect(36f, y, rect.width - 36f, rect.height);
-			string text = DrawThingRow_Patch.AddStockText(pawn, thingDef, thingDef.LabelCap);
+			string text = DrawThingRow_Patch.AddStockText(thingDef.LabelCap, pawn, thingDef);
 			Text.WordWrap = false;
-			Widgets.Label(textRect, text.Truncate(textRect.width, null));
+			DrawThingRow_Patch.LabelIncDecButton(textRect, text.Truncate(textRect.width, null), pawn, thingDef);
 			Text.WordWrap = true;
 
-			string tip = DrawThingRow_Patch.AddStockTip(pawn, thingDef, "");
+			string tip = DrawThingRow_Patch.AddStockTip("", pawn, thingDef);
 			if (tip != "")
 				TooltipHandler.TipRegion(textRect, tip);
-
-			DrawThingRow_Patch.AddIncDecButton(pawn, thingDef, textRect);
 
 			y += 28f;
 		}
