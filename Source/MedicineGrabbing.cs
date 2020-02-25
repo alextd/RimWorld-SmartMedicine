@@ -199,9 +199,19 @@ namespace SmartMedicine
 
 
 	//[HarmonyPatch(typeof(Toils_Tend), "PickupMedicine")]
-	//[HarmonyPatch("<PickupMedicine>c__AnonStorey0", "<>m__0")]
+	[StaticConstructorOnStartup]
 	static class PickupMedicine_Patch
 	{
+		static PickupMedicine_Patch()
+		{
+			HarmonyMethod transpiler = new HarmonyMethod(typeof(PickupMedicine_Patch), nameof(Transpiler));
+			Harmony harmony = new Harmony("uuugggg.rimworld.SmartMedicine.main");
+
+			Predicate<MethodInfo> check = m => m.Name.Contains("PickupMedicine");
+
+			harmony.PatchGeneratedMethod(typeof(Toils_Tend), check, transpiler: transpiler);
+		}
+
 		public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
 		{
 			MethodInfo GetMedicineCountToFullyHealInfo = AccessTools.Method(
@@ -245,6 +255,15 @@ namespace SmartMedicine
 	//[HarmonyPatch(typeof(JobDriver_TendPatient), "MakeNewToils")]
 	static class MakeNewToils_Patch
 	{
+		static MakeNewToils_Patch()
+		{
+			HarmonyMethod transpiler = new HarmonyMethod(typeof(PickupMedicine_Patch), nameof(Transpiler));
+			Harmony harmony = new Harmony("uuugggg.rimworld.SmartMedicine.main");
+
+			Predicate<MethodInfo> check = m => m.Name.Contains("MakeNewToils");
+
+			harmony.PatchGeneratedMethod(typeof(JobDriver_TendPatient), check, transpiler: transpiler);
+		}
 		public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
 		{
 			MethodInfo FindBestMedicineInfo = AccessTools.Method(typeof(HealthAIUtility), nameof(HealthAIUtility.FindBestMedicine));
@@ -267,7 +286,7 @@ namespace SmartMedicine
 			List<CodeInstruction> jobInstructions = new List<CodeInstruction>();
 			for (int i = 0; i < iList.Count(); i++)
 			{
-				if(iList[i].LoadsField(jobFieldInfo))
+				if (iList[i].LoadsField(jobFieldInfo))
 				{
 					jobInstructions.AddRange(iList.GetRange(i - 3, 4));
 					break;

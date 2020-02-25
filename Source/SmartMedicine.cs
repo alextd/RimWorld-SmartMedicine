@@ -25,19 +25,6 @@ namespace SmartMedicine
 			if (!harmony.GetPatchedMethods().Contains(DefOfHelperInfo))
 				harmony.Patch(DefOfHelperInfo, new HarmonyMethod(typeof(Mod), "EnsureInitializedInCtorPrefix"), null);
 
-			{
-				Type nestedType = AccessTools.Inner(typeof(Toils_Tend), "<PickupMedicine>c__AnonStorey1");
-				harmony.Patch(AccessTools.Method(nestedType, "<>m__0"),
-					null, null, new HarmonyMethod(typeof(PickupMedicine_Patch), "Transpiler"));
-			}
-
-			{
-				Type nestedType = AccessTools.Inner(typeof(JobDriver_TendPatient), "<MakeNewToils>c__Iterator0");
-				nestedType = AccessTools.Inner(nestedType, "<MakeNewToils>c__AnonStorey1");
-				harmony.Patch(AccessTools.Method(nestedType, "<>m__2"),
-					null, null, new HarmonyMethod(typeof(MakeNewToils_Patch), "Transpiler"));
-			}
-
 			harmony.PatchAll();
 		}
 

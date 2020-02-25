@@ -214,15 +214,7 @@ namespace SmartMedicine
 			HarmonyMethod transpiler = new HarmonyMethod(typeof(PriorityCareJobFail), nameof(Transpiler));
 			Harmony harmony = new Harmony("uuugggg.rimworld.SmartMedicine.main");
 
-			MethodInfo AllowsMedicineInfo = AccessTools.Method(typeof(MedicalCareUtility), "AllowsMedicine");
-
-			Predicate<MethodInfo> check = delegate (MethodInfo method)
-			{
-				DynamicMethod dm = DynamicTools.CreateDynamicMethod(method, "-unused");
-
-				return Harmony.ILCopying.MethodBodyReader.GetInstructions(dm.GetILGenerator(), method)
-					.Any(ilcode => ilcode.operand.Equals(AllowsMedicineInfo));
-			};
+			Predicate<MethodInfo> check = m => m.Name.Contains("MakeNewToils");
 
 			harmony.PatchGeneratedMethod(typeof(JobDriver_TendPatient), check, transpiler: transpiler);
 		}

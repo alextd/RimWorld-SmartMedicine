@@ -18,7 +18,7 @@ namespace SmartMedicine
 			{
 				if(AccessTools.Method(whileYoureUpUtils, "MyDistance") is MethodInfo patchThis)
 				{
-					HarmonyInstance.Create("uuugggg.rimworld.SmartMedicine.main").Patch(patchThis,
+					new Harmony("uuugggg.rimworld.SmartMedicine.main").Patch(patchThis,
 						new HarmonyMethod(typeof(FixWhileYoureUp), nameof(Prefix)));
 				}
 			}
