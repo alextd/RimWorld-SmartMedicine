@@ -252,9 +252,11 @@ namespace SmartMedicine
 			{
 				//pawn.AllowsMedicineForHediff, not pawn.playerSettings.medCare.AllowsMedicine
 				if (instList[i].Calls(AllowsMedicineInfo))
-					instList[i].operand = AllowsMedicineForHediffInfo;
-
-				yield return instList[i];
+				{
+					yield return new CodeInstruction(OpCodes.Call, AllowsMedicineForHediffInfo);
+				}
+				else
+					yield return instList[i];
 
 				//Remove .playerSettings.medCare, just using pawn
 				if (i+2 < instList.Count && 
