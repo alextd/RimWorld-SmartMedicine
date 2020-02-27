@@ -151,9 +151,10 @@ namespace SmartMedicine
 				{
 					yield return new CodeInstruction(OpCodes.Ldarg_1);
 					yield return new CodeInstruction(OpCodes.Ldarg_0);
-					instruction.operand = LayDownInPlaceInfo;
+					yield return new CodeInstruction(OpCodes.Call, LayDownInPlaceInfo);
 				}
-				yield return instruction;
+				else
+					yield return instruction;
 			}
 		}
 	}
@@ -192,8 +193,9 @@ namespace SmartMedicine
 			foreach (CodeInstruction instruction in instructions)
 			{
 				if (instruction.Calls(InBedInfo))
-					instruction.operand = InBed_PatchInfo;
-				yield return instruction;
+					yield return new CodeInstruction(OpCodes.Call, InBed_PatchInfo);
+				else
+					yield return instruction;
 			}
 		}
 	}
