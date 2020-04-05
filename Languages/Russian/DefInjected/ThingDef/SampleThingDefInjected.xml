@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+	
+	<TempSleepSpot.label>место для временного ухода</TempSleepSpot.label>
+	<TempSleepSpot.description>Автоматически созданное место для ухода за пациентом без кровати. Удаляется автоматически если не используется. (Smart Medicine)</TempSleepSpot.description>
+	
+</LanguageData>
