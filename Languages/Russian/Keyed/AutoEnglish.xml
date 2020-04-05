@@ -32,7 +32,7 @@
 	<TD.CopyStockUpFrom>Скопировать настройки из {0}</TD.CopyStockUpFrom>
 	<TD.SettingsMedicineGoodEnoughDesc>Для примера, если лечение лекарственными травами лучше на 90% чем обычно, использовать их</TD.SettingsMedicineGoodEnoughDesc>
 	<TD.SettingStockUpEnough>Запастись медициной, только если достаточно останется:</TD.SettingStockUpEnough>
-	<TD.SettingStockUpEnoughDesc>For example, at 150%, Stockpiles need to have enough for everyone to stock up to 100%, plus 50% extra</TD.SettingStockUpEnoughDesc>
+	<TD.SettingStockUpEnoughDesc>Например, при 150%, хапасов должно быть достаточно, что-бы иметь в наличии 100% и 50% дополнительно</TD.SettingStockUpEnoughDesc>
 	<TD.SettingStockUpReturn>Вернуть предметы если их не достаточно на складе</TD.SettingStockUpReturn>
 	<TD.Paused>Приостановлено</TD.Paused>
 	<TD.NotEnoughStockUp>Не достаточно медицины на складе что-бы сделать запас</TD.NotEnoughStockUp>
