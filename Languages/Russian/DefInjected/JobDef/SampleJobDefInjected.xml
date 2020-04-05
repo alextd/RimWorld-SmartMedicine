@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+	
+	<StockUp.reportString>запасается на TargetA</StockUp.reportString>
+	<StockDown.reportString>возвращает на TargetA</StockDown.reportString>
+	<StockUpOnMedicine.reportString>запасается на TargetA</StockUpOnMedicine.reportString>
+	<StockDownOnMedicine.reportString>возвращает на TargetA</StockDownOnMedicine.reportString>
+	
+</LanguageData>

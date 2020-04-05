@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+	
+	<TD.SettingDoctorInv>Используйте лекарства из инвентаря врача</TD.SettingDoctorInv>
+	<TD.SettingPatientInv>Используйте лекарства из инвентаря пациента</TD.SettingPatientInv>
+	<TD.SettingNearby>...Но используйте близлежащие лекарства (если того же качества)</TD.SettingNearby>
+	<TD.SettingNearbyDesc>Это также проверяет наличие лекарств по пути к пациенту (примерно на основе расстояния, а не фактического пути)</TD.SettingNearbyDesc>
+	<TD.SettingNearbyDist>Как далеко искать лекарства поблизости</TD.SettingNearbyDist>
+	<TD.SpacesFormat>{0:0} клеток</TD.SpacesFormat>
+	<TD.SettingNearbyDistDesc>Это только переопределение для лекарства в инвентарях - если нет лекарств в инвентарях, они будут искать лекарство по всей карте</TD.SettingNearbyDistDesc>
+	<TD.SettingOtherInv>Бросить лекарство из инвентаря ближайшего колониста</TD.SettingOtherInv>
+	<TD.SettingAnimalInv>Бросить лекарство из инвентаря ближайшего животного</TD.SettingAnimalInv>
+	<TD.SettingOtherAnyDist>...Неважно, как далеко</TD.SettingOtherAnyDist>
+	<TD.SettingOtherAnyDistDesc>Проверить, есть ли у кого-то лекарство получше, даже если он дальше</TD.SettingOtherAnyDistDesc>
+	<TD.SettingOtherDist>Как далеко идти, чтобы подобрать</TD.SettingOtherDist>
+	<TD.SettingMinimal>Использовать самые простые лекарства для несрочного лечения</TD.SettingMinimal>
+	<TD.SettingMinimalDesc>Неотложная помощь - это любое заболевание или травмы с кровотечением, вероятностью заражения или постоянными последствиями - ценные лекарства только для них</TD.SettingMinimalDesc>
+	<TD.SettingNoMed>Несрочная помощь без лекарств</TD.SettingNoMed>
+	<TD.SettingNoMedDesc>Аналогично тому, что выше, но без лекарств травмы лечатся по одной</TD.SettingNoMedDesc>
+	<TD.SettingMedicineGoodEnough>...включая высококачественные лекарства:</TD.SettingMedicineGoodEnough>
+	<TD.SettingStockUp>Запастись лекарствами и наркотиками</TD.SettingStockUp>
+	<TD.SettingStockUpDesc>Настройки запаса находятся во вкладке Назначения</TD.SettingStockUpDesc>
+	<TD.SettingFieldTendingNoBeds>Врачи будут лечить пациентов даже если нет свободных медицинских кроватей</TD.SettingFieldTendingNoBeds>
+	<TD.SettingFieldTendingNoBedsDesc>Пациент должен быть в состоянии покоя, лежать или призван к цели</TD.SettingFieldTendingNoBedsDesc>
+	<TD.SettingFieldTendingAlways>Врачи всегда могут ухаживать: с медицинскими кроватями или без них</TD.SettingFieldTendingAlways>
+	<TD.SettingFieldTendingAlwaysDesc>Колонист будет стараться лечь в кровать, но вы можете их держать на месте в режиме призыва</TD.SettingFieldTendingAlwaysDesc>
+	<TD.SmartMedicine>Smart Medicine</TD.SmartMedicine>
+	<TD.StockUpSettings>Настройки запасов</TD.StockUpSettings>
+	<TD.StockUpSettingsForPawn>Настройка запасов для {0}</TD.StockUpSettingsForPawn>
+	<TD.ClearStockUp>Очистить настройки запасов медицины</TD.ClearStockUp>
+	<TD.CancelCopyStockUp>Отмена копирования настроек из {0}</TD.CancelCopyStockUp>
+	<TD.CopyStockUpFrom>Скопировать настройки из {0}</TD.CopyStockUpFrom>
+	<TD.SettingsMedicineGoodEnoughDesc>Для примера, если лечение лекарственными травами лучше на 90% чем обычно, использовать их</TD.SettingsMedicineGoodEnoughDesc>
+	<TD.SettingStockUpEnough>Запастись медициной, только если достаточно останется:</TD.SettingStockUpEnough>
+	<TD.SettingStockUpEnoughDesc>For example, at 150%, Stockpiles need to have enough for everyone to stock up to 100%, plus 50% extra</TD.SettingStockUpEnoughDesc>
+	<TD.SettingStockUpReturn>Вернуть предметы если их не достаточно на складе</TD.SettingStockUpReturn>
+	<TD.Paused>Приостановлено</TD.Paused>
+	<TD.NotEnoughStockUp>Не достаточно медицины на складе что-бы сделать запас</TD.NotEnoughStockUp>
+	<TD.SettingGlobalSurgeryUnlimited>По умолчанию для новой игры будет включена опция 'Для операций использовать лучшее'</TD.SettingGlobalSurgeryUnlimited>
+	<TD.SettingGlobalSurgeryUnlimitedDesc>During a game, this setting is not used - the default for new colonists is alongside the other medical defaults accessible in the Health tab</TD.SettingGlobalSurgeryUnlimitedDesc>
+	<TD.DefaultSurgeryUnlimited>Для операций используются лучшие доступные лекарства</TD.DefaultSurgeryUnlimited>
+	<TD.PawnSettingSurgeryUnlimited>Для операций лучшее</TD.PawnSettingSurgeryUnlimited>
+	<TD.DefaultCare>Уход по умолчанию</TD.DefaultCare>
+	<TD.RemoveTempTendDesc>Remove this (in case it lingers around after it's unused)</TD.RemoveTempTendDesc>
+	
+</LanguageData>
