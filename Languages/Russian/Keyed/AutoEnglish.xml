@@ -7,7 +7,7 @@
 	<TD.SettingNearbyDesc>Это также проверяет наличие лекарств по пути к пациенту (примерно на основе расстояния, а не фактического пути)</TD.SettingNearbyDesc>
 	<TD.SettingNearbyDist>Как далеко искать лекарства поблизости</TD.SettingNearbyDist>
 	<TD.SpacesFormat>{0:0} клеток</TD.SpacesFormat>
-	<TD.SettingNearbyDistDesc>Это только переопределение для лекарства в инвентарях - если нет лекарств в инвентарях, они будут искать лекарство по всей карте</TD.SettingNearbyDistDesc>
+	<TD.SettingNearbyDistDesc>Это только переопределение для лекарства в инвентарях - если нет лекарств в инвентарях, они будут искать по всей карте</TD.SettingNearbyDistDesc>
 	<TD.SettingOtherInv>Бросить лекарство из инвентаря ближайшего колониста</TD.SettingOtherInv>
 	<TD.SettingAnimalInv>Бросить лекарство из инвентаря ближайшего животного</TD.SettingAnimalInv>
 	<TD.SettingOtherAnyDist>...Неважно, как далеко</TD.SettingOtherAnyDist>
@@ -21,7 +21,7 @@
 	<TD.SettingStockUp>Запастись лекарствами и наркотиками</TD.SettingStockUp>
 	<TD.SettingStockUpDesc>Настройки запаса находятся во вкладке Назначения</TD.SettingStockUpDesc>
 	<TD.SettingFieldTendingNoBeds>Врачи будут лечить пациентов даже если нет свободных медицинских кроватей</TD.SettingFieldTendingNoBeds>
-	<TD.SettingFieldTendingNoBedsDesc>Пациент должен быть в состоянии покоя, лежать или призван к цели</TD.SettingFieldTendingNoBedsDesc>
+	<TD.SettingFieldTendingNoBedsDesc>Пациент должен быть в состоянии покоя, лежать или в режиме призыва</TD.SettingFieldTendingNoBedsDesc>
 	<TD.SettingFieldTendingAlways>Врачи всегда могут ухаживать: с медицинскими кроватями или без них</TD.SettingFieldTendingAlways>
 	<TD.SettingFieldTendingAlwaysDesc>Колонист будет стараться лечь в кровать, но вы можете их держать на месте в режиме призыва</TD.SettingFieldTendingAlwaysDesc>
 	<TD.SmartMedicine>Smart Medicine</TD.SmartMedicine>
@@ -37,7 +37,7 @@
 	<TD.Paused>Приостановлено</TD.Paused>
 	<TD.NotEnoughStockUp>Не достаточно медицины на складе что-бы сделать запас</TD.NotEnoughStockUp>
 	<TD.SettingGlobalSurgeryUnlimited>По умолчанию для новой игры будет включена опция 'Для операций использовать лучшее'</TD.SettingGlobalSurgeryUnlimited>
-	<TD.SettingGlobalSurgeryUnlimitedDesc>During a game, this setting is not used - the default for new colonists is alongside the other medical defaults accessible in the Health tab</TD.SettingGlobalSurgeryUnlimitedDesc>
+	<TD.SettingGlobalSurgeryUnlimitedDesc>Вов ремя игры этот параметр не используется.  Включает использование лучших медикаментов для операций по умолчанию для новых колонистов.</TD.SettingGlobalSurgeryUnlimitedDesc>
 	<TD.DefaultSurgeryUnlimited>Для операций используются лучшие доступные лекарства</TD.DefaultSurgeryUnlimited>
 	<TD.PawnSettingSurgeryUnlimited>Для операций лучшее</TD.PawnSettingSurgeryUnlimited>
 	<TD.DefaultCare>Уход по умолчанию</TD.DefaultCare>
