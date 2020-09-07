@@ -22,8 +22,11 @@ namespace SmartMedicine
 	}
 
 	[HarmonyPatch(typeof(WorkGiver_DoBill), "AddEveryMedicineToRelevantThings")]
+	[DefOf]
 	public static class InventorySurgery
 	{
+		public static RecipeDef Anesthetize;
+
 		//private static void AddEveryMedicineToRelevantThings(Pawn pawn, Thing billGiver, List<Thing> relevantThings, Predicate<Thing> baseValidator, Map map)
 		public static void Postfix(Pawn pawn, Thing billGiver, List<Thing> relevantThings, Map map)
 		{
@@ -36,19 +39,22 @@ namespace SmartMedicine
 			Log.Message($"AddEveryMedicineToRelevantThings ({pawn}, {billGiver}, {HackityGetBill.bill})");
 			MedicalCareCategory medicalCareCategory = (MedicalCareCategory)AccessTools.Method(typeof(WorkGiver_DoBill), "GetMedicalCareCategory").Invoke(null, new object[] { billGiver });
 
-			bool added = false;
 			Log.Message($"inventory: ({pawn.inventory.GetDirectlyHeldThings().ToStringSafeEnumerable()})");
 			foreach (Thing t in pawn.inventory.GetDirectlyHeldThings())
 			{
 				if (medicalCareCategory.AllowsMedicine(t.def) && baseValidator(t))
 				{
 					Log.Message($"{pawn} considering {t} for surgery on {billGiver}");
-					added = true;
 					relevantThings.Add(t);
 				}
 			}
-			if (added)
-				relevantThings.SortBy((Thing x) => -x.GetStatValue(StatDefOf.MedicalPotency, true), (Thing x) => x.Spawned ? x.Position.DistanceToSquared(billGiver.Position) : 0);
+
+			//Tiny addition to use minimal medicine for Anesthetize bill. TODO: Make this a def extension so any recipe could use it, though no one will so why really
+			int statAdjust = (Settings.Get().minimalMedicineForNonUrgent && HackityGetBill.bill.recipe == Anesthetize ? 1 : -1);
+			relevantThings.SortBy(
+				(Thing x) => statAdjust * x.GetStatValue(StatDefOf.MedicalPotency),
+				//Check if item is in inventory or spawned in map: inventory "distance" is 0
+				(Thing x) => x.Spawned ? x.Position.DistanceToSquared(billGiver.Position) : 0);
 
 			HackityGetBill.bill = null;
 		}
