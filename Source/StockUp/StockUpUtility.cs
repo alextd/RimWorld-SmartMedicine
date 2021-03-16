@@ -80,6 +80,12 @@ namespace SmartMedicine
 
 			return pawn.StockUpSettings().Count > 0;
 		}
+		public static IEnumerable<ThingDef> StockingUpList(this Pawn pawn)
+		{
+			if (!Settings.Get().stockUp || pawn.inventory == null) return new List<ThingDef>();
+
+			return pawn.StockUpSettings().Keys;
+		}
 
 		public static bool StockingUpOn(this Pawn pawn, Thing thing) => pawn.StockingUpOn(thing.def);
 
