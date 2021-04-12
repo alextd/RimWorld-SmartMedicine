@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<LanguageData>
+	
+	<TD.SettingDoctorInv>Utiliser les médicaments de l'inventaire du médecin</TD.SettingDoctorInv>
+	<TD.SettingPatientInv>Utiliser les médicaments de l'inventaire du patient</TD.SettingPatientInv>
+	<TD.SettingNearby>... mais utilisez des médicaments à proximité (si de même qualité)</TD.SettingNearby>
+	<TD.SettingNearbyDesc>Cela vérifie également la présence de médicaments sur le chemin du patient (en gros en fonction de la distance et non du chemin réel)</TD.SettingNearbyDesc>
+	<TD.SettingNearbyDist>À quelle distance marcher pour trouver des médicaments à proximité</TD.SettingNearbyDist>
+	<TD.SpacesFormat>{0:0} espace</TD.SpacesFormat>
+	<TD.SettingNearbyDistDesc>Il ne s'agit que d'un remplacement pour les médicaments en stock - s'il n'y a pas de médicaments en stock, ils marcheront jusqu'aux extrémités de la carte pour récupérer des médicaments.</TD.SettingNearbyDistDesc>
+	<TD.SettingOtherInv>Déposer des médicaments de l'inventaire du colon à proximité</TD.SettingOtherInv>
+	<TD.SettingAnimalInv>Déposer des médicaments de l'inventaire de l'animal à proximité</TD.SettingAnimalInv>
+	<TD.SettingOtherAnyDist>... peu importe à quelle distance</TD.SettingOtherAnyDist>
+	<TD.SettingOtherAnyDistDesc>Permet d'utiliser les meilleurs médicaments de quelqu'un d'autre même s'il est loin, au prix de marcher jusqu'à lui</TD.SettingOtherAnyDistDesc>
+	<TD.SettingOtherDist>Jusqu'où marcher pour l'obtenir</TD.SettingOtherDist>
+	<TD.SettingMinimal>Utilisez un médicament minimal pour les soins non urgents</TD.SettingMinimal>
+	<TD.SettingMinimalDesc>Les soins urgents sont toute maladie ou blessure avec saignement, risque d'infection ou effets permanents - ne gardez que des médicaments précieux pour ces derniers.</TD.SettingMinimalDesc>
+	<TD.SettingNoMed>Pas de médicament pour les soins non urgents</TD.SettingNoMed>
+	<TD.SettingNoMedDesc>Idem que ci-dessus, mais sans médicament, chaque blessure est traitée à la fois</TD.SettingNoMedDesc>
+	<TD.SettingMedicineGoodEnough>... inclure des médicaments qui sont assez bons:</TD.SettingMedicineGoodEnough>
+	<TD.SettingStockUp>Faites le plein de médicaments</TD.SettingStockUp>
+	<TD.SettingStockUpDesc>Les paramètres d'inventaire se trouvent dans l'onglet Équipement du colon</TD.SettingStockUpDesc>
+	<TD.SettingFieldTendingNoBeds>Les médecins traiteront les patients s'il n'y a pas de lits disponibles</TD.SettingFieldTendingNoBeds>
+	<TD.SettingFieldTendingNoBedsDesc>Le patient doit être au repos, abattu ou mobilisé pour être ciblé</TD.SettingFieldTendingNoBedsDesc>
+	<TD.SettingFieldTendingAlways>Les médecins peuvent toujours soigner, avec ou sans lit</TD.SettingFieldTendingAlways>
+	<TD.SettingFieldTendingAlwaysDesc>Les colons donneront la priorité à aller au lit, mais vous pouvez mobiliser des patients pour les garder en place.</TD.SettingFieldTendingAlwaysDesc>
+	<TD.SmartMedicine>Médecine intelligente</TD.SmartMedicine>
+	<TD.StockUpSettings>Paramètres de stockage</TD.StockUpSettings>
+	<TD.StockUpSettingsForPawn>Paramètres de stockage pour {0}</TD.StockUpSettingsForPawn>
+	<TD.ClearStockUp>Effacer tous les paramètres de stockage </TD.ClearStockUp>
+	<TD.CancelCopyStockUp>Annuler la copie des paramètres depuis {0}</TD.CancelCopyStockUp>
+	<TD.CopyStockUpFrom>Copier les paramètres de stockage depuis {0}</TD.CopyStockUpFrom>
+	<TD.SettingsMedicineGoodEnoughDesc>Par exemple, si la phytothérapie fait un travail 90% aussi bon que la normale, utilisez plutôt des herbes médicinales.</TD.SettingsMedicineGoodEnoughDesc>
+	<TD.SettingStockUpEnough>Faites le plein uniquement s'il y en a suffisamment de disponibles:</TD.SettingStockUpEnough>
+	<TD.SettingStockUpEnoughDesc>Par exemple, à 150%, les stocks doivent en avoir suffisamment pour que tout le monde puisse stocker jusqu'à 100%, plus 50% supplémentaires</TD.SettingStockUpEnoughDesc>
+	<TD.SettingStockUpReturn>Retourner les articles s'il n'y en a pas suffisamment de disponible</TD.SettingStockUpReturn>
+	<TD.Paused>Pause</TD.Paused>
+	<TD.NotEnoughStockUp>Pas assez de disponible pour faire le plein</TD.NotEnoughStockUp>
+	<TD.SettingGlobalSurgeryUnlimited>Les paramètres médicaux par défaut pour un nouveau jeu ont coché `` Utilisation du meilleur médicament pour une chirurgie ''</TD.SettingGlobalSurgeryUnlimited>
+	<TD.SettingGlobalSurgeryUnlimitedDesc>Pendant une partie, ce paramètre n'est pas utilisé - la valeur par défaut pour les nouveaux colons est à côté des autres paramètres médicaux par défaut accessibles dans l'onglet Santé</TD.SettingGlobalSurgeryUnlimitedDesc>
+	<TD.DefaultSurgeryUnlimited>Surgery uses best medicine available</TD.DefaultSurgeryUnlimited>
+	<TD.PawnSettingSurgeryUnlimited>La chirurgie utilise le meilleur soin</TD.PawnSettingSurgeryUnlimited>
+	<TD.DefaultCare>Soins par défaut</TD.DefaultCare>
+	<TD.RemoveTempTendDesc>Supprimez-le (au cas où il persisterait après qu'il ne soit pas utilisé)</TD.RemoveTempTendDesc>
+	
+</LanguageData>

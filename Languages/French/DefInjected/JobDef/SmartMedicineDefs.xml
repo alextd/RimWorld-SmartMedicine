@@ -1,0 +1,12 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <StockUp.reportString>Ajoute TARGETA à votre inventaire</StockUp.reportString>
+  <StockDown.reportString>Retire TARGETA de votre inventaire</StockDown.reportString>
+
+  <!-- Backward compat -->
+
+  <StockUpOnMedicine.reportString>Ajoute TARGETA à votre inventaire</StockUpOnMedicine.reportString>
+  <StockDownOnMedicine.reportString>Retire TARGETA à votre inventaire</StockDownOnMedicine.reportString>
+
+</LanguageData>

@@ -1,0 +1,7 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<LanguageData>
+
+  <TempSleepSpot.label>zone de soins temporaire</TempSleepSpot.label>
+  <TempSleepSpot.description>Créé automatiquement une zone de soins pour soigner sur le terrain. S'enlève lorsqu'il n'est pas utilisé</TempSleepSpot.description>
+
+</LanguageData>
