@@ -3,27 +3,33 @@
   <PropertyGroup>
     <BaseIntermediateOutputPath>.vs\unused\</BaseIntermediateOutputPath>
     <ProjectGuid>{AA1EF112-E817-4ED1-849A-EE55B8DAF3C0}</ProjectGuid>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
-    <OutputPath>.\</OutputPath>
+    <OutputPath>Assemblies\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
-	<OutputPath>..\$(SolutionName) - Release\</OutputPath>
+    <OutputPath>..\$(SolutionName) - Release\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
-		<ReleaseFiles Include="About\**;Defs\**;Patches\**;Languages\**;Sounds\**;Textures\**;LoadFolders.xml"
-									Exclude="About\About-Debug.xml;About\About-Release.xml;About\About.xml"/>
-		<AboutFiles Include="About\About-Debug.xml;About\About-Release.xml"/>
+    <ReleaseFiles Include="About\**;Defs\**;Patches\**;Languages\**;Sounds\**;Textures\**;LoadFolders.xml" Exclude="About\About-Debug.xml;About\About-Release.xml;About\About.xml" />
+    <AboutFiles Include="About\About-Debug.xml;About\About-Release.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="0Harmony, Version=2.1.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Lib.Harmony.2.1.1\lib\net472\0Harmony.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <Target Name="Clean" />
   <Target Name="Build">
-    <Copy SourceFiles="About\About-$(Configuration).xml" 
-          DestinationFiles="$(OutputPath)About\About.xml" 
-          SkipUnchangedFiles="true" />
-    <Copy Condition=" '$(Configuration)' == 'Release' "
-					SourceFiles="@(ReleaseFiles)"
-					DestinationFiles="@(ReleaseFiles->'$(OutputPath)%(RelativeDir)%(Filename)%(Extension)')"
-          SkipUnchangedFiles="true" />
+    <Copy SourceFiles="About\About-$(Configuration).xml" DestinationFiles="$(OutputPath)About\About.xml" SkipUnchangedFiles="true" />
+    <Copy Condition=" '$(Configuration)' == 'Release' " SourceFiles="@(ReleaseFiles)" DestinationFiles="@(ReleaseFiles->'$(OutputPath)%(RelativeDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
   </Target>
   <Target Name="Rebuild" />
   <Target Name="PostBuild" AfterTargets="Build">
