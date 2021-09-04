@@ -1,0 +1,39 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+	<ThingDef>
+		<defName>TempSleepSpot</defName>
+		<label>temporary tending spot</label>
+		<description>Automatically created by Smart Medicine to tend in the field. Removes itself when not used.</description>
+		<thingClass>SmartMedicine.Building_TempTendSpot</thingClass>
+		<graphicData>
+			<texPath>TempSleepSpot</texPath>
+			<graphicClass>Graphic_Single</graphicClass>
+		</graphicData>
+		<altitudeLayer>FloorEmplacement</altitudeLayer>
+		<selectable>true</selectable>
+		<statBases>
+			<WorkToBuild>0</WorkToBuild>
+			<Comfort>0.4</Comfort>
+			<SurgerySuccessChanceFactor>0.7</SurgerySuccessChanceFactor>
+		</statBases>
+		<scatterableOnMapGen>false</scatterableOnMapGen>
+		<useHitPoints>False</useHitPoints>
+		<size>(1,1)</size>
+		<passability>Standable</passability>
+		<building>
+			<bed_defaultMedical>true</bed_defaultMedical>
+			<bed_showSleeperBody>True</bed_showSleeperBody>
+			<canPlaceOverImpassablePlant>false</canPlaceOverImpassablePlant>
+			<ai_chillDestination>false</ai_chillDestination>
+			<claimable>false</claimable>
+		</building>
+		<comps>
+			<li Class="CompProperties_AssignableToPawn">
+				<drawAssignmentOverlay>false</drawAssignmentOverlay>
+				<compClass>CompAssignableToPawn_Bed</compClass>
+			</li>
+		</comps>
+	</ThingDef>
+	
+</Defs>

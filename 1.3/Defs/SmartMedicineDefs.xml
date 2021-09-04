@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Defs>
+
+	<ThinkTreeDef>
+		<defName>StockUpTree</defName>
+		<insertTag>Humanlike_PostDuty</insertTag>
+		<insertPriority>100</insertPriority>
+		<thinkRoot Class="SmartMedicine.JobGiver_StockUp" />
+	</ThinkTreeDef>
+
+	<JobDef>
+		<defName>StockUp</defName>
+		<driverClass>SmartMedicine.JobDriver_StockUp</driverClass>
+		<reportString>stocking up on TargetA</reportString>
+		<casualInterruptible>true</casualInterruptible>
+		<suspendable>false</suspendable>
+	</JobDef>
+
+	<JobDef>
+		<defName>StockDown</defName>
+		<driverClass>SmartMedicine.JobDriver_StockDown</driverClass>
+		<reportString>putting back TargetA</reportString>
+		<casualInterruptible>true</casualInterruptible>
+		<suspendable>false</suspendable>
+	</JobDef>
+
+	<!--
+	Backward compat
+	-->
+
+
+	<JobDef>
+		<defName>StockUpOnMedicine</defName>
+		<driverClass>SmartMedicine.JobDriver_StockUpOnMedicine</driverClass>
+		<reportString>stocking up on TargetA</reportString>
+		<casualInterruptible>true</casualInterruptible>
+		<suspendable>false</suspendable>
+	</JobDef>
+
+	<JobDef>
+		<defName>StockDownOnMedicine</defName>
+		<driverClass>SmartMedicine.JobDriver_StockDownOnMedicine</driverClass>
+		<reportString>putting back TargetA</reportString>
+		<casualInterruptible>true</casualInterruptible>
+		<suspendable>false</suspendable>
+	</JobDef>
+</Defs>

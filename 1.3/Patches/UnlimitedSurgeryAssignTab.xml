@@ -1,0 +1,26 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+	<Operation Class="PatchOperationInsert">
+		<xpath>Defs/PawnTableDef[defName="Assign"]/columns/li[text() = 'MedicalCare']</xpath>
+		<order>Append</order>
+		<value>
+			<li>UnlimitedSurgery</li>
+		</value>
+	</Operation>
+
+	<!-- Fluffy's Medical Tab mod support -->
+	<Operation Class="PatchOperationSequence">
+		<success>Always</success>
+		<operations>
+			<li Class="PatchOperationTest">
+				<xpath>Defs/DynamicPawnTable.DynamicPawnTableDef[defName="Medical"]</xpath>
+			</li>
+			<li Class="PatchOperationInsert">
+				<xpath>Defs/DynamicPawnTable.DynamicPawnTableDef[defName="Medical"]/columns/li[text() = 'GapSmall']</xpath>
+				<value>
+					<li>UnlimitedSurgery</li>
+				</value>
+			</li>
+		</operations>
+	</Operation>
+</Patch>

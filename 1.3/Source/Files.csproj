@@ -1,0 +1,67 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <BaseIntermediateOutputPath>.vs\unused\</BaseIntermediateOutputPath>
+    <ProjectGuid>{AA1EF112-E817-4ED1-849A-EE55B8DAF3C0}</ProjectGuid>
+    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <OutputPath>.\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <OutputPath>..\$(SolutionName) - Release\</OutputPath>
+  </PropertyGroup>
+  <ItemGroup>
+    <ReleaseFiles Include="Defs\SmartMedicineDefs.xml" />
+    <ReleaseFiles Include="Defs\TempFieldTendingSpot.xml" />
+    <ReleaseFiles Include="Defs\UnlimitedSurgeryColumnDefs.xml" />
+    <ReleaseFiles Include="Patches\SmartMedicinePatches.xml" />
+    <ReleaseFiles Include="Patches\UnlimitedSurgeryAssignTab.xml" />
+    <ReleaseFiles Include="Languages\ChineseSimplified\DefInjected\JobDef\SmartMedicineDefs.xml" />
+    <ReleaseFiles Include="Languages\ChineseSimplified\DefInjected\WorkGiverDef\SmartMedicineDefs.xml" />
+    <ReleaseFiles Include="Languages\ChineseSimplified\Keyed\ChineseSimplified.xml" />
+    <ReleaseFiles Include="Languages\ChineseTraditional\DefInjected\JobDef\SmartMedicineDefs.xml" />
+    <ReleaseFiles Include="Languages\ChineseTraditional\DefInjected\WorkGiverDef\SmartMedicineDefs.xml" />
+    <ReleaseFiles Include="Languages\ChineseTraditional\Keyed\AutoEnglish.xml" />
+    <ReleaseFiles Include="Languages\English\Keyed\AutoEnglish.xml" />
+    <ReleaseFiles Include="Languages\French\DefInjected\JobDef\SmartMedicineDefs.xml" />
+    <ReleaseFiles Include="Languages\French\DefInjected\PawnColumnDef\UnlimitedSurgeryColumnDefs.xml" />
+    <ReleaseFiles Include="Languages\French\DefInjected\ThingDef\TempFieldTendingSpot.xml" />
+    <ReleaseFiles Include="Languages\French\Keyed\AutoEnglish.xml" />
+    <ReleaseFiles Include="Languages\French\LanguageInfo.xml" />
+    <ReleaseFiles Include="Languages\German\DefInjected\SmartMedicineDefs.xml" />
+    <ReleaseFiles Include="Languages\German\Keyed\AutoEnglish.xml" />
+    <ReleaseFiles Include="Languages\German\LanguageInfo.xml" />
+    <ReleaseFiles Include="Languages\Japanese\DefInjected\JobDef\SmartMedicineDefs.xml" />
+    <ReleaseFiles Include="Languages\Japanese\DefInjected\PawnColumnDef\UnlimitedSurgeryColumnDefs.xml" />
+    <ReleaseFiles Include="Languages\Japanese\DefInjected\ThingDef\TempFieldTendingSpot.xml" />
+    <ReleaseFiles Include="Languages\Japanese\Keyed\AutoEnglish.xml" />
+    <ReleaseFiles Include="Languages\Japanese\LanguageInfo.xml" />
+    <ReleaseFiles Include="Languages\Russian\DefInjected\JobDef\SmartMedicineDefs.xml" />
+    <ReleaseFiles Include="Languages\Russian\DefInjected\PawnColumnDef\SmartMedicineDefs.xml" />
+    <ReleaseFiles Include="Languages\Russian\DefInjected\ThingDef\SmartMedicineDefs.xml" />
+    <ReleaseFiles Include="Languages\Russian\Keyed\AutoEnglish.xml" />
+    <ReleaseFiles Include="Languages\Russian\LanguageInfo.xml" />
+    <ReleaseFiles Include="Languages\Sample\DefInjected\JobDef\SampleJobDefInjected.xml" />
+    <ReleaseFiles Include="Languages\Sample\DefInjected\ThingDef\SampleThingDefInjected.xml" />
+    <ReleaseFiles Include="Languages\SpanishLatin\DefInjected\JobDef\JobDefInjected.xml" />
+    <ReleaseFiles Include="Languages\SpanishLatin\Keyed\Keyed.xml" />
+    <ReleaseFiles Include="Languages\Spanish\DefInjected\JobDef\JobDefInjected.xml" />
+    <ReleaseFiles Include="Languages\Spanish\Keyed\Keyed.xml" />
+    <ReleaseFiles Include="Textures\MedicalRest.png" />
+    <ReleaseFiles Include="Textures\TempSleepSpot.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+  </ItemGroup>
+  <Target Name="Clean" />
+  <Target Name="Build">
+    <Copy SourceFiles="About\About-$(Configuration).xml" DestinationFiles="$(OutputPath)About\About.xml" SkipUnchangedFiles="true" />
+    <Copy Condition=" '$(Configuration)' == 'Release' " SourceFiles="@(ReleaseFiles)" DestinationFiles="@(ReleaseFiles->'$(OutputPath)%(RelativeDir)%(Filename)%(Extension)')" SkipUnchangedFiles="true" />
+  </Target>
+  <Target Name="Rebuild" />
+  <Target Name="PostBuild" AfterTargets="Build">
+    <RemoveDir Directories="obj" />
+  </Target>
+</Project>

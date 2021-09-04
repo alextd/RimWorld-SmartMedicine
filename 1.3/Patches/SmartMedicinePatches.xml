@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<Patch>
+	<Operation Class="PatchOperationInsert">
+		<xpath>Defs/JobDef[defName="TendPatient"]/defName</xpath>
+		<value>
+			<suspendable>false</suspendable>
+		</value>
+	</Operation>
+</Patch>
