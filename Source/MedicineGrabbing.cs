@@ -344,15 +344,19 @@ namespace SmartMedicine
 
 			public static bool operator >(MedicineEvaluator l, MedicineEvaluator r)
 			{
-				return l.rating > r.rating
-					|| (l.rating == r.rating && l.distance < r.distance)
-					|| (l.distance == r.distance && l.pawn != null && r.pawn == null);
+				if (l.rating > r.rating) return true;
+				if (l.rating < r.rating) return false;
+				if (l.distance < r.distance) return true;
+				if (l.distance > r.distance) return false;
+				return l.pawn != null && r.pawn == null;
 			}
 			public static bool operator <(MedicineEvaluator l, MedicineEvaluator r)
 			{
-				return l.rating < r.rating
-					|| (l.rating == r.rating && l.distance > r.distance)
-					|| (l.distance == r.distance && l.pawn == null && r.pawn != null);
+				if (l.rating < r.rating) return true;
+				if (l.rating > r.rating) return false;
+				if (l.distance > r.distance) return true;
+				if (l.distance < r.distance) return false;
+				return l.pawn == null && r.pawn != null;
 			}
 		}
 		static float maxMedicineQuality = 10.0f;
