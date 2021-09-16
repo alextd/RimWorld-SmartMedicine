@@ -251,70 +251,6 @@ namespace SmartMedicine
 		}
 	}
 
-
-	//[HarmonyPatch(typeof(JobDriver_TendPatient), "MakeNewToils")]
-	static class MakeNewToils_Patch
-	{
-		static MakeNewToils_Patch()
-		{
-			HarmonyMethod transpiler = new HarmonyMethod(typeof(PickupMedicine_Patch), nameof(Transpiler));
-			Harmony harmony = new Harmony("uuugggg.rimworld.SmartMedicine.main");
-
-			Predicate<MethodInfo> check = m => m.Name.Contains("MakeNewToils");
-
-			harmony.PatchGeneratedMethod(typeof(JobDriver_TendPatient), check, transpiler: transpiler);
-		}
-		public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
-		{
-			MethodInfo FindBestMedicineInfo = AccessTools.Method(typeof(HealthAIUtility), nameof(HealthAIUtility.FindBestMedicine));
-			MethodInfo FindInfo = AccessTools.Method(typeof(FindBestMedicine), nameof(FindBestMedicine.Find));
-
-
-			//MethodInfo FirstOrDefaultInfo = AccessTools.Method(typeof(Enumerable), "FirstOrDefault", new Type[] { typeof(IEnumerable<ThingCount>) }, new Type[] { typeof(IEnumerable<ThingCount>) });
-			//MethodInfo FirstOrDefaultInfo = AccessTools.FirstMethod(typeof(Enumerable), mi => mi.Name == "FirstOrDefault" && mi.GetParameters().Count() == 1);
-			//FirstOrDefaultInfo = FirstOrDefaultInfo.MakeGenericMethod(new Type[] { typeof(IEnumerable<ThingCount>) });
-			//MethodInfo ThingCountThingInfo = AccessTools.Property(typeof(ThingCount), "Thing").GetGetMethod();
-
-			//
-			MethodInfo GetTheBloodyThingInfo = AccessTools.Method(typeof(MakeNewToils_Patch), "GetTheBloodyThing");
-
-			FieldInfo jobFieldInfo = AccessTools.Field(
-				typeof(JobDriver), nameof(JobDriver.job));
-			FieldInfo jobCountInfo = AccessTools.Field(
-				typeof(Job), nameof(Job.count));
-			List<CodeInstruction> iList = instructions.ToList();
-			List<CodeInstruction> jobInstructions = new List<CodeInstruction>();
-			for (int i = 0; i < iList.Count(); i++)
-			{
-				if (iList[i].LoadsField(jobFieldInfo))
-				{
-					jobInstructions.AddRange(iList.GetRange(i - 3, 4));
-					break;
-				}
-			}
-
-			foreach (CodeInstruction i in instructions)
-			{
-				if (i.Calls(FindBestMedicineInfo))
-				{
-					foreach (CodeInstruction jobI in jobInstructions)
-						yield return jobI;
-					yield return new CodeInstruction(OpCodes.Ldflda, jobCountInfo);
-					yield return new CodeInstruction(OpCodes.Call, FindInfo);
-					yield return new CodeInstruction(OpCodes.Call, GetTheBloodyThingInfo);
-					//yield return new CodeInstruction(OpCodes.Call, FirstOrDefaultInfo);
-					//yield return new CodeInstruction(OpCodes.Call, ThingCountThingInfo);
-				}
-				else yield return i;
-			}
-		}
-		public static Thing GetTheBloodyThing(List<ThingCount> x)
-		{
-			return x.FirstOrDefault().Thing;
-		}
-	}
-
-
 	[HarmonyPatch(typeof(HealthAIUtility))]
 	[HarmonyPatch("FindBestMedicine")]
 	[HarmonyBefore(new string[] { "fluffy.rimworld.pharmacist" })]
@@ -378,17 +314,17 @@ namespace SmartMedicine
 		}
 
 		//FindBestMedicine Replacement
-		private static bool Prefix(Pawn healer, Pawn patient, ref Thing __result)
+		private static bool Prefix(Pawn healer, Pawn patient, ref Thing __result, bool onlyUseInventory = false)
 		{
 			if (patient.GetCare() <= MedicalCareCategory.NoMeds || Medicine.GetMedicineCountToFullyHeal(patient) <= 0)
 				return true;
 
-			__result = Find(healer, patient, out int dummy).FirstOrDefault().Thing;
+			__result = Find(healer, patient, out int dummy, onlyUseInventory).FirstOrDefault().Thing;
 			return false;
 		}
 
 		//public static Thing FindBestMedicine(Pawn healer, Pawn patient)
-		public static List<ThingCount> Find(Pawn healer, Pawn patient, out int totalCount)
+		public static List<ThingCount> Find(Pawn healer, Pawn patient, out int totalCount, bool onlyUseInventory = false)
 		{
 			totalCount = 0;
 			Log.Message($"{healer} is tending to {patient}");
@@ -418,7 +354,7 @@ namespace SmartMedicine
 
 				finalCare = toUse > finalCare ? toUse : finalCare;
 			}
-			Log.Message($"defaultCare = {defaultCare}, care = {finalCare}");
+			Log.Message($"Care for {patient} is {defaultCare}, Custom care = {finalCare}");
 
 			//Android Droid support;
 			Predicate<Thing> validatorDroid = t => true;
@@ -429,17 +365,35 @@ namespace SmartMedicine
 				validatorDroid = t => t.def.modExtensions?.Any(e => extRepair.IsAssignableFrom(e.GetType())) ?? false;
 			}
 
-			//Med
-			Predicate<Thing> validatorMed = t => finalCare.AllowsMedicine(t.def) && validatorDroid(t);
+			//Find valid Meds:
+			List<MedicineEvaluator> allMeds = new List<MedicineEvaluator>();
 
-			//Ground
+			Predicate<Thing> validatorMed = t => finalCare.AllowsMedicine(t.def) && validatorDroid(t);
 			Map map = patient.Map;
 			TraverseParms traverseParams = TraverseParms.For(healer, Danger.Deadly, TraverseMode.ByPawn, false);
-			Predicate<Thing> validator = (Thing t) => validatorMed(t)
-				&& map.reachability.CanReach(patient.Position, t, PathEndMode.ClosestTouch, traverseParams)
-				&& !t.IsForbidden(healer) && healer.CanReserve(t, FindBestMedicine.maxPawns, 1);//can reserve at least 1
-			Func<Thing, float> priorityGetter = (Thing t) => MedicineRating(t, sufficientQuality);
-			List<Thing> groundMedicines = patient.Map.listerThings.ThingsInGroup(isDroid?ThingRequestGroup.HaulableEver:ThingRequestGroup.Medicine).FindAll(t => validator(t));
+
+			//Ground
+			if (!onlyUseInventory)
+			{
+				Predicate<Thing> validator = (Thing t) => validatorMed(t)
+					&& map.reachability.CanReach(patient.Position, t, PathEndMode.ClosestTouch, traverseParams)
+					&& !t.IsForbidden(healer) && healer.CanReserve(t, FindBestMedicine.maxPawns, 1);//can reserve at least 1
+				Func<Thing, float> priorityGetter = (Thing t) => MedicineRating(t, sufficientQuality);
+				List<Thing> groundMedicines = map.listerThings.ThingsInGroup(isDroid ? ThingRequestGroup.HaulableEver : ThingRequestGroup.Medicine).FindAll(t => validator(t));
+
+				//Add each ground
+				foreach (Thing t in groundMedicines)
+					allMeds.Add(new MedicineEvaluator()
+					{
+						thing = t,
+						pawn = null,
+						rating = MedicineRating(t, sufficientQuality),
+						distance = DistanceTo(t, healer, patient)
+					});
+			}
+
+			//Ground-only medicines:
+			List<MedicineEvaluator> groundEvaluators = allMeds.ListFullCopy();
 
 			//Pawns
 			Predicate<Pawn> validatorHolder = (Pawn p) =>
@@ -462,21 +416,6 @@ namespace SmartMedicine
 				pawns.RemoveAll(p => DistanceTo(p, healer, patient) > minDistance + Settings.Get().distanceToUseFromOther * 2); //*2, there and back
 
 			pawns.RemoveAll(p => !validatorHolder(p));
-
-			//Evaluate them all
-			List<MedicineEvaluator> allMeds = new List<MedicineEvaluator>();
-
-			//Add each ground
-			foreach (Thing t in groundMedicines)
-				allMeds.Add(new MedicineEvaluator()
-				{
-					thing = t,
-					pawn = null,
-					rating = MedicineRating(t, sufficientQuality),
-					distance = DistanceTo(t, healer, patient)
-				});
-
-			List<MedicineEvaluator> groundEvaluators = allMeds.ListFullCopy();
 
 			//Add best from each pawn
 			foreach (Pawn p in pawns)
@@ -574,7 +513,7 @@ namespace SmartMedicine
 
 		private static Thing FindBestMedicineInInventory(Pawn pawn, Pawn patient, Predicate<Thing> validatorMed, float sufficientQuality, bool isHealer)
 		{
-			if (pawn == null || pawn.inventory == null || patient == null || patient.playerSettings == null)
+			if (pawn == null || pawn.inventory == null || patient == null)
 				return null;
 
 			List<Thing> items = new List<Thing>(pawn.inventory.innerContainer.InnerListForReading);

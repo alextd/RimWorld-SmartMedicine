@@ -34,7 +34,6 @@ namespace SmartMedicine
 			else
 			{
 				care = pawn.playerSettings?.medCare ?? MedicalCareCategory.NoCare;
-				Log.Message($"Care for {pawn} is {care}");
 			}
 			return care;
 		}
