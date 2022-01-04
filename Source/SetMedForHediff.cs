@@ -205,7 +205,6 @@ namespace SmartMedicine
 		}
 	}
 
-	//Haul job needs to deliver to frames even if construction blocked
 	[StaticConstructorOnStartup]
 	public static class PriorityCareJobFail
 	{
