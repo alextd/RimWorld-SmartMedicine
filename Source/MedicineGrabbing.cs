@@ -145,6 +145,13 @@ namespace SmartMedicine
 			Thing medicineToDrop = job.targetB.Thing;
 			if (medicineToDrop == null) return;
 
+			if (job.draftedTend)
+			{
+				//WorkGiver_Tend patch above sets job.count
+				//but 1.3 added right-click tend option - that dropdown menu delegate is a pain to transpile in the job count...
+				//so just set it here. A bit redundant but what can you do.
+				FindBestMedicine.Find(healer, patient, out job.count);
+			}
 			int needCount = Mathf.Min(medicineToDrop.stackCount, job.count);
 
 			Log.Message($"{healer} Starting Tend with {medicineToDrop}");
