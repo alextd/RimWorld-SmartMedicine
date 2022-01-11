@@ -23,7 +23,7 @@ namespace SmartMedicine
 			Pawn patient = t as Pawn;
 			if (Medicine.GetMedicineCountToFullyHeal(patient) > 0)
 			{
-				List<ThingCount> meds = FindBestMedicine.Find(pawn, patient, out int medCount);
+				List<ThingCount> meds = FindBestMedicine.Find(pawn, patient, out int medCount, false);
 				Job job = new Job(JobDefOf.TendPatient, patient, meds.FirstOrDefault().Thing);
 				job.count = medCount;
 				if (meds.Count() > 1)
@@ -150,7 +150,11 @@ namespace SmartMedicine
 				//WorkGiver_Tend patch above sets job.count
 				//but 1.3 added right-click tend option - that dropdown menu delegate is a pain to transpile in the job count...
 				//so just set it here. A bit redundant but what can you do.
-				FindBestMedicine.Find(healer, patient, out job.count);
+				FindBestMedicine.Find(healer, patient, out job.count, job.draftedTend);
+
+				//I don't fuckin understand but maybe a mod conflict makes this 0 and 0 here is bad.
+				//Probably it is sovled with above job.draftedTend though.
+				//if (job.count < 1) job.count = 1;
 			}
 			int needCount = Mathf.Min(medicineToDrop.stackCount, job.count);
 
@@ -330,8 +334,9 @@ namespace SmartMedicine
 			return false;
 		}
 
-		//public static Thing FindBestMedicine(Pawn healer, Pawn patient)
-		public static List<ThingCount> Find(Pawn healer, Pawn patient, out int totalCount, bool onlyUseInventory = false)
+		//public static Thing FindBestMedicine(Pawn healer, Pawn patient, bool onlyUseInventory = false)
+		// onlyUseInventory is only set true for drafted jobs - ie when the job.draftedTend is true
+		public static List<ThingCount> Find(Pawn healer, Pawn patient, out int totalCount, bool onlyUseInventory)
 		{
 			totalCount = 0;
 			Log.Message($"{healer} is tending to {patient}");
