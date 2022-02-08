@@ -7,7 +7,7 @@ using TD.Utilities;
 
 namespace SmartMedicine
 {
-	class Settings : ModSettings
+	public class Settings : ModSettings
 	{
 		//TODO: save per map
 		public bool useDoctorMedicine = true;
@@ -37,11 +37,6 @@ namespace SmartMedicine
 			return patient.IsFreeColonist && 
 				(fieldTendingAlways || 
 				(fieldTendingForLackOfBed && RestUtility.FindPatientBedFor(patient) == null));
-		}
-
-		public static Settings Get()
-		{
-			return LoadedModManager.GetMod<SmartMedicine.Mod>().GetSettings<Settings>();
 		}
 
 		public void DoWindowContents(Rect wrect)

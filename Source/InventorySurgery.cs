@@ -50,7 +50,7 @@ namespace SmartMedicine
 			}
 
 			//Tiny addition to use minimal medicine for Anesthetize bill. TODO: Make this a def extension so any recipe could use it, though no one will so why really
-			int statAdjust = (Settings.Get().minimalMedicineForNonUrgent && HackityGetBill.bill.recipe == Anesthetize ? 1 : -1);
+			int statAdjust = (Mod.settings.minimalMedicineForNonUrgent && HackityGetBill.bill.recipe == Anesthetize ? 1 : -1);
 			relevantThings.SortBy(
 				(Thing x) => statAdjust * x.GetStatValue(StatDefOf.MedicalPotency),
 				//Check if item is in inventory or spawned in map: inventory "distance" is 0

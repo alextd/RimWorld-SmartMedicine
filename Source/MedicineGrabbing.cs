@@ -105,11 +105,11 @@ namespace SmartMedicine
 				});
 			}
 
-			if (Settings.Get().noMedicineForNonUrgent)
+			if (Mod.settings.noMedicineForNonUrgent)
 			{
 				hediffs.RemoveAll(h => !h.IsUrgent());
 			}
-			else if (Settings.Get().minimalMedicineForNonUrgent && __beep_beep_MinimalMedicineAvailable)
+			else if (Mod.settings.minimalMedicineForNonUrgent && __beep_beep_MinimalMedicineAvailable)
 			{
 				if (hediffs.Any(h => h.IsUrgent()))
 					hediffs.RemoveAll(h => !h.IsUrgent());
@@ -342,7 +342,7 @@ namespace SmartMedicine
 			Log.Message($"{healer} is tending to {patient}");
 
 			float sufficientQuality = maxMedicineQuality + 1; // nothing is sufficient!
-			if (Settings.Get().minimalMedicineForNonUrgent)
+			if (Mod.settings.minimalMedicineForNonUrgent)
 			{
 				if (patient.health.hediffSet.hediffs.All(h => !h.TendableNow() || !h.IsUrgent()))
 				{
@@ -414,18 +414,18 @@ namespace SmartMedicine
 
 			List<Pawn> pawns = healer.Map.mapPawns.SpawnedPawnsInFaction(Faction.OfPlayer).ListFullCopy();
 
-			if (!Settings.Get().useDoctorMedicine)
+			if (!Mod.settings.useDoctorMedicine)
 				pawns.Remove(healer);
-			if (!Settings.Get().usePatientMedicine)
+			if (!Mod.settings.usePatientMedicine)
 				pawns.Remove(patient);
-			if (!Settings.Get().useColonistMedicine)
+			if (!Mod.settings.useColonistMedicine)
 				pawns.RemoveAll(p => p.IsFreeColonist && p != healer && p != patient);
-			if (!Settings.Get().useAnimalMedicine)
+			if (!Mod.settings.useAnimalMedicine)
 				pawns.RemoveAll(p => !p.IsColonist);
 
 			int minDistance = DistanceTo(healer, patient);
-			if (!Settings.Get().useOtherEvenIfFar)
-				pawns.RemoveAll(p => DistanceTo(p, healer, patient) > minDistance + Settings.Get().distanceToUseFromOther * 2); //*2, there and back
+			if (!Mod.settings.useOtherEvenIfFar)
+				pawns.RemoveAll(p => DistanceTo(p, healer, patient) > minDistance + Mod.settings.distanceToUseFromOther * 2); //*2, there and back
 
 			pawns.RemoveAll(p => !validatorHolder(p));
 
@@ -458,7 +458,7 @@ namespace SmartMedicine
 			if (bestMed.thing != null)
 			{
 				allMeds.RemoveLast();
-				if (Settings.Get().useCloseMedicine && bestMed.pawn != null)
+				if (Mod.settings.useCloseMedicine && bestMed.pawn != null)
 				{
 					bestMed.DebugLog("Best: ");
 					Log.Message($"checking nearby:");
@@ -467,7 +467,7 @@ namespace SmartMedicine
 					{
 						MedicineEvaluator closeMed = equalMedicines.MinBy(eval => eval.distance);
 						closeMed.DebugLog("Nearby med on the way there: ");
-						if (closeMed.distance <= minDistance + Settings.Get().distanceToUseEqualOnGround * 2) //*2, there and back
+						if (closeMed.distance <= minDistance + Mod.settings.distanceToUseEqualOnGround * 2) //*2, there and back
 							bestMed = closeMed;
 					}
 				}

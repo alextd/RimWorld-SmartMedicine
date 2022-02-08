@@ -43,7 +43,7 @@ namespace SmartMedicine
 		public static void Postfix(Pawn patient, ref bool __result)
 		{
 			if (!__result) Log.Message($"StatusFor {patient} is {__result}");
-			if (!__result && Settings.Get().FieldTendingActive(patient))
+			if (!__result && Mod.settings.FieldTendingActive(patient))
 				__result = (patient.GetPosture() != PawnPosture.Standing)
 					|| (patient.Drafted && patient.jobs.curDriver is JobDriver_Wait	//Tend while idle + drafted
 					&& !patient.stances.FullBodyBusy && !patient.stances.Staggered);
@@ -104,7 +104,7 @@ namespace SmartMedicine
 
 		public static ThinkResult LayDownInPlace(Pawn pawn, JobGiver_PatientGoToBed giver)
 		{
-			if (Settings.Get().FieldTendingActive(pawn))
+			if (Mod.settings.FieldTendingActive(pawn))
 			{
 				Building_Bed tempTendSpot = pawn.Position.GetThingList(pawn.Map).FirstOrDefault(t => t.def == TempSleepSpot) as Building_Bed;
 				if (tempTendSpot == null &&
@@ -180,7 +180,7 @@ namespace SmartMedicine
 	{
 		public static bool InBed_Patch(Pawn pawn)
 		{
-			return pawn.InBed() || Settings.Get().FieldTendingActive(pawn);
+			return pawn.InBed() || Mod.settings.FieldTendingActive(pawn);
 		}
 		public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
 		{

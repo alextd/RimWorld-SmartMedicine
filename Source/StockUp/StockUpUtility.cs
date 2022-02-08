@@ -76,13 +76,13 @@ namespace SmartMedicine
 		}
 		public static bool StockingUpOnAnything(this Pawn pawn)
 		{
-			if (!Settings.Get().stockUp || pawn.inventory == null) return false;
+			if (!Mod.settings.stockUp || pawn.inventory == null) return false;
 
 			return pawn.StockUpSettings().Count > 0;
 		}
 		public static IEnumerable<ThingDef> StockingUpList(this Pawn pawn)
 		{
-			if (!Settings.Get().stockUp || pawn.inventory == null) return new List<ThingDef>();
+			if (!Mod.settings.stockUp || pawn.inventory == null) return new List<ThingDef>();
 
 			return pawn.StockUpSettings().Keys;
 		}
@@ -91,7 +91,7 @@ namespace SmartMedicine
 
 		public static bool StockingUpOn(this Pawn pawn, ThingDef thingDef)
 		{
-			if (!Settings.Get().stockUp || pawn.inventory == null || pawn.inventory.UnloadEverything) return false;
+			if (!Mod.settings.stockUp || pawn.inventory == null || pawn.inventory.UnloadEverything) return false;
 
 			return pawn.StockUpSettings().ContainsKey(thingDef);
 		}
@@ -121,7 +121,7 @@ namespace SmartMedicine
 			if (invCount > capacity) return capacity - invCount;
 
 			if (!EnoughAvailable(thingDef, pawn.Map))
-				return Settings.Get().stockUpReturn ? -invCount : 0;
+				return Mod.settings.stockUpReturn ? -invCount : 0;
 
 			return capacity - invCount;
 		}
@@ -160,7 +160,7 @@ namespace SmartMedicine
 
 		public static Thing StockUpThingToReturn(this Pawn pawn)
 		{
-			if (!Settings.Get().stockUp || pawn.inventory == null) return null;
+			if (!Mod.settings.stockUp || pawn.inventory == null) return null;
 
 			ThingDef td = pawn.StockUpSettings().FirstOrDefault(kvp => pawn.StockUpNeeds(kvp.Key) < 0).Key;
 			if (td == null) return null;
@@ -170,7 +170,7 @@ namespace SmartMedicine
 
 		public static bool StockUpIsFull(this Pawn pawn)
 		{
-			if (!Settings.Get().stockUp) return true;
+			if (!Mod.settings.stockUp) return true;
 
 			return !pawn.StockUpSettings().Any(kvp => pawn.StockUpNeeds(kvp.Key) != 0);
 		}
@@ -178,7 +178,7 @@ namespace SmartMedicine
 		public static bool EnoughAvailable(Thing thing) => EnoughAvailable(thing.def, thing.Map);
 		public static bool EnoughAvailable(ThingDef thingDef, Map map)
 		{
-			float enough = Settings.Get().stockUpEnough;
+			float enough = Mod.settings.stockUpEnough;
 			if (enough == 0.0f) return true;
 
 			float stockUpCount = 0;

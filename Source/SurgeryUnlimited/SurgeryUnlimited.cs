@@ -18,7 +18,7 @@ namespace SmartMedicine.SurgeryUnlimited
 
 		public SurgeryUnlimitedGameComponent(Game game)
 		{
-			surgeryUnlimitedDefault = Settings.Get().defaultUnlimitedSurgery;
+			surgeryUnlimitedDefault = Mod.settings.defaultUnlimitedSurgery;
 			surgeryUnlimited = new HashSet<Pawn>();
 		}
 
@@ -37,7 +37,7 @@ namespace SmartMedicine.SurgeryUnlimited
 
 		public override void ExposeData()
 		{
-			Scribe_Values.Look(ref surgeryUnlimitedDefault, "surgeryUnlimitedDefault", Settings.Get().defaultUnlimitedSurgery);
+			Scribe_Values.Look(ref surgeryUnlimitedDefault, "surgeryUnlimitedDefault", Mod.settings.defaultUnlimitedSurgery);
 			Scribe_Collections.Look(ref surgeryUnlimited, "surgeryUnlimitedList", LookMode.Reference);
 		}
 	}

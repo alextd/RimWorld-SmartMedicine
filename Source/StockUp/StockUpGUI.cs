@@ -212,7 +212,7 @@ namespace SmartMedicine
 		{
 			if (!pawn.IsFreeColonist || pawn.Dead) return;
 
-			if (!Settings.Get().stockUp) return;
+			if (!Mod.settings.stockUp) return;
 
 			foreach (ThingDef def in pawn.StockingUpList().ToList())
 				if (pawn.StockUpMissing(def))
@@ -222,7 +222,7 @@ namespace SmartMedicine
 
 		public static void DrawStockUpButton(Pawn pawn, ref float y, float width)
 		{
-			if (!Settings.Get().stockUp) return;
+			if (!Mod.settings.stockUp) return;
 
 			GUI.color = ThingLabelColor;
 
@@ -308,7 +308,7 @@ namespace SmartMedicine
 		public static PropertyInfo SelPawnForGearInfo = AccessTools.Property(typeof(ITab_Pawn_Gear), "SelPawnForGear");
 		public static void Postfix(Thing t, ITab_Pawn_Gear __instance)
 		{
-			if (!Settings.Get().stockUp) return;
+			if (!Mod.settings.stockUp) return;
 
 			Pawn pawn = (Pawn)SelPawnForGearInfo.GetValue(__instance, new object[] { });
 
