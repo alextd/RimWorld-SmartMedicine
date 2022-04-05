@@ -20,6 +20,9 @@ namespace SmartMedicine
 	{
 		public static bool Skip(Pawn pawn)
 		{
+			if (pawn.inventory.UnloadEverything)
+				return true;
+
 			Log.Message($"Skip need tend?");
 			if (pawn.Map.mapPawns.AllPawnsSpawned.Any(p => HealthAIUtility.ShouldBeTendedNowByPlayer(p) && pawn.CanReserveAndReach(p, PathEndMode.ClosestTouch, Danger.Deadly, ignoreOtherReservations: true)))
 				return true;
