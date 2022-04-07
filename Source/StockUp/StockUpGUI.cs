@@ -352,7 +352,7 @@ namespace SmartMedicine
 
 
 			Rect botRect = inRect.BottomPartPixels(inRect.height - Text.LineHeight * 2);
-			GUI.BeginGroup(botRect);
+			Widgets.BeginGroup(botRect);
 			Text.Font = GameFont.Small;
 			GUI.color = Color.white;
 			Rect outRect = new Rect(0f, 0f, botRect.width, botRect.height);
@@ -418,7 +418,7 @@ namespace SmartMedicine
 				scrollViewHeight = y + rowRect.height;
 			}
 			Widgets.EndScrollView();
-			GUI.EndGroup();
+			Widgets.EndGroup();
 			GUI.color = Color.white;
 			Text.Anchor = TextAnchor.UpperLeft;
 		}
