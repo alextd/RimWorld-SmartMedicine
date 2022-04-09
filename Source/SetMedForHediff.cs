@@ -140,7 +140,7 @@ namespace SmartMedicine
 				{
 					drawer = delegate (Rect r)
 					{
-						Texture2D tex = ((Texture2D[])careTexturesField.GetValue(null))[(int)heCare];
+						Texture2D tex = careTextures()[(int)heCare];
 						r = new Rect(2 * rect.x + rect.width - r.x - 20f, r.y, 20f, 20f);
 						GUI.DrawTexture(r, tex);
 					},
@@ -151,12 +151,9 @@ namespace SmartMedicine
 		}
 
 
-		private static FieldInfo careTexturesField;
-		static HediffRowPriorityCare()
-		{
-			//MedicalCareUtility		private static Texture2D[] careTextures;
-			careTexturesField = AccessTools.Field(typeof(MedicalCareUtility), "careTextures");
-		}
+		//private static Texture2D[] careTextures;
+		private static AccessTools.FieldRef<Texture2D[]> careTextures =
+			AccessTools.StaticFieldRefAccess< Texture2D[]>(AccessTools.Field( typeof(MedicalCareUtility), "careTextures"));
 
 		public static void DrawHediffCare(Hediff hediff, ref Rect iconRect)
 		{

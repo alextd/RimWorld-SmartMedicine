@@ -12,23 +12,32 @@ namespace SmartMedicine
 	[StaticConstructorOnStartup]
 	static class GetPawnMedicalCareCategory
 	{
-		static MethodInfo pharmacistTendAdvice;
+		//        public static MedicalCareCategory TendAdvice(Pawn patient) 
+		public delegate MedicalCareCategory TendAdviceDel(Pawn patient);
+		public static TendAdviceDel TendAdvice;
+
 		static GetPawnMedicalCareCategory()
 		{
-			Log.Message($"Trying to find Pharmacist");
-			Type pharmacist = AccessTools.TypeByName("Pharmacist.PharmacistUtility");
-			if (pharmacist == null) return;
+			try
+			{
+				//Harmony 2.2.1
+				//TendAdvice = AccessTools.MethodDelegate<TendAdviceDel>("Pharmacist.PharmacistUtility:TendAdvice");
 
-			pharmacistTendAdvice = AccessTools.Method(pharmacist, "TendAdvice", new Type[] { typeof(Pawn)});
-			Log.Message($"Pharmacist type is {pharmacist}, advice is {pharmacistTendAdvice}");
+				//Harmony <2.2.1
+				Type type = AccessTools.TypeByName("Pharmacist.PharmacistUtility");
+				TendAdvice = AccessTools.MethodDelegate<TendAdviceDel>(AccessTools.Method( type, "TendAdvice"));
+			}
+			catch (Exception)
+			{ //Well you dont have pharmacist then}
+			}
 		}
 
 		public static MedicalCareCategory GetCare(this Pawn pawn)
 		{
 			MedicalCareCategory care;
-			if (pharmacistTendAdvice != null)
+			if (TendAdvice != null)
 			{
-				care = (MedicalCareCategory)pharmacistTendAdvice.Invoke(null, new object[] { pawn });
+				care = TendAdvice(pawn);
 				Log.Message($"Pharmacist tend advicefor {pawn} is {care}");
 			}
 			else

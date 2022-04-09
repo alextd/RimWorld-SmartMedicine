@@ -20,12 +20,19 @@ namespace SmartMedicine
 			HackityGetBill.bill = bill;
 		}
 	}
-
-	[HarmonyPatch(typeof(WorkGiver_DoBill), "AddEveryMedicineToRelevantThings")]
 	[DefOf]
-	public static class InventorySurgery
+	public static class InventorySurgeryDefOf
 	{
 		public static RecipeDef Anesthetize;
+	}
+
+	[HarmonyPatch(typeof(WorkGiver_DoBill), "AddEveryMedicineToRelevantThings")]
+	public static class InventorySurgery
+	{
+		//private static MedicalCareCategory GetMedicalCareCategory(Thing billGiver)
+		public delegate MedicalCareCategory GetMedicalCareCategoryDel(Thing billGiver);
+		public static GetMedicalCareCategoryDel GetMedicalCareCategory =
+			AccessTools.MethodDelegate<GetMedicalCareCategoryDel>(AccessTools.Method(typeof(WorkGiver_DoBill), "GetMedicalCareCategory"));
 
 		//private static void AddEveryMedicineToRelevantThings(Pawn pawn, Thing billGiver, List<Thing> relevantThings, Predicate<Thing> baseValidator, Map map)
 		public static void Postfix(Pawn pawn, Thing billGiver, List<Thing> relevantThings, Map map)
@@ -37,7 +44,7 @@ namespace SmartMedicine
 			}
 			Predicate<Thing> baseValidator = (Thing t) => HackityGetBill.bill.IsFixedOrAllowedIngredient(t) && HackityGetBill.bill.recipe.ingredients.Any((IngredientCount ingNeed) => ingNeed.filter.Allows(t));
 			Log.Message($"AddEveryMedicineToRelevantThings ({pawn}, {billGiver}, {HackityGetBill.bill})");
-			MedicalCareCategory medicalCareCategory = (MedicalCareCategory)AccessTools.Method(typeof(WorkGiver_DoBill), "GetMedicalCareCategory").Invoke(null, new object[] { billGiver });
+			MedicalCareCategory medicalCareCategory = GetMedicalCareCategory(billGiver);
 
 			Log.Message($"inventory: ({pawn.inventory.GetDirectlyHeldThings().ToStringSafeEnumerable()})");
 			foreach (Thing t in pawn.inventory.GetDirectlyHeldThings())
@@ -50,7 +57,7 @@ namespace SmartMedicine
 			}
 
 			//Tiny addition to use minimal medicine for Anesthetize bill. TODO: Make this a def extension so any recipe could use it, though no one will so why really
-			int statAdjust = (Mod.settings.minimalMedicineForNonUrgent && HackityGetBill.bill.recipe == Anesthetize ? 1 : -1);
+			int statAdjust = (Mod.settings.minimalMedicineForNonUrgent && HackityGetBill.bill.recipe == InventorySurgeryDefOf.Anesthetize ? 1 : -1);
 			relevantThings.SortBy(
 				(Thing x) => statAdjust * x.GetStatValue(StatDefOf.MedicalPotency),
 				//Check if item is in inventory or spawned in map: inventory "distance" is 0
