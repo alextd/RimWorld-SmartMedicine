@@ -41,6 +41,6 @@
 	<TD.DefaultSurgeryUnlimited>Для операций используются лучшие доступные лекарства</TD.DefaultSurgeryUnlimited>
 	<TD.PawnSettingSurgeryUnlimited>Для операций лучшее</TD.PawnSettingSurgeryUnlimited>
 	<TD.DefaultCare>Уход по умолчанию</TD.DefaultCare>
-	<TD.RemoveTempTendDesc>Remove this (in case it lingers around after it's unused)</TD.RemoveTempTendDesc>
+	<TD.RemoveTempTendDesc>Удалите это (если он задерживается после не использования)</TD.RemoveTempTendDesc>
 	
 </LanguageData>
