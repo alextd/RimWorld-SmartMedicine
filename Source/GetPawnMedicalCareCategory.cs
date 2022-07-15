@@ -21,11 +21,7 @@ namespace SmartMedicine
 			try
 			{
 				//Harmony 2.2.1
-				//TendAdvice = AccessTools.MethodDelegate<TendAdviceDel>("Pharmacist.PharmacistUtility:TendAdvice");
-
-				//Harmony <2.2.1
-				Type type = AccessTools.TypeByName("Pharmacist.PharmacistUtility");
-				TendAdvice = AccessTools.MethodDelegate<TendAdviceDel>(AccessTools.Method( type, "TendAdvice"));
+				TendAdvice = AccessTools.MethodDelegate<TendAdviceDel>("Pharmacist.PharmacistUtility:TendAdvice");
 			}
 			catch (Exception)
 			{ //Well you dont have pharmacist then}
