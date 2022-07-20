@@ -328,7 +328,10 @@ namespace SmartMedicine
 		private static bool Prefix(Pawn healer, Pawn patient, ref Thing __result, bool onlyUseInventory = false)
 		{
 			if (patient.GetCare() <= MedicalCareCategory.NoMeds || Medicine.GetMedicineCountToFullyHeal(patient) <= 0)
-				return true;
+			{
+				__result = null;
+				return false;
+			}
 
 			__result = Find(healer, patient, out int dummy, onlyUseInventory).FirstOrDefault().Thing;
 			return false;
