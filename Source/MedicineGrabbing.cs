@@ -24,7 +24,7 @@ namespace SmartMedicine
 			if (Medicine.GetMedicineCountToFullyHeal(patient) > 0)
 			{
 				List<ThingCount> meds = FindBestMedicine.Find(pawn, patient, out int medCount, false);
-				Job job = new Job(JobDefOf.TendPatient, patient, meds.FirstOrDefault().Thing);
+				Job job = JobMaker.MakeJob(JobDefOf.TendPatient, patient, meds.FirstOrDefault().Thing);
 				job.count = medCount;
 				if (meds.Count() > 1)
 				{
@@ -34,7 +34,7 @@ namespace SmartMedicine
 				__result = job;
 			}
 			else
-				__result = new Job(JobDefOf.TendPatient, patient);
+				__result = JobMaker.MakeJob(JobDefOf.TendPatient, patient);
 
 			return false;
 		}
