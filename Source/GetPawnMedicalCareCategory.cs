@@ -30,17 +30,13 @@ namespace SmartMedicine
 
 		public static MedicalCareCategory GetCare(this Pawn pawn)
 		{
-			MedicalCareCategory care;
 			if (TendAdvice != null)
 			{
-				care = TendAdvice(pawn);
+				var care = TendAdvice(pawn);
 				Log.Message($"Pharmacist tend advicefor {pawn} is {care}");
+				return care;
 			}
-			else
-			{
-				care = pawn.playerSettings?.medCare ?? MedicalCareCategory.NoCare;
-			}
-			return care;
+			return pawn.playerSettings?.medCare ?? MedicalCareCategory.Best;
 		}
 	}
 }
