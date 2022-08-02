@@ -21,10 +21,15 @@ namespace SmartMedicine
 			try
 			{
 				//Harmony 2.2.1
-				TendAdvice = AccessTools.MethodDelegate<TendAdviceDel>("Pharmacist.PharmacistUtility:TendAdvice");
+				Type pharmacist = AccessTools.TypeByName("Pharmacist.PharmacistUtility");
+				if (pharmacist == null) return;
+
+				TendAdvice = AccessTools.MethodDelegate<TendAdviceDel>(AccessTools.Method(pharmacist, "TendAdvice", new Type[] { typeof(Pawn) }));
+				Log.Message("Got Pharmacist");
 			}
 			catch (Exception)
 			{ //Well you dont have pharmacist then}
+				Verse.Log.Warning("Smart Medicine couldn't find Pharmacist TendAdvice?");
 			}
 		}
 
