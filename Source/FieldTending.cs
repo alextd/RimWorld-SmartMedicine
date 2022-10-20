@@ -46,7 +46,7 @@ namespace SmartMedicine
 			if (!__result && Mod.settings.FieldTendingActive(patient))
 				__result = (patient.GetPosture() != PawnPosture.Standing)
 					|| (patient.Drafted && patient.jobs.curDriver is JobDriver_Wait	//Tend while idle + drafted
-					&& !patient.stances.FullBodyBusy && !patient.stances.Staggered);
+					&& !patient.stances.FullBodyBusy && !patient.stances.stagger.Staggered);
 		}
 	}
 
@@ -96,13 +96,12 @@ namespace SmartMedicine
 	}
 
 	[DefOf]
-	[HarmonyPatch(typeof(JobGiver_PatientGoToBed))]
-	[HarmonyPatch("TryIssueJobPackage")]
+	[HarmonyPatch(typeof(JobGiver_PatientGoToBed), "TryGiveJob")]
 	public static class UseTempSleepSpot
 	{
 		public static ThingDef TempSleepSpot;
 
-		public static ThinkResult LayDownInPlace(Pawn pawn, JobGiver_PatientGoToBed giver)
+		public static Job LayDownInPlace(Pawn pawn, JobGiver_PatientGoToBed giver)
 		{
 			if (Mod.settings.FieldTendingActive(pawn))
 			{
@@ -118,24 +117,18 @@ namespace SmartMedicine
 					Log.Message($"Creating bed {tempTendSpot} for {pawn} at {pawn.Position}");
 				}
 
-				return new ThinkResult(new Job(JobDefOf.LayDown, tempTendSpot), giver);
+				return new Job(JobDefOf.LayDown, tempTendSpot);
 			}
-			else return ThinkResult.NoJob;
+			else return null;
 		}
 		public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
 		{
-			//After:
-			//IL_0049: ldarg.1      // pawn
-			//IL_004a: call         class RimWorld.Building_Bed RimWorld.RestUtility::FindPatientBedFor(class Verse.Pawn)
-			//IL_004f: stloc.0      // patientBedFor
+			//Replace any NULL after FindBedFor with above LayDownInPlace
 
-			//Find:
-			//IL_0056: call valuetype Verse.AI.ThinkResult Verse.AI.ThinkResult::get_NoJob()
-			//IL_005b: ret
-			MethodInfo FindPatientBedForInfo = AccessTools.Method(
-				typeof(RestUtility), nameof(RestUtility.FindPatientBedFor));
-			MethodInfo get_NoJobInfo = AccessTools.Property(
-				typeof(ThinkResult), nameof(ThinkResult.NoJob)).GetGetMethod(false);
+			//public static Building_Bed FindBedFor(Pawn sleeper, Pawn traveler, bool checkSocialProperness, bool ignoreOtherReservations = false, GuestStatus? guestStatus = null)
+			MethodInfo FindBedForInfo = AccessTools.Method(
+				typeof(RestUtility), nameof(RestUtility.FindBedFor), new Type[]
+				{typeof(Pawn), typeof(Pawn), typeof(bool), typeof(bool), typeof(GuestStatus?)});
 
 			MethodInfo LayDownInPlaceInfo = AccessTools.Method(
 				typeof(UseTempSleepSpot), nameof(LayDownInPlace));
@@ -143,15 +136,15 @@ namespace SmartMedicine
 			bool lookedForBed = false;
 			foreach (CodeInstruction instruction in instructions)
 			{
-				if (instruction.Calls(FindPatientBedForInfo))
+				if (instruction.Calls(FindBedForInfo))
 					lookedForBed = true;
 
 				if (lookedForBed &&
-					instruction.Calls(get_NoJobInfo))
+					instruction.opcode == OpCodes.Ldnull)
 				{
-					yield return new CodeInstruction(OpCodes.Ldarg_1);
-					yield return new CodeInstruction(OpCodes.Ldarg_0);
-					yield return new CodeInstruction(OpCodes.Call, LayDownInPlaceInfo);
+					yield return new CodeInstruction(OpCodes.Ldarg_1);//Pawn
+					yield return new CodeInstruction(OpCodes.Ldarg_0);//JobGiver
+					yield return new CodeInstruction(OpCodes.Call, LayDownInPlaceInfo); //LayDownInPlace(Pawn, JobGiver)
 				}
 				else
 					yield return instruction;
