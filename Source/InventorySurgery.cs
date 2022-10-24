@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using RimWorld;
+using UnityEngine;
 using Verse;
 using Verse.AI;
 using HarmonyLib;
@@ -10,7 +11,7 @@ using HarmonyLib;
 namespace SmartMedicine
 {
 	[HarmonyPatch(typeof(WorkGiver_DoBill), "TryFindBestBillIngredients")]
-	[HarmonyPriority(Priority.Last)]	//Patch applied last, means the prefix goes first.
+	[HarmonyPriority(Priority.Last)]  //Patch applied last, means the prefix goes first.
 	public static class HackityGetBill
 	{
 		public static Bill bill;
@@ -37,7 +38,7 @@ namespace SmartMedicine
 		//private static void AddEveryMedicineToRelevantThings(Pawn pawn, Thing billGiver, List<Thing> relevantThings, Predicate<Thing> baseValidator, Map map)
 		public static void Postfix(Pawn pawn, Thing billGiver, List<Thing> relevantThings, Map map)
 		{
-			if(HackityGetBill.bill == null)
+			if (HackityGetBill.bill == null)
 			{
 				Verse.Log.Warning($"Smart Medicine Inventory Surgery not going to work for {pawn}; mod conflict in AddEveryMedicineToRelevantThings or TryFindBestBillIngredients?");
 				return;
@@ -67,27 +68,44 @@ namespace SmartMedicine
 		}
 	}
 
-	[HarmonyPatch(typeof(Toils_JobTransforms), "ExtractNextTargetFromQueue")]
-	public static class ExtractQueueDrop
+
+	// Drop the medicine so that you can then pick it up. Ya really.
+	[HarmonyPatch(typeof(JobDriver_DoBill), nameof(JobDriver_DoBill.CollectIngredientsToils))]
+	public static class InsertToilDropInventoryThing
 	{
-		//public static Toil ExtractNextTargetFromQueue(TargetIndex ind, bool failIfCountFromQueueTooBig = true)
-		public static void Postfix (Toil __result, TargetIndex ind)
+		//public static IEnumerable<Toil> CollectIngredientsToils(TargetIndex ingredientInd, TargetIndex billGiverInd,
+		//  TargetIndex ingredientPlaceCellInd, bool subtractNumTakenFromJobCount = false, bool failIfStackCountLessThanJobCount = true, bool placeInBillGiver = false)
+
+		public static IEnumerable<Toil> Postfix(IEnumerable<Toil> result, TargetIndex ingredientInd)
 		{
-			__result.AddFinishAction(() =>
+			foreach (Toil t in result)
 			{
-				Pawn actor = __result.actor;
-				Job job = actor.jobs.curJob;
-				if (job.def != JobDefOf.DoBill) return;
-
-				Thing thing = job.GetTarget(ind).Thing;
-				Log.Message($"ExtractNextTargetFromQueue Finish: {actor}, {job}, {thing}, {job.count}");
-
-				if (thing?.ParentHolder is Pawn_InventoryTracker)
+				//Insert new Toil "DropTargetThingIfInInventory" before "GotoThing"
+				//because the goddamn pawn doesn't know how to start carrying the thing from their own inventory god fucking damnit
+				//Gotothing fails on despawned so it's probably pretty safe to drop it as it would only otherwise fail in the inventory.
+				//It literally can't be a preInitAction either on GotoThing since it checks for failure before that
+				if (t.debugName == "GotoThing")
 				{
-					thing.holdingOwner.TryDrop(thing, ThingPlaceMode.Direct, job.count, out Thing droppedThing);
-					job.SetTarget(ind, droppedThing);
+					Toil toil = ToilMaker.MakeToil("SmartMedicineDropTargetThingIfInInventory");
+					toil.initAction = delegate
+					{
+						Pawn actor = toil.actor;
+						Job curJob = actor.jobs.curJob;
+						Thing thing = curJob.GetTarget(ingredientInd).Thing;
+						if (actor.inventory.Contains(thing))
+						{
+							int count = Mathf.Min(curJob.count, actor.carryTracker.AvailableStackSpace(thing.def), thing.stackCount);
+
+							actor.inventory.innerContainer.TryDrop(thing, actor.Position, actor.Map, ThingPlaceMode.Near, count, out var _);
+						}
+					};
+					toil.defaultCompleteMode = ToilCompleteMode.Instant;
+					yield return toil;
 				}
-			});
+
+				yield return t;
+
+			}
 		}
 	}
 }
