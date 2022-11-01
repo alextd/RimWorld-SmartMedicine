@@ -76,16 +76,18 @@ namespace SmartMedicine
 		//public static IEnumerable<Toil> CollectIngredientsToils(TargetIndex ingredientInd, TargetIndex billGiverInd,
 		//  TargetIndex ingredientPlaceCellInd, bool subtractNumTakenFromJobCount = false, bool failIfStackCountLessThanJobCount = true, bool placeInBillGiver = false)
 
-		public static IEnumerable<Toil> Postfix(IEnumerable<Toil> result, TargetIndex ingredientInd)
+		public static IEnumerable<Toil> Postfix(IEnumerable<Toil> result, JobDriver_DoBill __instance, TargetIndex ingredientInd)
 		{
+			bool first = true;
 			foreach (Toil t in result)
 			{
 				//Insert new Toil "DropTargetThingIfInInventory" before "GotoThing"
 				//because the goddamn pawn doesn't know how to start carrying the thing from their own inventory god fucking damnit
 				//Gotothing fails on despawned so it's probably pretty safe to drop it as it would only otherwise fail in the inventory.
 				//It literally can't be a preInitAction either on GotoThing since it checks for failure before that
-				if (t.debugName == "GotoThing")
+				if (t.debugName == "GotoThing" && first)
 				{
+					first = false;
 					Toil toil = ToilMaker.MakeToil("SmartMedicineDropTargetThingIfInInventory");
 					toil.initAction = delegate
 					{
@@ -96,7 +98,8 @@ namespace SmartMedicine
 						{
 							int count = Mathf.Min(curJob.count, actor.carryTracker.AvailableStackSpace(thing.def), thing.stackCount);
 
-							actor.inventory.innerContainer.TryDrop(thing, actor.Position, actor.Map, ThingPlaceMode.Near, count, out var _);
+							if(actor.inventory.innerContainer.TryDrop(thing, actor.Position, actor.Map, ThingPlaceMode.Near, count, out var droppedThing))
+								curJob.SetTarget(ingredientInd, droppedThing);
 						}
 					};
 					toil.defaultCompleteMode = ToilCompleteMode.Instant;
