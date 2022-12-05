@@ -18,8 +18,6 @@ namespace SmartMedicine.StockUp
 		public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
 		{
 
-			Trace.WriteLine("test");
-
 			MethodInfo IsDrugInfo = AccessTools.Property(typeof(ThingDef), "IsDrug").GetGetMethod();
 
 			MethodInfo StockingUpInfo = AccessTools.Method(typeof(StockUpUtility), nameof(StockUpUtility.StockingUpOn),
