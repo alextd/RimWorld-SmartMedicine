@@ -26,7 +26,9 @@ namespace TD.Utilities
 			Text.Anchor = TextAnchor.MiddleLeft;
 			Widgets.Label(rect2, label);
 
+#pragma warning disable CS0612 // Type or member is obsolete
 			float result = Widgets.HorizontalSlider(rect3, val, min, max, true);
+#pragma warning restore CS0612 // Type or member is obsolete
 			val = result;
 			Text.Anchor = TextAnchor.MiddleRight;
 			Widgets.Label(rect4, String.Format(format, val));
