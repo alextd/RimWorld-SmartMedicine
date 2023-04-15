@@ -143,14 +143,21 @@ namespace SmartMedicine
 			Pawn healer = __instance.pawn;
 			Pawn patient = job.targetA.Thing as Pawn;
 			Thing medicineToDrop = job.targetB.Thing;
+
+			// Nothing to drop
 			if (medicineToDrop == null) return;
+
+			// Job not created with Smart Medicine ; let's hope you don't need to drop it.
+			if (job.count == 0)
+				return;
 
 			if (job.draftedTend)
 			{
-				//WorkGiver_Tend patch above sets job.count
-				//but 1.3 added right-click tend option - that dropdown menu delegate is a pain to transpile in the job count...
-				//so just set it here. A bit redundant but what can you do.
-				FindBestMedicine.Find(healer, patient, out job.count, job.draftedTend);
+				// WorkGiver_Tend patch above sets job.count
+				// but 1.3 added right-click tend option - that dropdown menu delegate is a pain to transpile in the job count...
+				// and sets job.count = 1 ? BUT DOES NOT USE IT?!?!
+				// so just set it here. A bit redundant but what can you do.
+				job.count = Medicine.GetMedicineCountToFullyHeal(patient);
 
 				//I don't fuckin understand but maybe a mod conflict makes this 0 and 0 here is bad.
 				//Probably it is sovled with above job.draftedTend though.
@@ -158,7 +165,7 @@ namespace SmartMedicine
 			}
 			int needCount = Mathf.Min(medicineToDrop.stackCount, job.count);
 
-			Log.Message($"{healer} Starting Tend with {medicineToDrop}");
+			Log.Message($"{healer} Starting Tend with {medicineToDrop}:{needCount}");
 
 			job.targetB = DropIt(medicineToDrop, needCount, healer, job);
 
@@ -229,8 +236,6 @@ namespace SmartMedicine
 				typeof(Medicine), nameof(Medicine.GetMedicineCountToFullyHeal));
 			MethodInfo GetCarriedThingInfo = AccessTools.Property(
 				typeof(Pawn_CarryTracker), nameof(Pawn_CarryTracker.CarriedThing)).GetGetMethod();
-			FieldInfo countInfo = AccessTools.Field(
-				typeof(Job), nameof(Job.count));
 
 			bool branchNext = false;
 			bool branched = false;
@@ -246,10 +251,8 @@ namespace SmartMedicine
 
 				if (i.Calls(GetMedicineCountToFullyHealInfo))
 				{
-					yield return new CodeInstruction(OpCodes.Pop);//pawn
-
 					yield return new CodeInstruction(OpCodes.Ldloc_1);//job
-					yield return new CodeInstruction(OpCodes.Ldfld, countInfo);//job.count
+					yield return new CodeInstruction(OpCodes.Call, AccessTools.Method(typeof(PickupMedicine_Patch), nameof(JobCountOrCalculate))); //JobCountOrCalculate(injured, job)
 				}
 				else
 					yield return i;
@@ -259,6 +262,19 @@ namespace SmartMedicine
 					branchNext = true;
 				}
 			}
+		}
+
+		public static int JobCountOrCalculate(Pawn injured, Job job)
+		{
+			if (job.count > 0)
+			{
+				Log.Message($"PickupMedicine using job.count:{job.count}");
+				return job.count; //Probably because Smart Medicine Set it
+			}
+
+			//Otherwise, use what was already there.
+			Log.Message($"PickupMedicine using calculated: {Medicine.GetMedicineCountToFullyHeal(injured)}");
+			return Medicine.GetMedicineCountToFullyHeal(injured);
 		}
 	}
 
@@ -509,7 +525,7 @@ namespace SmartMedicine
 							break;
 
 						usedCount = Mathf.Min(closeMed.thing.stackCount, count);
-						closeMed.DebugLog("Using: ({usedCount})");
+						closeMed.DebugLog($"Using: ({usedCount})");
 
 						result.Add(new ThingCount(closeMed.thing, usedCount));
 						count -= usedCount;
