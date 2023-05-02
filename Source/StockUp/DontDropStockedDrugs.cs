@@ -10,32 +10,24 @@ using Verse;
 
 namespace SmartMedicine.StockUp
 {
+	//What was 1.3 transpiler:
 	//Job JobGiver_DropUnusedInventory.TryGiveJob(Pawn pawn)
-	[HarmonyPatch(typeof(JobGiver_DropUnusedInventory), "TryGiveJob")]
+	//[HarmonyPatch(typeof(JobGiver_DropUnusedInventory), "TryGiveJob")]
+
+
+	//Now in 1.4 prefix on new helper method:
+	//public static bool ShouldKeepDrugInInventory(Pawn pawn, Thing drug)
+	[HarmonyPatch(typeof(JobGiver_DropUnusedInventory), "ShouldKeepDrugInInventory")]
 	public static class DontDropStockedDrugs
 	{
-		public static IEnumerable<CodeInstruction> Transpiler(IEnumerable<CodeInstruction> instructions)
+		public static bool Prefix(ref bool __result, Pawn pawn, Thing drug)
 		{
-			MethodInfo IsDrugInfo = AccessTools.Property(typeof(ThingDef), "IsDrug").GetGetMethod();
-
-			MethodInfo StockingUpInfo = AccessTools.Method(typeof(StockUpUtility), nameof(StockUpUtility.StockingUpOn),
-				new Type[] { typeof(Pawn), typeof(Thing) });
-
-			List<CodeInstruction> instList = instructions.ToList();
-			for (int i = 0; i < instList.Count(); i++)
+			if(pawn.StockingUpOn(drug))
 			{
-				CodeInstruction inst = instList[i];
-				yield return inst;
-				
-				if (inst.opcode == OpCodes.Brfalse
-					&& instList[i - 1].Calls(IsDrugInfo))
-				{
-					yield return new CodeInstruction(OpCodes.Ldarg_1);//pawn
-					yield return new CodeInstruction(OpCodes.Ldloc_3);//thing
-					yield return new CodeInstruction(OpCodes.Call, StockingUpInfo);//pawn.StockingUpOn(thing)
-					yield return new CodeInstruction(OpCodes.Brtrue, inst.operand);
-				}
+				__result = true;
+				return false;
 			}
+			return true;
 		}
 	}
 }
