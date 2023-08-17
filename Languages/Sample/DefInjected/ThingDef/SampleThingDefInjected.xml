@@ -1,7 +1,0 @@
-<?xml version="1.0" encoding="utf-8" ?>
-<LanguageData>
-	
-	<TempSleepSpot.label>temporary tending spot</TempSleepSpot.label>
-	<TempSleepSpot.description>Automatically created by Smart Medicine to tend in the field. Removes itself when not used.</TempSleepSpot.description>
-	
-</LanguageData>
