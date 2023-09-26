@@ -33,6 +33,16 @@ namespace SmartMedicine
 				action = () => this.Destroy()
 			};
 		}
+
+		public override void SpawnSetup(Map map, bool respawningAfterLoad)
+		{
+			base.SpawnSetup(map, respawningAfterLoad);
+
+			// Clear ForPrisoners after deciding to lay down in a prison.
+			// There are a few other cases where ForPrisoners is set true, but don't expect to run into them.
+			ForOwnerType = BedOwnerType.Colonist;
+		}
+
 	}
 
 	[HarmonyPatch(typeof(WorkGiver_Tend))]
