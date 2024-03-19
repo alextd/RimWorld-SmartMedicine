@@ -167,7 +167,7 @@ namespace SmartMedicine
 	{
 		public static void Prefix(JobDriver_LayDown __instance)
 		{
-			__instance.AddFinishAction(delegate ()
+			__instance.AddFinishAction(delegate (JobCondition _)
 			{
 				if (__instance.Bed?.def == UseTempSleepSpot.TempSleepSpot)
 					if(!__instance.Bed?.Destroyed ?? false)
