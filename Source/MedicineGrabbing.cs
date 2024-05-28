@@ -280,7 +280,7 @@ namespace SmartMedicine
 
 	[HarmonyPatch(typeof(HealthAIUtility))]
 	[HarmonyPatch("FindBestMedicine")]
-	[HarmonyBefore(new string[] { "fluffy.rimworld.pharmacist" })]
+	[HarmonyBefore(new string[] { "Fluffy.Pharmacist" })]
 	[StaticConstructorOnStartup]
 	public static class FindBestMedicine
 	{
