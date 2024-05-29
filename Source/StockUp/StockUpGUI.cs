@@ -3,11 +3,9 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Reflection.Emit;
 using System.Linq;
-using System.Text;
 using UnityEngine;
 using HarmonyLib;
 using Verse;
-using Verse.AI;
 using RimWorld;
 
 namespace SmartMedicine
