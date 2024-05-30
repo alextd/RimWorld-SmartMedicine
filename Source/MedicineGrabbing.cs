@@ -88,7 +88,7 @@ namespace SmartMedicine
 				//ignore defaultCare if none uses default
 				if (PriorityCareComp.AllPriorityCare(hediffs))
 					defaultCare = maxPriorityCare;
-				
+
 				//Find highest care
 				MedicalCareCategory highestCare = defaultCare > maxPriorityCare ? defaultCare : maxPriorityCare;
 				Log.Message($"maxPriorityCare is {maxPriorityCare}, defaultCare is {defaultCare}, highestCare is {highestCare}");
@@ -164,7 +164,6 @@ namespace SmartMedicine
 				//if (job.count < 1) job.count = 1;
 			}
 			int needCount = Mathf.Min(medicineToDrop.stackCount, job.count);
-
 			Log.Message($"{healer} Starting Tend with {medicineToDrop}:{needCount}");
 
 			job.targetB = DropIt(medicineToDrop, needCount, healer, job);
@@ -184,7 +183,6 @@ namespace SmartMedicine
 		public static Thing DropIt(Thing medicineToUse, int needCount, Pawn healer, Job job)
 		{
 			if (medicineToUse == null || medicineToUse.holdingOwner == null) return null;
-
 			//Well apparently inventory items can be forbidden
 			medicineToUse.SetForbidden(false, false);
 
@@ -387,6 +385,14 @@ namespace SmartMedicine
 			}
 			Log.Message($"Care for {patient} is {defaultCare}, Custom care = {finalCare}");
 
+			//WORKAROUND - 1.4 / 1.5 compatibility
+			if (defaultCare < finalCare)
+			{
+				Log.Message("[2] Pawn default care is lower than hediff care! Elevating default as workaround");
+				patient.playerSettings.medCare = finalCare;
+			}
+
+
 			//Android Droid support;
 			Predicate<Thing> validatorDroid = t => true;
 			bool isDroid = extMechanicalPawn != null && (patient.def.modExtensions?.Any(e => extMechanicalPawn.IsAssignableFrom(e.GetType())) ?? false);
@@ -503,7 +509,7 @@ namespace SmartMedicine
 				Log.Message($"Medicine count = {count}");
 
 				bestMed.DebugLog("Best Med on " + (bestMed.pawn == null ? "ground" : "hand") + ":");
-				
+
 				int usedCount = Mathf.Min(bestMed.thing.stackCount, count);
 				result.Add(new ThingCount(bestMed.thing, usedCount));
 				count -= usedCount;

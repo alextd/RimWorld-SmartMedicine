@@ -195,6 +195,7 @@ namespace SmartMedicine
 
 				int diff = ((int)hediffCare) - ((int)defaultCare);
 				__result += diff*5;//Raise priority for higher meds, lower for lower meds.
+				//__result = (int)hediffCare;
 				return false;
 			}
 			return true;
@@ -262,10 +263,11 @@ namespace SmartMedicine
 
 		public static bool AllowsMedicineForHediff(Pawn deliveree, ThingDef med)
 		{
+			//Should this not be reversed, instead checking for false?
 			if (PriorityCareComp.MaxPriorityCare(deliveree, out MedicalCareCategory heCare))
 			{
-				//This is uses to allow higher medicine above normal limit below.
-				//this is NOT used to stop the job is PriorityCare is lowered
+				//This is used to allow higher medicine above normal limit below.
+				//this is NOT used to stop the job if PriorityCare is lowered
 				if (heCare.AllowsMedicine(med)) return true;
 			}
 
