@@ -372,7 +372,7 @@ namespace SmartMedicine
 			List<ThingDef> stockable = DefDatabase<ThingDef>.AllDefsListForReading.FindAll(
 				t => t.EverHaulable &&
 				anything ||
-				(t.IsDrug || t.IsMedicine));
+				(t.IsDrug || t.IsMedicine || t == ThingDefOf.HemogenPack));
 			foreach (ThingDef td in stockable)
 			{
 				rowRect.x = x;
