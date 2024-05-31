@@ -36,5 +36,7 @@
 	<TD.SettingStockUpReturn>退還物品，如果沒有足夠的物資。</TD.SettingStockUpReturn>
 	<TD.Paused>已暫停</TD.Paused>
 	<TD.NotEnoughStockUp>沒有足夠的物資用於儲備</TD.NotEnoughStockUp>
+	<TD.DefaultSurgeryUnlimited>使用最好的藥物進行手術</TD.DefaultSurgeryUnlimited>
+	<TD.PawnSettingSurgeryUnlimited>使用最好的藥物進行手術</TD.PawnSettingSurgeryUnlimited>
 
 </LanguageData>
