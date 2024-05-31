@@ -161,8 +161,11 @@ namespace SmartMedicine
 
 				//I don't fuckin understand but maybe a mod conflict makes this 0 and 0 here is bad.
 				//Probably it is sovled with above job.draftedTend though.
-				//if (job.count < 1) job.count = 1;
 			}
+			//ReTend mod, when trying to "ReTend" an injury with medicine in inventory, throws:
+			//Exception filling window for Verse.FloatMenuMap: System.ArgumentException: SplitOff with count <= 0
+			//Workaround:
+			if (job.count < 1) job.count = 1;
 			int needCount = Mathf.Min(medicineToDrop.stackCount, job.count);
 
 			Log.Message($"{healer} Starting Tend with {medicineToDrop}:{needCount}");
